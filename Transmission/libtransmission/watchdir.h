@@ -8,9 +8,10 @@
 
 #pragma once
 
-#include "tr-macros.h"
-
-TR_BEGIN_DECLS
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
 struct event_base;
 
@@ -35,4 +36,6 @@ void tr_watchdir_free(tr_watchdir_t handle);
 
 char const* tr_watchdir_get_path(tr_watchdir_t handle);
 
-TR_END_DECLS
+#ifdef __cplusplus
+}
+#endif

@@ -6,37 +6,14 @@
  *
  */
 
-#include <QDir>
 #include <QFile>
+#include <QDir>
 
-#include <libtransmission/crypto-utils.h> // tr_base64_encode()
 #include <libtransmission/transmission.h>
+#include <libtransmission/crypto-utils.h> // tr_base64_encode()
 
 #include "AddData.h"
 #include "Utils.h"
-
-namespace
-{
-
-QString getNameFromMetainfo(QByteArray const& metainfo)
-{
-    QString name;
-
-    tr_ctor* ctor = tr_ctorNew(nullptr);
-    tr_ctorSetMetainfo(ctor, metainfo.constData(), metainfo.size());
-
-    tr_info inf;
-    if (tr_torrentParse(ctor, &inf) == TR_PARSE_OK)
-    {
-        name = QString::fromUtf8(inf.name); // metainfo is required to be UTF-8
-        tr_metainfoFree(&inf);
-    }
-
-    tr_ctorFree(ctor);
-    return name;
-}
-
-} // anonymous namespace
 
 int AddData::set(QString const& key)
 {
@@ -62,7 +39,7 @@ int AddData::set(QString const& key)
     }
     else if (Utils::isHexHashcode(key))
     {
-        magnet = QStringLiteral("magnet:?xt=urn:btih:") + key;
+        magnet = QString::fromUtf8("magnet:?xt=urn:btih:") + key;
         type = MAGNET;
     }
     else
@@ -102,23 +79,41 @@ QByteArray AddData::toBase64() const
 
 QString AddData::readableName() const
 {
+    QString ret;
+
     switch (type)
     {
     case FILENAME:
-        return filename;
+        ret = filename;
+        break;
 
     case MAGNET:
-        return magnet;
+        ret = magnet;
+        break;
 
     case URL:
-        return url.toString();
+        ret = url.toString();
+        break;
 
     case METAINFO:
-        return getNameFromMetainfo(metainfo);
+        {
+            tr_info inf;
+            tr_ctor* ctor = tr_ctorNew(nullptr);
 
-    default: // NONE
-        return {};
+            tr_ctorSetMetainfo(ctor, reinterpret_cast<quint8 const*>(metainfo.constData()), metainfo.size());
+
+            if (tr_torrentParse(ctor, &inf) == TR_PARSE_OK)
+            {
+                ret = QString::fromUtf8(inf.name); // metainfo is required to be UTF-8
+                tr_metainfoFree(&inf);
+            }
+
+            tr_ctorFree(ctor);
+            break;
+        }
     }
+
+    return ret;
 }
 
 QString AddData::readableShortName() const
@@ -126,7 +121,7 @@ QString AddData::readableShortName() const
     switch (type)
     {
     case FILENAME:
-        return QFileInfo(filename).baseName();
+        return QFileInfo(filename).fileName();
 
     case URL:
         return url.path().split(QLatin1Char('/')).last();

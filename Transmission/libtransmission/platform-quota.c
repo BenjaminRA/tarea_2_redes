@@ -66,7 +66,6 @@
 #endif
 
 #include "transmission.h"
-#include "tr-macros.h"
 #include "utils.h"
 #include "platform-quota.h"
 
@@ -105,7 +104,7 @@ static char const* getdev(char const* path)
 
 #else
 
-    struct mntent const* mnt;
+    struct mntent* mnt;
 
     fp = setmntent(_PATH_MOUNTED, "r");
 
@@ -181,7 +180,7 @@ static char const* getfstype(char const* device)
 
 #else
 
-    struct mntent const* mnt;
+    struct mntent* mnt;
 
     fp = setmntent(_PATH_MOUNTED, "r");
 
@@ -450,7 +449,7 @@ static int64_t tr_getQuotaFreeSpace(struct tr_device_info const* info)
 
 #else /* _WIN32 */
 
-    TR_UNUSED(info);
+    (void)info;
 
 #endif /* _WIN32 */
 

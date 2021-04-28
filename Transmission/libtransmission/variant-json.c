@@ -15,11 +15,14 @@
 #include <event2/buffer.h> /* evbuffer_add() */
 #include <event2/util.h> /* evutil_strtoll() */
 
-#define LIBTRANSMISSION_VARIANT_MODULE
+#define JSONSL_STATE_USER_FIELDS /* no fields */
+#include "jsonsl.h"
+#include "jsonsl.c"
+
+#define __LIBTRANSMISSION_VARIANT_MODULE__
 
 #include "transmission.h"
 #include "ConvertUTF.h"
-#include "jsonsl.h"
 #include "list.h"
 #include "log.h"
 #include "ptrarray.h"
@@ -77,10 +80,8 @@ static tr_variant* get_node(struct jsonsl_st* jsn)
     return node;
 }
 
-static void error_handler(jsonsl_t jsn, jsonsl_error_t error, struct jsonsl_state_st* state, jsonsl_char_t const* buf)
+static void error_handler(jsonsl_t jsn, jsonsl_error_t error, struct jsonsl_state_st* state UNUSED, jsonsl_char_t const* buf)
 {
-    TR_UNUSED(state);
-
     struct json_wrapper_data* data = jsn->data;
 
     if (data->source != NULL)
@@ -102,11 +103,9 @@ static int error_callback(jsonsl_t jsn, jsonsl_error_t error, struct jsonsl_stat
     return 0; /* bail */
 }
 
-static void action_callback_PUSH(jsonsl_t jsn, jsonsl_action_t action, struct jsonsl_state_st* state, jsonsl_char_t const* buf)
+static void action_callback_PUSH(jsonsl_t jsn, jsonsl_action_t action UNUSED, struct jsonsl_state_st* state,
+    jsonsl_char_t const* buf UNUSED)
 {
-    TR_UNUSED(action);
-    TR_UNUSED(buf);
-
     tr_variant* node;
     struct json_wrapper_data* data = jsn->data;
 
@@ -247,7 +246,8 @@ static char* extract_escaped_string(char const* in, size_t in_len, size_t* len, 
 
                             if (ConvertUTF32toUTF8(&str32_walk, str32_end, &str8_walk, str8_end, 0) == 0)
                             {
-                                evbuffer_add(buf, str8_buf, str8_walk - str8_buf);
+                                size_t const len = str8_walk - str8_buf;
+                                evbuffer_add(buf, str8_buf, len);
                                 unescaped = true;
                             }
 
@@ -302,11 +302,9 @@ static char const* extract_string(jsonsl_t jsn, struct jsonsl_state_st* state, s
     return ret;
 }
 
-static void action_callback_POP(jsonsl_t jsn, jsonsl_action_t action, struct jsonsl_state_st* state, jsonsl_char_t const* buf)
+static void action_callback_POP(jsonsl_t jsn, jsonsl_action_t action UNUSED, struct jsonsl_state_st* state,
+    jsonsl_char_t const* buf UNUSED)
 {
-    TR_UNUSED(action);
-    TR_UNUSED(buf);
-
     struct json_wrapper_data* data = jsn->data;
 
     if (state->type == JSONSL_T_STRING)
@@ -557,19 +555,21 @@ static void jsonStringFunc(tr_variant const* val, void* vdata)
 {
     char* out;
     char* outwalk;
+    char* outend;
     struct evbuffer_iovec vec[1];
-    struct jsonWalk* const data = vdata;
+    struct jsonWalk* data = vdata;
+    char const* str;
+    size_t len;
     unsigned char const* it;
+    unsigned char const* end;
 
-    char const* str = NULL;
-    size_t len = 0;
-    (void)tr_variantGetStr(val, &str, &len);
+    tr_variantGetStr(val, &str, &len);
     it = (unsigned char const*)str;
-    unsigned char const* const end = it + len;
+    end = it + len;
 
     evbuffer_reserve_space(data->out, len * 4, vec, 1);
     out = vec[0].iov_base;
-    char const* const outend = out + vec[0].iov_len;
+    outend = out + vec[0].iov_len;
 
     outwalk = out;
     *outwalk++ = '"';

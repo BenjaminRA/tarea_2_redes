@@ -8,35 +8,25 @@
 
 #pragma once
 
-#include <memory>
-
 #include <QObject>
-#include <QFileSystemWatcher>
 #include <QSet>
 #include <QString>
 
-#include "Macros.h"
+class QFileSystemWatcher;
 
 class TorrentModel;
 
 class WatchDir : public QObject
 {
     Q_OBJECT
-    TR_DISABLE_COPY_MOVE(WatchDir)
 
 public:
-    explicit WatchDir(TorrentModel const&);
+    WatchDir(TorrentModel const&);
 
-    void setPath(QString const& path, bool is_enabled);
+    void setPath(QString const& path, bool isEnabled);
 
 signals:
     void torrentFileAdded(QString const& filename);
-
-private slots:
-    void watcherActivated(QString const& path);
-    void onTimeout();
-
-    void rescanAllWatchedDirectories();
 
 private:
     enum
@@ -46,10 +36,18 @@ private:
         ERROR
     };
 
+private:
     int metainfoTest(QString const& filename) const;
 
-    TorrentModel const& model_;
+private slots:
+    void watcherActivated(QString const& path);
+    void onTimeout();
 
-    QSet<QString> watch_dir_files_;
-    std::unique_ptr<QFileSystemWatcher> watcher_;
+    void rescanAllWatchedDirectories();
+
+private:
+    TorrentModel const& myModel;
+
+    QSet<QString> myWatchDirFiles;
+    QFileSystemWatcher* myWatcher;
 };

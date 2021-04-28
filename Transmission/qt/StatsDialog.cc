@@ -20,29 +20,35 @@ enum
 
 StatsDialog::StatsDialog(Session& session, QWidget* parent) :
     BaseDialog(parent),
-    session_(session)
+    mySession(session),
+    myTimer(new QTimer(this))
 {
-    ui_.setupUi(this);
+    ui.setupUi(this);
 
-    auto* cr = new ColumnResizer(this);
-    cr->addLayout(ui_.currentSessionSectionLayout);
-    cr->addLayout(ui_.totalSectionLayout);
+    ColumnResizer* cr(new ColumnResizer(this));
+    cr->addLayout(ui.currentSessionSectionLayout);
+    cr->addLayout(ui.totalSectionLayout);
     cr->update();
 
-    timer_.setSingleShot(false);
-    connect(&timer_, &QTimer::timeout, &session_, &Session::refreshSessionStats);
-    connect(&session_, &Session::statsUpdated, this, &StatsDialog::updateStats);
+    myTimer->setSingleShot(false);
+    connect(myTimer, SIGNAL(timeout()), &mySession, SLOT(refreshSessionStats()));
+
+    connect(&mySession, SIGNAL(statsUpdated()), this, SLOT(updateStats()));
     updateStats();
-    session_.refreshSessionStats();
+    mySession.refreshSessionStats();
+}
+
+StatsDialog::~StatsDialog()
+{
 }
 
 void StatsDialog::setVisible(bool visible)
 {
-    timer_.stop();
+    myTimer->stop();
 
     if (visible)
     {
-        timer_.start(REFRESH_INTERVAL_MSEC);
+        myTimer->start(REFRESH_INTERVAL_MSEC);
     }
 
     BaseDialog::setVisible(visible);
@@ -50,18 +56,18 @@ void StatsDialog::setVisible(bool visible)
 
 void StatsDialog::updateStats()
 {
-    tr_session_stats const& current(session_.getStats());
-    tr_session_stats const& total(session_.getCumulativeStats());
+    tr_session_stats const& current(mySession.getStats());
+    tr_session_stats const& total(mySession.getCumulativeStats());
 
-    ui_.currentUploadedValueLabel->setText(Formatter::get().sizeToString(current.uploadedBytes));
-    ui_.currentDownloadedValueLabel->setText(Formatter::get().sizeToString(current.downloadedBytes));
-    ui_.currentRatioValueLabel->setText(Formatter::get().ratioToString(current.ratio));
-    ui_.currentDurationValueLabel->setText(Formatter::get().timeToString(current.secondsActive));
+    ui.currentUploadedValueLabel->setText(Formatter::sizeToString(current.uploadedBytes));
+    ui.currentDownloadedValueLabel->setText(Formatter::sizeToString(current.downloadedBytes));
+    ui.currentRatioValueLabel->setText(Formatter::ratioToString(current.ratio));
+    ui.currentDurationValueLabel->setText(Formatter::timeToString(current.secondsActive));
 
-    ui_.totalUploadedValueLabel->setText(Formatter::get().sizeToString(total.uploadedBytes));
-    ui_.totalDownloadedValueLabel->setText(Formatter::get().sizeToString(total.downloadedBytes));
-    ui_.totalRatioValueLabel->setText(Formatter::get().ratioToString(total.ratio));
-    ui_.totalDurationValueLabel->setText(Formatter::get().timeToString(total.secondsActive));
+    ui.totalUploadedValueLabel->setText(Formatter::sizeToString(total.uploadedBytes));
+    ui.totalDownloadedValueLabel->setText(Formatter::sizeToString(total.downloadedBytes));
+    ui.totalRatioValueLabel->setText(Formatter::ratioToString(total.ratio));
+    ui.totalDurationValueLabel->setText(Formatter::timeToString(total.secondsActive));
 
-    ui_.startCountLabel->setText(tr("Started %Ln time(s)", nullptr, total.sessionCount));
+    ui.startCountLabel->setText(tr("Started %Ln time(s)", nullptr, total.sessionCount));
 }

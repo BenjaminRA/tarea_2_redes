@@ -9,20 +9,20 @@
 #pragma once
 
 #include "BaseDialog.h"
-#include "Macros.h"
+
 #include "ui_StatsDialog.h"
 
-#include <QTimer>
+class QTimer;
 
 class Session;
 
 class StatsDialog : public BaseDialog
 {
     Q_OBJECT
-    TR_DISABLE_COPY_MOVE(StatsDialog)
 
 public:
-    explicit StatsDialog(Session&, QWidget* parent = nullptr);
+    StatsDialog(Session&, QWidget* parent = nullptr);
+    ~StatsDialog() override;
 
     // QWidget
     void setVisible(bool visible) override;
@@ -31,9 +31,9 @@ private slots:
     void updateStats();
 
 private:
-    Session& session_;
+    Session& mySession;
 
-    Ui::StatsDialog ui_ = {};
+    Ui::StatsDialog ui;
 
-    QTimer timer_;
+    QTimer* myTimer;
 };

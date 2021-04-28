@@ -19,7 +19,11 @@
 #include "Utils.h"
 
 PathButton::PathButton(QWidget* parent) :
-    QToolButton(parent)
+    QToolButton(parent),
+    myMode(DirectoryMode),
+    myTitle(),
+    myNameFilter(),
+    myPath()
 {
     setSizePolicy(QSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed));
     setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -27,48 +31,48 @@ PathButton::PathButton(QWidget* parent) :
 
     updateAppearance();
 
-    connect(this, &QAbstractButton::clicked, this, &PathButton::onClicked);
+    connect(this, SIGNAL(clicked()), this, SLOT(onClicked()));
 }
 
 void PathButton::setMode(Mode mode)
 {
-    if (mode_ == mode)
+    if (myMode == mode)
     {
         return;
     }
 
-    mode_ = mode;
+    myMode = mode;
 
     updateAppearance();
 }
 
 void PathButton::setTitle(QString const& title)
 {
-    title_ = title;
+    myTitle = title;
 }
 
-void PathButton::setNameFilter(QString const& name_filter)
+void PathButton::setNameFilter(QString const& nameFilter)
 {
-    name_filter_ = name_filter;
+    myNameFilter = nameFilter;
 }
 
 void PathButton::setPath(QString const& path)
 {
-    if (path_ == path)
+    if (myPath == path)
     {
         return;
     }
 
-    path_ = QDir::toNativeSeparators(Utils::removeTrailingDirSeparator(path));
+    myPath = QDir::toNativeSeparators(Utils::removeTrailingDirSeparator(path));
 
     updateAppearance();
 
-    emit pathChanged(path_);
+    emit pathChanged(myPath);
 }
 
 QString const& PathButton::path() const
 {
-    return path_;
+    return myPath;
 }
 
 QSize PathButton::sizeHint() const
@@ -83,27 +87,26 @@ void PathButton::paintEvent(QPaintEvent* /*event*/)
     QStyleOptionToolButton option;
     initStyleOption(&option);
 
-    auto const& strut = QApplication::globalStrut();
-    QSize const fake_content_size(qMax(100, strut.width()), qMax(100, strut.height()));
-    QSize const fake_size_hint = style()->sizeFromContents(QStyle::CT_ToolButton, &option, fake_content_size, this);
+    QSize const fakeContentSize(qMax(100, qApp->globalStrut().width()), qMax(100, qApp->globalStrut().height()));
+    QSize const fakeSizeHint = style()->sizeFromContents(QStyle::CT_ToolButton, &option, fakeContentSize, this);
 
-    int text_width = width() - (fake_size_hint.width() - fake_content_size.width()) - iconSize().width() - 6;
+    int textWidth = width() - (fakeSizeHint.width() - fakeContentSize.width()) - iconSize().width() - 6;
 
     if (popupMode() == MenuButtonPopup)
     {
-        text_width -= style()->pixelMetric(QStyle::PM_MenuButtonIndicator, &option, this);
+        textWidth -= style()->pixelMetric(QStyle::PM_MenuButtonIndicator, &option, this);
     }
 
-    QFileInfo const path_info(path_);
-    option.text = path_.isEmpty() ? tr("(None)") : (path_info.fileName().isEmpty() ? path_ : path_info.fileName());
-    option.text = fontMetrics().elidedText(option.text, Qt::ElideMiddle, text_width);
+    QFileInfo const pathInfo(myPath);
+    option.text = myPath.isEmpty() ? tr("(None)") : (pathInfo.fileName().isEmpty() ? myPath : pathInfo.fileName());
+    option.text = fontMetrics().elidedText(option.text, Qt::ElideMiddle, textWidth);
 
     painter.drawComplexControl(QStyle::CC_ToolButton, option);
 }
 
-void PathButton::onClicked() const
+void PathButton::onClicked()
 {
-    auto* dialog = new QFileDialog(window(), effectiveTitle());
+    QFileDialog* dialog = new QFileDialog(window(), effectiveTitle());
     dialog->setFileMode(isDirMode() ? QFileDialog::Directory : QFileDialog::ExistingFile);
 
     if (isDirMode())
@@ -111,27 +114,27 @@ void PathButton::onClicked() const
         dialog->setOption(QFileDialog::ShowDirsOnly);
     }
 
-    if (!name_filter_.isEmpty())
+    if (!myNameFilter.isEmpty())
     {
-        dialog->setNameFilter(name_filter_);
+        dialog->setNameFilter(myNameFilter);
     }
 
-    QFileInfo const path_info(path_);
+    QFileInfo const pathInfo(myPath);
 
-    if (!path_.isEmpty() && path_info.exists())
+    if (!myPath.isEmpty() && pathInfo.exists())
     {
-        if (path_info.isDir())
+        if (pathInfo.isDir())
         {
-            dialog->setDirectory(path_info.absoluteFilePath());
+            dialog->setDirectory(pathInfo.absoluteFilePath());
         }
         else
         {
-            dialog->setDirectory(path_info.absolutePath());
-            dialog->selectFile(path_info.fileName());
+            dialog->setDirectory(pathInfo.absolutePath());
+            dialog->selectFile(pathInfo.fileName());
         }
     }
 
-    connect(dialog, &QFileDialog::fileSelected, this, &PathButton::onFileSelected);
+    connect(dialog, SIGNAL(fileSelected(QString)), this, SLOT(onFileSelected(QString)));
 
     dialog->setAttribute(Qt::WA_DeleteOnClose);
     dialog->open();
@@ -147,40 +150,40 @@ void PathButton::onFileSelected(QString const& path)
 
 void PathButton::updateAppearance()
 {
-    QFileInfo const path_info(path_);
+    QFileInfo const pathInfo(myPath);
 
-    int const icon_size(style()->pixelMetric(QStyle::PM_SmallIconSize));
-    QFileIconProvider const icon_provider;
+    int const iconSize(style()->pixelMetric(QStyle::PM_SmallIconSize));
+    QFileIconProvider const iconProvider;
 
     QIcon icon;
 
-    if (!path_.isEmpty() && path_info.exists())
+    if (!myPath.isEmpty() && pathInfo.exists())
     {
-        icon = icon_provider.icon(path_);
+        icon = iconProvider.icon(myPath);
     }
 
     if (icon.isNull())
     {
-        icon = icon_provider.icon(isDirMode() ? QFileIconProvider::Folder : QFileIconProvider::File);
+        icon = iconProvider.icon(isDirMode() ? QFileIconProvider::Folder : QFileIconProvider::File);
     }
 
-    setIconSize(QSize(icon_size, icon_size));
+    setIconSize(QSize(iconSize, iconSize));
     setIcon(icon);
-    setToolTip(path_ == text() ? QString() : path_);
+    setToolTip(myPath == text() ? QString() : myPath);
 
     update();
 }
 
 bool PathButton::isDirMode() const
 {
-    return mode_ == DirectoryMode;
+    return myMode == DirectoryMode;
 }
 
 QString PathButton::effectiveTitle() const
 {
-    if (!title_.isEmpty())
+    if (!myTitle.isEmpty())
     {
-        return title_;
+        return myTitle;
     }
 
     return isDirMode() ? tr("Select Folder") : tr("Select File");

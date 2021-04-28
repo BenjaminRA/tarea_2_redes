@@ -8,7 +8,7 @@
 
 #pragma once
 
-#ifndef LIBTRANSMISSION_WATCHDIR_MODULE
+#ifndef __LIBTRANSMISSION_WATCHDIR_MODULE__
 #error only the libtransmission watchdir module should #include this header.
 #endif
 

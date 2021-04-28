@@ -25,16 +25,16 @@
 #import "NSStringAdditions.h"
 
 @implementation TrackerNode
-{
-    tr_tracker_stat fStat;
-}
+
+#warning remove ivars in header when 64-bit only (or it compiles in 32-bit mode)
+@synthesize torrent = fTorrent;
 
 - (id) initWithTrackerStat: (tr_tracker_stat *) stat torrent: (Torrent *) torrent
 {
     if ((self = [super init]))
     {
         fStat = *stat;
-        _torrent = torrent; //weak reference
+        fTorrent = torrent; //weak reference
     }
 
     return self;
@@ -156,17 +156,23 @@
         case TR_TRACKER_WAITING:
         {
             const NSTimeInterval nextAnnounceTimeLeft = fStat.nextAnnounceTime - [[NSDate date] timeIntervalSince1970];
-            
-            static NSDateComponentsFormatter *formatter;
-            static dispatch_once_t onceToken;
-            dispatch_once(&onceToken, ^{
-                formatter = [NSDateComponentsFormatter new];
-                formatter.unitsStyle = NSDateComponentsFormatterUnitsStyleAbbreviated;
-                formatter.zeroFormattingBehavior = NSDateComponentsFormatterZeroFormattingBehaviorDropLeading;
-                formatter.collapsesLargestUnit = YES;
-            });
-            
-            NSString *timeString = [formatter stringFromTimeInterval: nextAnnounceTimeLeft];
+
+            NSString *timeString;
+            if ([NSApp isOnYosemiteOrBetter]) {
+                static NSDateComponentsFormatter *formatter;
+                static dispatch_once_t onceToken;
+                dispatch_once(&onceToken, ^{
+                    formatter = [NSDateComponentsFormatter new];
+                    formatter.unitsStyle = NSDateComponentsFormatterUnitsStyleAbbreviated;
+                    formatter.zeroFormattingBehavior = NSDateComponentsFormatterZeroFormattingBehaviorDropLeading;
+                    formatter.collapsesLargestUnit = YES;
+                });
+
+                timeString = [formatter stringFromTimeInterval: nextAnnounceTimeLeft];
+            }
+            else {
+                timeString = [NSString timeString: nextAnnounceTimeLeft includesTimeRemainingPhrase: NO showSeconds: YES];
+            }
             return [NSString stringWithFormat: NSLocalizedString(@"Next announce in %@", "Tracker next announce"),
                     timeString];
         }

@@ -24,9 +24,13 @@ public:
         METAINFO
     };
 
-    AddData() = default;
+public:
+    AddData() :
+        type(NONE)
+    {
+    }
 
-    explicit AddData(QString const& str)
+    AddData(QString const& str)
     {
         set(str);
     }
@@ -42,7 +46,8 @@ public:
         return AddData(str).type != NONE;
     }
 
-    int type = NONE;
+public:
+    int type;
     QByteArray metainfo;
     QString filename;
     QString magnet;

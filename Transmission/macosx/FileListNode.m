@@ -29,18 +29,23 @@
 @end
 
 @implementation FileListNode
-{
-    NSMutableIndexSet * _indexes;
-    NSImage * _icon;
-    NSMutableArray * _children;
-}
+
+#warning remove ivars in header when 64-bit only (or it compiles in 32-bit mode)
+@synthesize name = fName;
+@synthesize path = fPath;
+@synthesize torrent = fTorrent;
+@synthesize size = fSize;
+@synthesize icon = fIcon;
+@synthesize isFolder = fIsFolder;
+@synthesize indexes = fIndexes;
+@synthesize children = fChildren;
 
 - (id) initWithFolderName: (NSString *) name path: (NSString *) path torrent: (Torrent *) torrent
 {
     if ((self = [self initWithFolder: YES name: name path: path torrent: torrent]))
     {
-        _children = [[NSMutableArray alloc] init];
-        _size = 0;
+        fChildren = [[NSMutableArray alloc] init];
+        fSize = 0;
     }
 
     return self;
@@ -50,8 +55,8 @@
 {
     if ((self = [self initWithFolder: NO name: name path: path torrent: torrent]))
     {
-        _size = size;
-        [_indexes addIndex: index];
+        fSize = size;
+        [fIndexes addIndex: index];
     }
 
     return self;
@@ -59,17 +64,17 @@
 
 - (void) insertChild: (FileListNode *) child
 {
-    NSAssert(_isFolder, @"method can only be invoked on folders");
+    NSAssert(fIsFolder, @"method can only be invoked on folders");
 
-    [_children addObject: child];
+    [fChildren addObject: child];
 }
 
 - (void) insertIndex: (NSUInteger) index withSize: (uint64_t) size
 {
-    NSAssert(_isFolder, @"method can only be invoked on folders");
+    NSAssert(fIsFolder, @"method can only be invoked on folders");
 
-    [_indexes addIndex: index];
-    _size += size;
+    [fIndexes addIndex: index];
+    fSize += size;
 }
 
 - (id) copyWithZone: (NSZone *) zone
@@ -81,30 +86,25 @@
 
 - (NSString *) description
 {
-    if (!_isFolder)
-        return [NSString stringWithFormat: @"%@ (%ld)", _name, [_indexes firstIndex]];
+    if (!fIsFolder)
+        return [NSString stringWithFormat: @"%@ (%ld)", fName, [fIndexes firstIndex]];
     else
-        return [NSString stringWithFormat: @"%@ (folder: %@)", _name, _indexes];
+        return [NSString stringWithFormat: @"%@ (folder: %@)", fName, fIndexes];
 }
 
 - (NSImage *) icon
 {
-    if (!_icon)
-        _icon = [[NSWorkspace sharedWorkspace] iconForFileType: _isFolder ? NSFileTypeForHFSTypeCode(kGenericFolderIcon)
-                                                                          : [_name pathExtension]];
-    return _icon;
+    if (!fIcon)
+        fIcon = [[NSWorkspace sharedWorkspace] iconForFileType: fIsFolder ? NSFileTypeForHFSTypeCode(kGenericFolderIcon)
+                                                                            : [fName pathExtension]];
+    return fIcon;
 }
 
 - (NSMutableArray *) children
 {
-    NSAssert(_isFolder, @"method can only be invoked on folders");
+    NSAssert(fIsFolder, @"method can only be invoked on folders");
 
-    return _children;
-}
-
-- (NSIndexSet *) indexes
-{
-    return _indexes;
+    return fChildren;
 }
 
 - (BOOL) updateFromOldName: (NSString *) oldName toNewName: (NSString *) newName inPath: (NSString *) path
@@ -120,8 +120,8 @@
     {
         if ([oldName isEqualToString: self.name])
         {
-            _name = [newName copy];
-            _icon = nil;
+            fName = [newName copy];
+            fIcon = nil;
             return YES;
         }
     }
@@ -137,7 +137,7 @@
             NSString * oldPathPrefix = [path stringByAppendingPathComponent: oldName];
             NSString * newPathPrefix = [path stringByAppendingPathComponent: newName];
 
-            _path = [_path stringByReplacingCharactersInRange: NSMakeRange(0, [oldPathPrefix length]) withString: newPathPrefix];
+            fPath = [fPath stringByReplacingCharactersInRange: NSMakeRange(0, [oldPathPrefix length]) withString: newPathPrefix];
             return YES;
         }
     }
@@ -153,13 +153,13 @@
 {
     if ((self = [super init]))
     {
-        _isFolder = isFolder;
-        _name = [name copy];
-        _path = [path copy];
+        fIsFolder = isFolder;
+        fName = [name copy];
+        fPath = [path copy];
 
-        _indexes = [[NSMutableIndexSet alloc] init];
+        fIndexes = [[NSMutableIndexSet alloc] init];
 
-        _torrent = torrent;
+        fTorrent = torrent;
     }
 
     return self;

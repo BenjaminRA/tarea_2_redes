@@ -15,9 +15,10 @@
 #include <windows.h>
 #endif
 
-#include "tr-macros.h"
-
-TR_BEGIN_DECLS
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
 struct tr_error;
 
@@ -663,4 +664,6 @@ bool tr_sys_dir_close(tr_sys_dir_t handle, struct tr_error** error);
 /** @} */
 /** @} */
 
-TR_END_DECLS
+#ifdef __cplusplus
+}
+#endif

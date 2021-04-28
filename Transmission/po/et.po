@@ -3,18 +3,14 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-# Translators:
-# Mike Gelfand <mikedld@mikedld.com>, 2017
-# Priit Uring, 2020
-#
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-03 20:25+0300\n"
-"PO-Revision-Date: 2017-01-26 19:47+0000\n"
-"Last-Translator: Priit Uring, 2020\n"
+"POT-Creation-Date: 2020-05-14 18:55+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Mike Gelfand <mikedld@mikedld.com>, 2017\n"
 "Language-Team: Estonian (https://www.transifex.com/transmissionbt/teams/33778/et/)\n"
 "Language: et\n"
 "MIME-Version: 1.0\n"
@@ -22,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: ../cli/cli.c:114 ../gtk/util.c:92 ../libtransmission/utils.c:1727
+#: ../cli/cli.c:114 ../gtk/util.c:92 ../libtransmission/utils.c:1694
 msgid "None"
 msgstr "Puudub"
 
@@ -40,15 +36,15 @@ msgstr "Järjesta _edenemise järgi"
 
 #: ../gtk/actions.c:34
 msgid "Sort by _Queue"
-msgstr "Järjesta _järjekorra oleku järgi"
+msgstr "Jä_rjesta järjekorra positsiooni järgi"
 
 #: ../gtk/actions.c:35
 msgid "Sort by Rati_o"
-msgstr "Järjesta _suhte järgi"
+msgstr "Järjesta su_hte järgi"
 
 #: ../gtk/actions.c:36
 msgid "Sort by Stat_e"
-msgstr "Järjesta _oleku järgi"
+msgstr "Järjesta o_leku järgi"
 
 #: ../gtk/actions.c:37
 msgid "Sort by A_ge"
@@ -62,215 +58,199 @@ msgstr "Järjesta _jäänud aja järgi"
 msgid "Sort by Si_ze"
 msgstr "Järjesta _suuruse järgi"
 
-#: ../gtk/actions.c:56
+#: ../gtk/actions.c:53
 msgid "_Show Transmission"
 msgstr "_Ava Transmission'i aken"
 
-#: ../gtk/actions.c:57
+#: ../gtk/actions.c:54
 msgid "Message _Log"
-msgstr "Teadete _logi"
+msgstr "Teadete_logi"
 
-#: ../gtk/actions.c:72
+#: ../gtk/actions.c:67
 msgid "Enable Alternative Speed _Limits"
 msgstr "Alternatiivsed _kiiruspiirangud on lubatud"
 
-#: ../gtk/actions.c:73
+#: ../gtk/actions.c:68
 msgid "_Compact View"
 msgstr "_Kompaktvaade"
 
-#: ../gtk/actions.c:74
+#: ../gtk/actions.c:69
 msgid "Re_verse Sort Order"
 msgstr "_Pööratud järjestus"
 
-#: ../gtk/actions.c:75
+#: ../gtk/actions.c:70
 msgid "_Filterbar"
 msgstr "_Filtreerimisriba"
 
-#: ../gtk/actions.c:76
+#: ../gtk/actions.c:71
 msgid "_Statusbar"
 msgstr "_Olekuriba"
 
-#: ../gtk/actions.c:77
+#: ../gtk/actions.c:72
 msgid "_Toolbar"
 msgstr "_Tööriistariba"
 
-#: ../gtk/actions.c:82
+#: ../gtk/actions.c:77
 msgid "_File"
 msgstr "_Fail"
 
-#: ../gtk/actions.c:83
+#: ../gtk/actions.c:78
 msgid "_Torrent"
 msgstr "_Torrent"
 
-#: ../gtk/actions.c:84
+#: ../gtk/actions.c:79
 msgid "_View"
 msgstr "_Vaade"
 
-#: ../gtk/actions.c:85
+#: ../gtk/actions.c:80
 msgid "_Sort Torrents By"
 msgstr "_Järjesta torrentid"
 
-#: ../gtk/actions.c:86
+#: ../gtk/actions.c:81
 msgid "_Queue"
 msgstr "_Järjekord"
 
-#: ../gtk/actions.c:87 ../gtk/details.c:2846
+#: ../gtk/actions.c:82 ../gtk/details.c:2839
 msgid "_Edit"
 msgstr "_Redigeeri"
 
-#: ../gtk/actions.c:88 ../gtk/tr-prefs.c:1270
+#: ../gtk/actions.c:83
 msgid "_Help"
-msgstr "_Abi"
+msgstr "A_bi"
 
-#: ../gtk/actions.c:89
+#: ../gtk/actions.c:84
 msgid "Copy _Magnet Link to Clipboard"
-msgstr "Kopeeri _Magneti link lõikelaule"
+msgstr "Kopeeri _magnetlink"
 
-#: ../gtk/actions.c:90
+#: ../gtk/actions.c:85
 msgid "Open URL…"
 msgstr "Ava URL…"
 
-#: ../gtk/actions.c:90
+#: ../gtk/actions.c:85
 msgid "Open _URL…"
 msgstr "Ava _URL…"
 
-#: ../gtk/actions.c:91 ../gtk/actions.c:92
+#: ../gtk/actions.c:86 ../gtk/actions.c:87
 msgid "Open a torrent"
-msgstr "Ava torrent"
+msgstr "Torrenti avamine"
 
-#: ../gtk/actions.c:91 ../gtk/actions.c:92 ../gtk/open-dialog.c:286 ../gtk/open-dialog.c:459 ../gtk/open-dialog.c:524
-msgid "_Open"
-msgstr "_Ava"
-
-#: ../gtk/actions.c:93
+#: ../gtk/actions.c:88
 msgid "Start torrent"
-msgstr "Käivita torrent"
+msgstr "Torrenti käivitamine"
 
-#: ../gtk/actions.c:93
+#: ../gtk/actions.c:88
 msgid "_Start"
 msgstr "_Käivita"
 
-#: ../gtk/actions.c:94
+#: ../gtk/actions.c:89
 msgid "Start _Now"
-msgstr "Käivita _kohe"
+msgstr "Käivita ko_he"
 
-#: ../gtk/actions.c:94
+#: ../gtk/actions.c:89
 msgid "Start torrent now"
 msgstr "Torrenti kohene käivitamine"
 
-#: ../gtk/actions.c:96
+#: ../gtk/actions.c:91
 msgid "_Statistics"
-msgstr "_statistika"
+msgstr "S_tatistika"
 
-#: ../gtk/actions.c:97
+#: ../gtk/actions.c:92
 msgid "_Donate"
 msgstr "_Annetamine"
 
-#: ../gtk/actions.c:98
+#: ../gtk/actions.c:93
 msgid "_Verify Local Data"
-msgstr "_Kontrolli allalaetud andmeid"
+msgstr "Kont_rolli allalaaditud andmeid"
 
-#: ../gtk/actions.c:99
+#: ../gtk/actions.c:94
 msgid "Pause torrent"
-msgstr "Seiska torrent"
+msgstr "Torrenti peatamine"
 
-#: ../gtk/actions.c:99
+#: ../gtk/actions.c:94
 msgid "_Pause"
 msgstr "_Peata"
 
-#: ../gtk/actions.c:100
+#: ../gtk/actions.c:95
 msgid "Pause all torrents"
-msgstr "Peata kõik torrentid"
+msgstr "Kõigi torrentite peatamine"
 
-#: ../gtk/actions.c:100
+#: ../gtk/actions.c:95
 msgid "_Pause All"
 msgstr "_Peata kõik"
 
-#: ../gtk/actions.c:101
+#: ../gtk/actions.c:96
 msgid "Start all torrents"
 msgstr "Kõikide torrentite käivitamine"
 
-#: ../gtk/actions.c:101
+#: ../gtk/actions.c:96
 msgid "_Start All"
 msgstr "_Käivita kõik"
 
-#: ../gtk/actions.c:102
+#: ../gtk/actions.c:97
 msgid "Set _Location…"
-msgstr "Määra _asukoht…"
+msgstr "Määra a_sukoht…"
 
-#: ../gtk/actions.c:103
+#: ../gtk/actions.c:98
 msgid "Remove torrent"
 msgstr "Torrenti eemaldamine"
 
-#: ../gtk/actions.c:104
+#: ../gtk/actions.c:99
 msgid "_Delete Files and Remove"
 msgstr "Eemalda torrent ja kustuta _failid"
 
-#: ../gtk/actions.c:105
+#: ../gtk/actions.c:100
 msgid "Create a torrent"
 msgstr "Torrenti loomine"
 
-#: ../gtk/actions.c:105
+#: ../gtk/actions.c:100
 msgid "_New…"
 msgstr "_Uus…"
 
-#: ../gtk/actions.c:106
+#: ../gtk/actions.c:101
 msgid "_Quit"
 msgstr "_Välju"
 
-#: ../gtk/actions.c:107
+#: ../gtk/actions.c:102
 msgid "Select _All"
 msgstr "Vali _kõik"
 
-#: ../gtk/actions.c:108
+#: ../gtk/actions.c:103
 msgid "Dese_lect All"
 msgstr "_Tühista valik"
 
-#: ../gtk/actions.c:109
-msgid "_Preferences"
-msgstr "_Eelistused"
-
-#: ../gtk/actions.c:110
+#: ../gtk/actions.c:105
 msgid "Torrent properties"
 msgstr "Torrenti omadused"
 
-#: ../gtk/actions.c:110
-msgid "_Properties"
-msgstr "_Atribuudid"
-
-#: ../gtk/actions.c:112
+#: ../gtk/actions.c:106
 msgid "Open Fold_er"
 msgstr "Ava _kataloog"
 
-#: ../gtk/actions.c:113
-msgid "_About"
-msgstr "_Teave"
-
-#: ../gtk/actions.c:114
+#: ../gtk/actions.c:108
 msgid "_Contents"
 msgstr "_Sisukord"
 
-#: ../gtk/actions.c:115
+#: ../gtk/actions.c:109
 msgid "Ask Tracker for _More Peers"
-msgstr "Küsi jälitajalt _veel partnereid"
+msgstr "Küsi järjepidajalt _veel partnereid"
 
-#: ../gtk/actions.c:116
+#: ../gtk/actions.c:110
 msgid "Move to _Top"
 msgstr "_Liiguta kõige ülemiseks"
 
-#: ../gtk/actions.c:117
+#: ../gtk/actions.c:111
 msgid "Move _Up"
-msgstr "Liiguta _üles"
+msgstr "Liiguta ül_es"
 
-#: ../gtk/actions.c:118
+#: ../gtk/actions.c:112
 msgid "Move _Down"
 msgstr "Liiguta _alla"
 
-#: ../gtk/actions.c:119
+#: ../gtk/actions.c:113
 msgid "Move to _Bottom"
 msgstr "Liiguta _kõige alumiseks"
 
-#: ../gtk/actions.c:120
+#: ../gtk/actions.c:114
 msgid "Present Main Window"
 msgstr "Põhiakna näitamine"
 
@@ -280,21 +260,21 @@ msgstr "Vastavalt üldistele sätetele"
 
 #: ../gtk/details.c:487
 msgid "Seed regardless of ratio"
-msgstr "Jaga hoolimata suhtest"
+msgstr "Levitatakse suhtest hoolimata"
 
 #: ../gtk/details.c:488
 msgid "Stop seeding at ratio:"
-msgstr "Peata jagamine, kui suhe on:"
+msgstr "Levitamine peatub järgmise suhte juures:"
 
 #: ../gtk/details.c:498
 msgid "Seed regardless of activity"
-msgstr "Jaga hoolimata aktiivsusest"
+msgstr "Levitamine aktiivsusest hoolimata"
 
 #: ../gtk/details.c:499
 msgid "Stop seeding if idle for N minutes:"
 msgstr "Levitamine peatub pärast N-minutilist jõudeolekut:"
 
-#: ../gtk/details.c:517 ../gtk/tr-prefs.c:1280
+#: ../gtk/details.c:517 ../gtk/tr-prefs.c:1253
 msgid "Speed"
 msgstr "Kiirus"
 
@@ -310,19 +290,19 @@ msgstr "_Allalaadimise kiirus on piiratud (%s):"
 #: ../gtk/details.c:537
 #, c-format
 msgid "Limit _upload speed (%s):"
-msgstr "Piira _üleslaadimise kiirust (%s):"
+msgstr "Ü_leslaadimise kiirus on piiratud (%s):"
 
-#: ../gtk/details.c:550 ../gtk/open-dialog.c:370
+#: ../gtk/details.c:550 ../gtk/open-dialog.c:368
 msgid "Torrent _priority:"
 msgstr "Torrenti _tähtsus:"
 
 #: ../gtk/details.c:554
 msgid "Seeding Limits"
-msgstr "Jagamise piirangud"
+msgstr "Levitamise piirangud"
 
 #: ../gtk/details.c:564
 msgid "_Ratio:"
-msgstr "_Suhtele:"
+msgstr "Su_htele:"
 
 #: ../gtk/details.c:573
 msgid "_Idle:"
@@ -334,39 +314,39 @@ msgstr "Partnerite ühendused"
 
 #: ../gtk/details.c:579
 msgid "_Maximum peers:"
-msgstr "_Maksimaalselt partnereid:"
+msgstr "_Suurim partnerite arv:"
 
-#: ../gtk/details.c:598 ../gtk/torrent-cell-renderer.c:195 ../libtransmission/verify.c:274
+#: ../gtk/details.c:598 ../gtk/torrent-cell-renderer.c:195 ../libtransmission/verify.c:272
 msgid "Queued for verification"
 msgstr "Kontrollimise ootel"
 
 #: ../gtk/details.c:601
 msgid "Verifying local data"
-msgstr "Kontrollin kohalikke andmeid"
+msgstr "Kohalike andmete kontrollimine"
 
 #: ../gtk/details.c:604 ../gtk/torrent-cell-renderer.c:199
 msgid "Queued for download"
-msgstr "Ootejärjekorras allalaadimiseks"
+msgstr "Allalaadimise järjekorras ootel"
 
-#: ../gtk/details.c:607 ../gtk/filter.c:601
+#: ../gtk/details.c:607 ../gtk/filter.c:586
 msgctxt "Verb"
 msgid "Downloading"
 msgstr "Allalaadimisel"
 
 #: ../gtk/details.c:610 ../gtk/torrent-cell-renderer.c:203
 msgid "Queued for seeding"
-msgstr "Ootejärjekorras jagamiseks"
+msgstr "Levitamise järjekorras ootel"
 
-#: ../gtk/details.c:613 ../gtk/filter.c:602
+#: ../gtk/details.c:613 ../gtk/filter.c:587
 msgctxt "Verb"
 msgid "Seeding"
-msgstr "Jagan"
+msgstr "Levitamisel"
 
-#: ../gtk/details.c:616 ../gtk/filter.c:604 ../gtk/torrent-cell-renderer.c:191
+#: ../gtk/details.c:616 ../gtk/filter.c:589 ../gtk/torrent-cell-renderer.c:191
 msgid "Finished"
 msgstr "Lõpetatud"
 
-#: ../gtk/details.c:616 ../gtk/filter.c:603 ../gtk/torrent-cell-renderer.c:191
+#: ../gtk/details.c:616 ../gtk/filter.c:588 ../gtk/torrent-cell-renderer.c:191
 msgid "Paused"
 msgstr "Peatatud"
 
@@ -374,7 +354,7 @@ msgstr "Peatatud"
 msgid "N/A"
 msgstr "Puudub"
 
-#: ../gtk/details.c:664 ../gtk/file-list.c:643
+#: ../gtk/details.c:664 ../gtk/file-list.c:636
 msgid "Mixed"
 msgstr "Kombineeritud"
 
@@ -384,7 +364,7 @@ msgstr "Ühtegi torrentit pole valitud"
 
 #: ../gtk/details.c:695
 msgid "Private to this tracker -- DHT and PEX disabled"
-msgstr "Privaatne antud jälitajale -- DHT ja PEX on keelatud"
+msgstr "Selle järjepidaja eratorrent -- DHT ja PEX on keelatud"
 
 #: ../gtk/details.c:695
 msgid "Public torrent"
@@ -477,11 +457,11 @@ msgstr "Torrenti suurus:"
 msgid "Have:"
 msgstr "Olemas:"
 
-#: ../gtk/details.c:1160 ../gtk/stats.c:139 ../gtk/stats.c:164
+#: ../gtk/details.c:1160 ../gtk/stats.c:133 ../gtk/stats.c:158
 msgid "Uploaded:"
 msgstr "Üles laaditud:"
 
-#: ../gtk/details.c:1165 ../gtk/stats.c:143 ../gtk/stats.c:168
+#: ../gtk/details.c:1165 ../gtk/stats.c:137 ../gtk/stats.c:162
 msgid "Downloaded:"
 msgstr "Allalaetud:"
 
@@ -531,7 +511,7 @@ msgstr "Kommentaar:"
 
 #: ../gtk/details.c:1256
 msgid "Web Seeds"
-msgstr "Veebi seemned"
+msgstr ""
 
 #: ../gtk/details.c:1260 ../gtk/details.c:1316
 msgid "Down"
@@ -581,141 +561,133 @@ msgstr "Nende katkestatud"
 msgid "Flags"
 msgstr "Lipud"
 
-#: ../gtk/details.c:1773
+#: ../gtk/details.c:1770
 msgid "Optimistic unchoke"
 msgstr "Optimistlik avatus"
 
-#: ../gtk/details.c:1777
+#: ../gtk/details.c:1774
 msgid "Downloading from this peer"
-msgstr "Allalaadimine sellelt partnerilt"
+msgstr "Sellelt partnerilt toimub allalaadimine"
 
-#: ../gtk/details.c:1781
+#: ../gtk/details.c:1778
 msgid "We would download from this peer if they would let us"
-msgstr "Laeksime alla partnerilt, kui vaid ta lubaks"
+msgstr "Kui partner lubaks, siis võiksime temalt alla laadida"
 
-#: ../gtk/details.c:1785
+#: ../gtk/details.c:1782
 msgid "Uploading to peer"
-msgstr "Üleslaadimine partnerile"
+msgstr "Sellele partnerile toimub üleslaadimine"
 
-#: ../gtk/details.c:1789
+#: ../gtk/details.c:1786
 msgid "We would upload to this peer if they asked"
-msgstr "Me laeks ülesse sellele partnerile, kui ta küsiks"
+msgstr "Kui partner küsiks, siis võiksime talle üles laadida"
 
-#: ../gtk/details.c:1793
+#: ../gtk/details.c:1790
 msgid "Peer has unchoked us, but we're not interested"
 msgstr "Partner on end meile avanud, kuid me pole huvitatud"
 
-#: ../gtk/details.c:1797
+#: ../gtk/details.c:1794
 msgid "We unchoked this peer, but they're not interested"
 msgstr "Me oleme end sellele partnerile avanud, kuid ta pole huvitatud"
 
-#: ../gtk/details.c:1801
+#: ../gtk/details.c:1798
 msgid "Encrypted connection"
-msgstr "Krüptitud ühendus"
+msgstr "Ühendus on krüptitud"
 
-#: ../gtk/details.c:1805
+#: ../gtk/details.c:1802
 msgid "Peer was found through Peer Exchange (PEX)"
 msgstr "Partner leiti partnerivahetuse (PEX) käigus"
 
-#: ../gtk/details.c:1809
+#: ../gtk/details.c:1806
 msgid "Peer was found through DHT"
 msgstr "Partner leiti DHT kaudu"
 
-#: ../gtk/details.c:1813
+#: ../gtk/details.c:1810
 msgid "Peer is an incoming connection"
 msgstr "Partner on sissetuleva ühendusega"
 
-#: ../gtk/details.c:1817
+#: ../gtk/details.c:1814
 msgid "Peer is connected over µTP"
 msgstr "Partner on ühendatud µTP abil"
 
-#: ../gtk/details.c:2085 ../gtk/details.c:2860
+#: ../gtk/details.c:2082 ../gtk/details.c:2854
 msgid "Show _more details"
-msgstr "Kuva _rohkem detaile"
+msgstr "Üksikasjaline _kuva"
 
-#: ../gtk/details.c:2159
+#: ../gtk/details.c:2156
 #, c-format
 msgid "Got a list of %1$s%2$'d peers%3$s %4$s ago"
 msgstr "Nimekiri %1$s%2$'d partneriga%3$s saadi %4$s tagasi"
 
-#: ../gtk/details.c:2164
+#: ../gtk/details.c:2161
 #, c-format
 msgid "Peer list request %1$stimed out%2$s %3$s ago; will retry"
 msgstr "Partnerite nimekirja päring %1$saegus%2$s %3$s tagasi, proovitakse uuesti"
 
-#: ../gtk/details.c:2169
+#: ../gtk/details.c:2166
 #, c-format
 msgid "Got an error %1$s\"%2$s\"%3$s %4$s ago"
 msgstr "Viga %1$s\"%2$s\"%3$s saadi %4$s tagasi"
 
-#: ../gtk/details.c:2178
+#: ../gtk/details.c:2175
 msgid "No updates scheduled"
-msgstr "Pole uuendusi planeeritud"
+msgstr "Uuendusi ei ole plaanis"
 
-#: ../gtk/details.c:2184
+#: ../gtk/details.c:2181
 #, c-format
 msgid "Asking for more peers in %s"
 msgstr "Lisapartnerite küsimiseni on aega %s"
 
-#: ../gtk/details.c:2189
+#: ../gtk/details.c:2186
 msgid "Queued to ask for more peers"
 msgstr "Lisapartnerite pärimine on plaanis"
 
-#: ../gtk/details.c:2195
+#: ../gtk/details.c:2192
 #, c-format
 msgid "Asking for more peers now… <small>%s</small>"
 msgstr "Hetkel toimub lisapartnerite küsimine… <small>%s</small>"
 
-#: ../gtk/details.c:2208
+#: ../gtk/details.c:2205
 #, c-format
 msgid "Tracker had %s%'d seeders and %'d leechers%s %s ago"
 msgstr "Järjepidajal oli %5$s tagasi teada %1$s%2$'d levitajat ja %3$'d allalaadijat%4$s"
 
-#: ../gtk/details.c:2213
+#: ../gtk/details.c:2210
 #, c-format
 msgid "Got a scrape error \"%s%s%s\" %s ago"
 msgstr "Saadi pisitõrge \"%s%s%s\" %s tagasi"
 
-#: ../gtk/details.c:2226
+#: ../gtk/details.c:2223
 #, c-format
 msgid "Asking for peer counts in %s"
 msgstr "Partnerite arvu küsimiseni on aega %s"
 
-#: ../gtk/details.c:2231
+#: ../gtk/details.c:2228
 msgid "Queued to ask for peer counts"
 msgstr "Plaanitakse partnerite arvu päringut"
 
-#: ../gtk/details.c:2237
+#: ../gtk/details.c:2234
 #, c-format
 msgid "Asking for peer counts now… <small>%s</small>"
 msgstr "Hetkel toimub partnerite arvu küsimine… <small>%s</small>"
 
-#: ../gtk/details.c:2536
+#: ../gtk/details.c:2537
 msgid "List contains invalid URLs"
 msgstr "Loendis on ka sobimatud URL-id"
 
-#: ../gtk/details.c:2540 ../gtk/file-list.c:856
+#: ../gtk/details.c:2541 ../gtk/file-list.c:847
 msgid "Please correct the errors and try again."
 msgstr "Palun paranda vead ja proovi uuesti."
 
-#: ../gtk/details.c:2602
+#: ../gtk/details.c:2603
 #, c-format
 msgid "%s - Edit Trackers"
-msgstr "%s - Muuda Jälitajaid"
+msgstr "%s - jälgijate muutmine"
 
-#: ../gtk/details.c:2604 ../gtk/details.c:2718 ../gtk/dialogs.c:155 ../gtk/main.c:762 ../gtk/makemeta-ui.c:186 ../gtk/msgwin.c:201 ../gtk/open-dialog.c:285 ../gtk/open-dialog.c:458 ../gtk/open-dialog.c:523 ../gtk/relocate.c:142 ../gtk/stats.c:98
-msgid "_Cancel"
-msgstr "_tühista"
-
-#: ../gtk/details.c:2605 ../gtk/msgwin.c:202
-msgid "_Save"
-msgstr "_salvesta"
-
-#: ../gtk/details.c:2611
+#: ../gtk/details.c:2610
 msgid "Tracker Announce URLs"
-msgstr "Jälitaja teadvustamise URL-id"
+msgstr "Järjepidaja teatamise URL-id"
 
-#: ../gtk/details.c:2614 ../gtk/makemeta-ui.c:505
+#: ../gtk/details.c:2613 ../gtk/makemeta-ui.c:493
 msgid ""
 "To add a backup URL, add it on the line after the primary URL.\n"
 "To add another primary URL, add it after a blank line."
@@ -723,65 +695,61 @@ msgstr ""
 "Varu URL-i võib lisada peamise URL-i järele uuele reale.\n"
 "Teise peamise URL-i võib lisada pärast tühja rida."
 
-#: ../gtk/details.c:2716
+#: ../gtk/details.c:2713
 #, c-format
 msgid "%s - Add Tracker"
-msgstr "%s - Lisa Jälitaja"
+msgstr "%s - järjepidaja lisamine"
 
-#: ../gtk/details.c:2719 ../gtk/details.c:2841 ../gtk/makemeta-ui.c:188 ../gtk/tr-prefs.c:864
-msgid "_Add"
-msgstr "_Lisa"
-
-#: ../gtk/details.c:2725
+#: ../gtk/details.c:2720
 msgid "Tracker"
-msgstr "Jälitaja"
+msgstr "Järjepidaja"
 
-#: ../gtk/details.c:2731
+#: ../gtk/details.c:2726
 msgid "_Announce URL:"
 msgstr "Teatamise _URL:"
 
-#: ../gtk/details.c:2817 ../gtk/details.c:2980
+#: ../gtk/details.c:2810 ../gtk/details.c:2967
 msgid "Trackers"
-msgstr "Jälitajad"
+msgstr "Järjepidajad"
 
-#: ../gtk/details.c:2851 ../gtk/dialogs.c:156 ../gtk/tr-prefs.c:859
+#: ../gtk/details.c:2834
+msgid "_Add"
+msgstr "_Lisa"
+
+#: ../gtk/details.c:2845
 msgid "_Remove"
 msgstr "_Eemalda"
 
-#: ../gtk/details.c:2867
+#: ../gtk/details.c:2861
 msgid "Show _backup trackers"
-msgstr "Kuva _tagavara jälitajad"
+msgstr "Näidatakse ka _varujärjepidajaid"
 
-#: ../gtk/details.c:2953 ../gtk/makemeta-ui.c:187 ../gtk/makemeta-ui.c:445 ../gtk/stats.c:129 ../gtk/tr-prefs.c:1271
-msgid "_Close"
-msgstr "_Sulge"
-
-#: ../gtk/details.c:2972 ../gtk/msgwin.c:432
+#: ../gtk/details.c:2959 ../gtk/msgwin.c:431
 msgid "Information"
 msgstr "Andmed"
 
-#: ../gtk/details.c:2976
+#: ../gtk/details.c:2963
 msgid "Peers"
 msgstr "Partnerid"
 
-#: ../gtk/details.c:2985
+#: ../gtk/details.c:2972
 msgid "File listing not available for combined torrent properties"
 msgstr "Failide loend ei ole kombineeritud torrentite jaoks saadaval"
 
-#: ../gtk/details.c:2989 ../gtk/makemeta-ui.c:454
+#: ../gtk/details.c:2976 ../gtk/makemeta-ui.c:442
 msgid "Files"
 msgstr "Failid"
 
-#: ../gtk/details.c:2993 ../gtk/tr-prefs.c:1189 ../gtk/tr-window.c:669
+#: ../gtk/details.c:2980 ../gtk/tr-prefs.c:1164 ../gtk/tr-window.c:646
 msgid "Options"
 msgstr "Valikud"
 
-#: ../gtk/details.c:3015
+#: ../gtk/details.c:3002
 #, c-format
 msgid "%s Properties"
 msgstr "%s - omadused"
 
-#: ../gtk/details.c:3026
+#: ../gtk/details.c:3013
 #, c-format
 msgid "%'d Torrent Properties"
 msgstr "%'d torrenti omadused"
@@ -828,116 +796,112 @@ msgstr[1] "Mõned neist torrentitest on ühendatud partneritega."
 msgid "One of these torrents has not finished downloading."
 msgid_plural "Some of these torrents have not finished downloading."
 msgstr[0] "Nendest torrentitest ühe allalaadimine pole lõpetatud."
-msgstr[1] "Mõned nendest torrentitest ei ole lõpetanud allalaadimise."
+msgstr[1] "Nendest torrentitest mitme allalaadimine pole lõpetatud."
 
-#: ../gtk/dialogs.c:156
-msgid "_Delete"
-msgstr "_Kustuta"
-
-#: ../gtk/file-list.c:631 ../gtk/util.c:522
+#: ../gtk/file-list.c:624 ../gtk/util.c:520
 msgid "High"
 msgstr "Kõrge"
 
-#: ../gtk/file-list.c:635 ../gtk/util.c:523
+#: ../gtk/file-list.c:628 ../gtk/util.c:521
 msgid "Normal"
 msgstr "Tavaline"
 
-#: ../gtk/file-list.c:639 ../gtk/util.c:524
+#: ../gtk/file-list.c:632 ../gtk/util.c:522
 msgid "Low"
 msgstr "Madal"
 
-#: ../gtk/file-list.c:854
+#: ../gtk/file-list.c:845
 #, c-format
 msgid "Unable to rename file as \"%s\": %s"
-msgstr "Ebaõnnestus faili nime muutmine \"%s\": %s"
+msgstr ""
 
 #. add file column
-#: ../gtk/file-list.c:966 ../gtk/msgwin.c:288
+#: ../gtk/file-list.c:957 ../gtk/msgwin.c:289
 msgid "Name"
 msgstr "Nimi"
 
 #. add "size" column
-#: ../gtk/file-list.c:982
+#: ../gtk/file-list.c:973
 msgid "Size"
 msgstr "Suurus"
 
 #. add "progress" column
-#: ../gtk/file-list.c:993
+#: ../gtk/file-list.c:984
 msgid "Have"
 msgstr "Kohal"
 
 #. add "enabled" column
-#: ../gtk/file-list.c:1006
+#: ../gtk/file-list.c:997
 msgid "Download"
 msgstr "Allalaadimine"
 
 #. add priority column
-#: ../gtk/file-list.c:1021
+#: ../gtk/file-list.c:1012
 msgid "Priority"
 msgstr "Tähtsus"
 
-#: ../gtk/filter.c:298 ../gtk/filter.c:598
+#: ../gtk/filter.c:299 ../gtk/filter.c:583
 msgid "All"
 msgstr "Kõik"
 
-#: ../gtk/filter.c:600
+#: ../gtk/filter.c:585
 msgid "Active"
 msgstr "Aktiivsed"
 
-#: ../gtk/filter.c:605
+#: ../gtk/filter.c:590
 msgctxt "Verb"
 msgid "Verifying"
 msgstr "Kontrollimine"
 
-#: ../gtk/filter.c:606 ../gtk/msgwin.c:431 ../gtk/util.c:719
+#: ../gtk/filter.c:591 ../gtk/msgwin.c:430 ../gtk/util.c:717
 msgid "Error"
-msgstr "Tõrge"
+msgstr "Tõrkega"
 
-#: ../gtk/filter.c:906
+#: ../gtk/filter.c:880
 msgid "_Show:"
 msgstr "_Näita:"
 
-#: ../gtk/filter.c:910
+#: ../gtk/filter.c:884
 #, c-format
 msgid "_Show %'d of:"
-msgstr "_kuva %:"
+msgstr ""
 
-#: ../gtk/main.c:320
+#: ../gtk/main.c:314
 #, c-format
 msgid "Error registering Transmission as a %s handler: %s"
-msgstr "Tõrge registreerimisel Transmission'i kui %s haldaja: %s"
+msgstr ""
 
-#: ../gtk/main.c:489
+#: ../gtk/main.c:480
 #, c-format
 msgid "Got signal %d; trying to shut down cleanly. Do it again if it gets stuck."
 msgstr "Saadi signaal %d; püütakse puhtalt lõpetada. Kui see siiski seisma jääb, proovi uuesti."
 
-#: ../gtk/main.c:628
+#: ../gtk/main.c:616
 msgid "Where to look for configuration files"
 msgstr "Sättefailide otsimise asukoha määramine"
 
-#: ../gtk/main.c:629
+#: ../gtk/main.c:617
 msgid "Start with all torrents paused"
 msgstr "Käivitamine koos kõigi torrentite peatamisega"
 
-#: ../gtk/main.c:630
+#: ../gtk/main.c:618
 msgid "Start minimized in notification area"
 msgstr "Käivitamine minimeerituna teatealale"
 
-#: ../gtk/main.c:631
+#: ../gtk/main.c:619
 msgid "Show version number and exit"
 msgstr "Versiooninumbri näitamine ja programmi töö lõpetamine"
 
-#: ../gtk/main.c:649 ../gtk/transmission-gtk.appdata.xml.in:11 ../gtk/transmission-gtk.desktop.in:3
+#: ../gtk/main.c:637 ../gtk/transmission-gtk.appdata.xml.in:11 ../gtk/transmission-gtk.desktop.in:3
 msgid "Transmission"
 msgstr "Transmission"
 
 #. parse the command line
-#: ../gtk/main.c:652
+#: ../gtk/main.c:640
 msgid "[torrent files or urls]"
 msgstr "[torrentifailid või URL-id]"
 
-#: ../gtk/main.c:659
+#: ../gtk/main.c:647
 #, c-format
 msgid ""
 "%s\n"
@@ -946,50 +910,50 @@ msgstr ""
 "%s\n"
 "Käsurea võtmete täieliku nimekirja saamiseks käivita '%s --help'.\n"
 
-#: ../gtk/main.c:760
+#: ../gtk/main.c:746
 msgid "Transmission is a file sharing program. When you run a torrent, its data will be made available to others by means of upload. Any content you share is your sole responsibility."
-msgstr "Transmission on failijagamise programm. Kui sa käivitad torrenti, siis selle sisu tehakse teistele kättesaadavaks. Kõik sisu mida jagad on su enda vastutada."
+msgstr ""
 
-#: ../gtk/main.c:763
+#: ../gtk/main.c:749
 msgid "I _Agree"
-msgstr "Mina _nõustun"
+msgstr ""
 
-#: ../gtk/main.c:1008
+#: ../gtk/main.c:980
 msgid "<b>Closing Connections</b>"
 msgstr "<b>Ühenduste sulgemine</b>"
 
-#: ../gtk/main.c:1012
+#: ../gtk/main.c:984
 msgid "Sending upload/download totals to tracker…"
-msgstr "Saadan üles- ja allalaadimiste kokkuvõtete jälitajale…"
+msgstr "Üles- ja allalaadimiste kokkuvõtete saatmine järjepidajale…"
 
-#: ../gtk/main.c:1016
+#: ../gtk/main.c:988
 msgid "_Quit Now"
 msgstr "_Lõpeta kohe"
 
-#: ../gtk/main.c:1066
+#: ../gtk/main.c:1038
 msgid "Couldn't add corrupt torrent"
 msgid_plural "Couldn't add corrupt torrents"
 msgstr[0] "Vigast torrentit pole võimalik lisada"
 msgstr[1] "Vigaseid torrenteid pole võimalik lisada"
 
-#: ../gtk/main.c:1072
+#: ../gtk/main.c:1044
 msgid "Couldn't add duplicate torrent"
 msgid_plural "Couldn't add duplicate torrents"
 msgstr[0] "Torrenti duplikaati pole võimalik lisada"
 msgstr[1] "Torrentite duplikaate pole võimalik lisada"
 
-#: ../gtk/main.c:1398
+#: ../gtk/main.c:1363
 msgid "A fast and easy BitTorrent client"
 msgstr "Väle ja lihtne BitTorrenti klient"
 
-#: ../gtk/main.c:1399
+#: ../gtk/main.c:1364
 msgid "Copyright (c) The Transmission Project"
 msgstr "Autoriõigused (c) Transmissioni projekt"
 
 #. Translators: translate "translator-credits" as your name
 #. to have it appear in the credits in the "About"
 #. dialog
-#: ../gtk/main.c:1405
+#: ../gtk/main.c:1370
 msgid "translator-credits"
 msgstr ""
 "Launchpad Contributions:\n"
@@ -1041,128 +1005,112 @@ msgstr "Tõrge faili \"%s\" kirjutamisel: %s"
 msgid "Scanned %s"
 msgstr "%s üle vaadatud"
 
-#: ../gtk/makemeta-ui.c:185 ../gtk/makemeta-ui.c:444
+#: ../gtk/makemeta-ui.c:183 ../gtk/makemeta-ui.c:434
 msgid "New Torrent"
 msgstr "Uus torrent"
 
-#: ../gtk/makemeta-ui.c:199
+#: ../gtk/makemeta-ui.c:194
 msgid "Creating torrent…"
 msgstr "Torrenti loomine…"
 
-#: ../gtk/makemeta-ui.c:309
+#: ../gtk/makemeta-ui.c:304
 msgid "No source selected"
 msgstr "Allikat pole valitud"
 
-#: ../gtk/makemeta-ui.c:315
+#: ../gtk/makemeta-ui.c:310
 #, c-format
 msgid "%1$s; %2$'d File"
 msgid_plural "%1$s; %2$'d Files"
 msgstr[0] "%1$s; %2$'d fail"
 msgstr[1] "%1$s; %2$'d faili"
 
-#: ../gtk/makemeta-ui.c:320
+#: ../gtk/makemeta-ui.c:315
 #, c-format
 msgid "%1$'d Piece @ %2$s"
 msgid_plural "%1$'d Pieces @ %2$s"
 msgstr[0] "%1$'d tükk @ %2$s"
 msgstr[1] "%1$'d tükki @ %2$s"
 
-#: ../gtk/makemeta-ui.c:446
-msgid "_New"
-msgstr "_Uus"
-
-#: ../gtk/makemeta-ui.c:456
+#: ../gtk/makemeta-ui.c:444
 msgid "Sa_ve to:"
 msgstr "_Salvesta kausta:"
 
-#: ../gtk/makemeta-ui.c:462
+#: ../gtk/makemeta-ui.c:450
 msgid "Source F_older:"
 msgstr "Lähte_kaust:"
 
-#: ../gtk/makemeta-ui.c:474
+#: ../gtk/makemeta-ui.c:462
 msgid "Source _File:"
 msgstr "Lähte_fail:"
 
-#: ../gtk/makemeta-ui.c:486
+#: ../gtk/makemeta-ui.c:474
 msgid "<i>No source selected</i>"
 msgstr "<i>Allikat pole valitud</i>"
 
-#: ../gtk/makemeta-ui.c:490
+#: ../gtk/makemeta-ui.c:478
 msgid "Properties"
 msgstr "Omadused"
 
-#: ../gtk/makemeta-ui.c:492
+#: ../gtk/makemeta-ui.c:480
 msgid "_Trackers:"
-msgstr "_Jälitajad:"
+msgstr "_Järjepidajad:"
 
-#: ../gtk/makemeta-ui.c:512
+#: ../gtk/makemeta-ui.c:500
 msgid "Co_mment:"
 msgstr "Ko_mmentaar:"
 
-#: ../gtk/makemeta-ui.c:521
+#: ../gtk/makemeta-ui.c:509
 msgid "_Private torrent"
-msgstr "_Privaatne torrent"
+msgstr "_Eratorrent"
 
-#: ../gtk/msgwin.c:138
+#: ../gtk/msgwin.c:146
 #, c-format
 msgid "Couldn't save \"%s\""
 msgstr "Faili \"%s\" pole võimalik salvestada"
 
-#: ../gtk/msgwin.c:200
+#: ../gtk/msgwin.c:209
 msgid "Save Log"
 msgstr "Salvesta logi"
 
-#: ../gtk/msgwin.c:283
+#: ../gtk/msgwin.c:284
 msgid "Time"
 msgstr "Aeg"
 
-#: ../gtk/msgwin.c:293
+#: ../gtk/msgwin.c:294
 msgid "Message"
 msgstr "Teade"
 
-#: ../gtk/msgwin.c:433
+#: ../gtk/msgwin.c:432
 msgid "Debug"
 msgstr "Silumine"
 
-#: ../gtk/msgwin.c:458
+#: ../gtk/msgwin.c:457
 msgid "Message Log"
 msgstr "Teadetelogi"
 
-#: ../gtk/msgwin.c:475
-msgid "Save _As"
-msgstr "Salvesta _kui"
-
-#: ../gtk/msgwin.c:485
-msgid "Clear"
-msgstr "Tühjenda"
-
-#: ../gtk/msgwin.c:498
-msgid "P_ause"
-msgstr "_Seiska"
-
-#: ../gtk/msgwin.c:507
+#: ../gtk/msgwin.c:491
 msgid "Level"
 msgstr "Tase"
 
-#: ../gtk/notify.c:215
+#: ../gtk/notify.c:207
 msgid "Open File"
 msgstr "Ava fail"
 
-#: ../gtk/notify.c:220
+#: ../gtk/notify.c:212
 msgid "Open Folder"
-msgstr "Ava kaust"
+msgstr "Ava kataloog"
 
-#: ../gtk/notify.c:229
+#: ../gtk/notify.c:217
 msgid "Torrent Complete"
 msgstr "Torrent lõpetatud"
 
-#: ../gtk/notify.c:245
+#: ../gtk/notify.c:233
 msgid "Torrent Added"
 msgstr "Torrent lisatud"
 
 #: ../gtk/open-dialog.c:256
 msgid "Torrent files"
-msgstr "Torrent'i failid"
+msgstr "Torrentfailid"
 
 #: ../gtk/open-dialog.c:261
 msgid "All files"
@@ -1173,48 +1121,48 @@ msgstr "Kõik failid"
 msgid "Torrent Options"
 msgstr "Torrenti valikud"
 
-#: ../gtk/open-dialog.c:303 ../gtk/tr-prefs.c:277
+#: ../gtk/open-dialog.c:301 ../gtk/tr-prefs.c:275
 msgid "Mo_ve .torrent file to the trash"
 msgstr ".torrent fail visatakse _prügikasti"
 
-#: ../gtk/open-dialog.c:305
+#: ../gtk/open-dialog.c:303
 msgid "_Start when added"
 msgstr "Lisamisel torrent _käivitatakse"
 
 #. "torrent file" row
-#: ../gtk/open-dialog.c:320
+#: ../gtk/open-dialog.c:318
 msgid "_Torrent file:"
 msgstr "Torrent_fail:"
 
-#: ../gtk/open-dialog.c:323
+#: ../gtk/open-dialog.c:321
 msgid "Select Source File"
 msgstr "Lähtefaili valimine"
 
-#: ../gtk/open-dialog.c:333
+#: ../gtk/open-dialog.c:331
 msgid "_Destination folder:"
 msgstr "_Sihtkataloog:"
 
-#: ../gtk/open-dialog.c:336
+#: ../gtk/open-dialog.c:334
 msgid "Select Destination Folder"
 msgstr "Sihtkataloogi valimine"
 
-#: ../gtk/open-dialog.c:457
+#: ../gtk/open-dialog.c:455
 msgid "Open a Torrent"
 msgstr "Torrenti avamine"
 
-#: ../gtk/open-dialog.c:470
+#: ../gtk/open-dialog.c:466
 msgid "Show _options dialog"
 msgstr "Lisamisel kuvatakse _valikute dialoogi"
 
-#: ../gtk/open-dialog.c:522
+#: ../gtk/open-dialog.c:518
 msgid "Open URL"
 msgstr "URL-i avamine"
 
-#: ../gtk/open-dialog.c:530
+#: ../gtk/open-dialog.c:524
 msgid "Open torrent from URL"
 msgstr "Torrenti avamine URL-ilt"
 
-#: ../gtk/open-dialog.c:535
+#: ../gtk/open-dialog.c:529
 msgid "_URL"
 msgstr "_URL"
 
@@ -1227,70 +1175,66 @@ msgstr "\"%s\" liigutamine"
 msgid "Couldn't move torrent"
 msgstr "Torrentit pole võimalik liigutada"
 
-#: ../gtk/relocate.c:113
+#: ../gtk/relocate.c:111
 msgid "This may take a moment…"
 msgstr "See võib hetke aega võtta…"
 
-#: ../gtk/relocate.c:141 ../gtk/relocate.c:157
+#: ../gtk/relocate.c:139 ../gtk/relocate.c:153
 msgid "Set Torrent Location"
 msgstr "Torrenti asukoha määramine"
 
-#: ../gtk/relocate.c:143
-msgid "_Apply"
-msgstr "_Rakenda"
-
-#: ../gtk/relocate.c:150
+#: ../gtk/relocate.c:146
 msgid "Location"
 msgstr "Asukoht"
 
-#: ../gtk/relocate.c:160
+#: ../gtk/relocate.c:156
 msgid "Torrent _location:"
 msgstr "Torrenti _asukoht:"
 
-#: ../gtk/relocate.c:161
+#: ../gtk/relocate.c:157
 msgid "_Move from the current folder"
 msgstr "_Tõstetakse praegusest kataloogist ümber"
 
-#: ../gtk/relocate.c:164
+#: ../gtk/relocate.c:160
 msgid "Local data is _already there"
 msgstr "Kohalikud andmed on _juba seal"
 
-#: ../gtk/stats.c:68 ../gtk/stats.c:156
+#: ../gtk/stats.c:69 ../gtk/stats.c:150
 #, c-format
 msgid "Started %'d time"
 msgid_plural "Started %'d times"
 msgstr[0] "Alustatud %'d kord"
 msgstr[1] "Alustatud %'d korda"
 
-#: ../gtk/stats.c:92
+#: ../gtk/stats.c:91
 msgid "Reset your statistics?"
 msgstr "Kas lähtestada statistilised andmed?"
 
-#: ../gtk/stats.c:93
+#: ../gtk/stats.c:92
 msgid "These statistics are for your information only. Resetting them doesn't affect the statistics logged by your BitTorrent trackers."
-msgstr "See statistika on vaid sulle teadmiseks. Selle lähtestamine ei mõjuta BitTorrenti jälitajate kogutud statistikat."
+msgstr "See statistika on vaid sulle teadmiseks. Selle lähtestamine ei mõjuta BitTorrenti jälgijate kogutud statistikat."
 
-#: ../gtk/stats.c:99 ../gtk/stats.c:128
+#: ../gtk/stats.c:96 ../gtk/stats.c:123
 msgid "_Reset"
 msgstr "_Lähtesta"
 
-#: ../gtk/stats.c:127 ../gtk/tr-window.c:710
+#: ../gtk/stats.c:123 ../gtk/tr-window.c:687
 msgid "Statistics"
 msgstr "Statistika"
 
-#: ../gtk/stats.c:135
+#: ../gtk/stats.c:129
 msgid "Current Session"
 msgstr "Aktiivne seanss"
 
-#: ../gtk/stats.c:147 ../gtk/stats.c:172
+#: ../gtk/stats.c:141 ../gtk/stats.c:166
 msgid "Ratio:"
 msgstr "Suhe:"
 
-#: ../gtk/stats.c:151 ../gtk/stats.c:176
+#: ../gtk/stats.c:145 ../gtk/stats.c:170
 msgid "Duration:"
 msgstr "Kestus:"
 
-#: ../gtk/stats.c:155
+#: ../gtk/stats.c:149
 msgid "Total"
 msgstr "Kokku"
 
@@ -1348,19 +1292,19 @@ msgstr "Järelejäänud aeg teadmata"
 #: ../gtk/torrent-cell-renderer.c:142
 #, c-format
 msgid "%s remaining"
-msgstr "%s jäänud"
+msgstr "%s lõpuni"
 
 #. down speed, down symbol, up speed, up symbol
 #: ../gtk/torrent-cell-renderer.c:162
 #, c-format
 msgid "%1$s %2$s  %3$s %4$s"
-msgstr "%1$s %2$s  %3$s %4$s"
+msgstr ""
 
 #. up speed, up symbol
 #: ../gtk/torrent-cell-renderer.c:171
 #, c-format
 msgid "%1$s  %2$s"
-msgstr "%1$s  %2$s"
+msgstr ""
 
 #: ../gtk/torrent-cell-renderer.c:175
 msgid "Stalled"
@@ -1371,106 +1315,101 @@ msgstr "Seiskunud"
 msgid "Verifying local data (%.1f%% tested)"
 msgstr "Andmete kontroll (%.1f%% kontrollitud)"
 
-#: ../gtk/torrent-cell-renderer.c:220 ../gtk/tr-window.c:784 ../gtk/tr-window.c:810
-#, c-format
-msgid "Ratio: %s"
-msgstr "Suhe: %s"
-
-#: ../gtk/torrent-cell-renderer.c:237
+#: ../gtk/torrent-cell-renderer.c:236
 #, c-format
 msgid "Tracker gave a warning: \"%s\""
-msgstr "Jälitaja andis hoiatuse: \"%s\""
+msgstr "Järjepidaja andis hoiatuse: \"%s\""
 
-#: ../gtk/torrent-cell-renderer.c:238
+#: ../gtk/torrent-cell-renderer.c:237
 #, c-format
 msgid "Tracker gave an error: \"%s\""
 msgstr "Järjepidaja andis veateate: \"%s\""
 
-#: ../gtk/torrent-cell-renderer.c:239
+#: ../gtk/torrent-cell-renderer.c:238
 #, c-format
 msgid "Error: %s"
 msgstr "Tõrge: %s"
 
 #. Downloading metadata from 2 peer (s)(50% done)
-#: ../gtk/torrent-cell-renderer.c:263
+#: ../gtk/torrent-cell-renderer.c:262
 #, c-format
 msgid "Downloading metadata from %1$'d %2$s (%3$d%% done)"
-msgstr "Laen alla metadata infot allikast %1$'d %2$s (%3$d%% laetud)"
+msgstr ""
 
-#: ../gtk/torrent-cell-renderer.c:264 ../gtk/torrent-cell-renderer.c:270 ../gtk/torrent-cell-renderer.c:283
+#: ../gtk/torrent-cell-renderer.c:263 ../gtk/torrent-cell-renderer.c:269 ../gtk/torrent-cell-renderer.c:282
 msgid "peer"
 msgid_plural "peers"
 msgstr[0] ""
 msgstr[1] ""
 
 #. Downloading from 2 of 3 peer (s) and 2 webseed (s)
-#: ../gtk/torrent-cell-renderer.c:269
+#: ../gtk/torrent-cell-renderer.c:268
 #, c-format
 msgid "Downloading from %1$'d of %2$'d %3$s and %4$'d %5$s"
 msgstr ""
 
-#: ../gtk/torrent-cell-renderer.c:271 ../gtk/torrent-cell-renderer.c:277
+#: ../gtk/torrent-cell-renderer.c:270 ../gtk/torrent-cell-renderer.c:276
 msgid "web seed"
 msgid_plural "web seeds"
 msgstr[0] ""
 msgstr[1] ""
 
 #. Downloading from 3 web seed (s)
-#: ../gtk/torrent-cell-renderer.c:276
+#: ../gtk/torrent-cell-renderer.c:275
 #, c-format
 msgid "Downloading from %1$'d %2$s"
-msgstr "Allalaadimine allikast %1$'d %2$s"
+msgstr ""
 
 #. Downloading from 2 of 3 peer (s)
-#: ../gtk/torrent-cell-renderer.c:282
+#: ../gtk/torrent-cell-renderer.c:281
 #, c-format
 msgid "Downloading from %1$'d of %2$'d %3$s"
 msgstr ""
 
-#: ../gtk/torrent-cell-renderer.c:290
+#: ../gtk/torrent-cell-renderer.c:289
 #, c-format
 msgid "Seeding to %1$'d of %2$'d connected peer"
 msgid_plural "Seeding to %1$'d of %2$'d connected peers"
 msgstr[0] "Levitamine %1$'d / %2$'d ühendatud partnerile"
 msgstr[1] "Levitamine %1$'d / %2$'d ühendatud partnerile"
 
-#: ../gtk/tr-core.c:1250
+#: ../gtk/tr-core.c:1241
 #, c-format
 msgid "Couldn't read \"%s\": %s"
 msgstr "Faili \"%s\" pole võimalik lugeda: %s"
 
-#: ../gtk/tr-core.c:1346
+#: ../gtk/tr-core.c:1337
 #, c-format
 msgid "Skipping unknown torrent \"%s\""
 msgstr "Tundmatu torrent \"%s\" jäetakse vahele"
 
-#: ../gtk/tr-core.c:1621
+#: ../gtk/tr-core.c:1612
 msgid "Inhibiting desktop hibernation"
 msgstr "Töölaua talveunne jäämist piiratakse"
 
-#: ../gtk/tr-core.c:1625
+#: ../gtk/tr-core.c:1616
 #, c-format
 msgid "Couldn't inhibit desktop hibernation: %s"
 msgstr "Töölaua talveunne jäämist pole võimalik piirata: %s"
 
-#: ../gtk/tr-core.c:1658
+#: ../gtk/tr-core.c:1649
 msgid "Allowing desktop hibernation"
 msgstr "Süsteemi talveune lubamine"
 
-#: ../gtk/tr-icon.c:67
+#: ../gtk/tr-icon.c:57
 msgid "Idle"
 msgstr "Jõude"
 
-#: ../gtk/tr-icon.c:90 ../gtk/tr-icon.c:112
+#: ../gtk/tr-icon.c:80 ../gtk/tr-icon.c:102
 #, c-format
 msgid " (Limit: %s)"
-msgstr " (Piirang: %s)"
+msgstr ""
 
 #. %1$s: current upload speed
 #. * %2$s: current upload limit, if any
 #. * %3$s: current download speed
 #. * %4$s: current download limit, if any
-#: ../gtk/tr-icon.c:119
+#: ../gtk/tr-icon.c:109
 #, c-format
 msgid ""
 "Transmission\n"
@@ -1481,464 +1420,465 @@ msgstr ""
 "Üles: %1$s %2$s\n"
 "Alla: %3$s %4$s"
 
-#: ../gtk/tr-prefs.c:260
+#: ../gtk/tr-prefs.c:258
 msgctxt "Gerund"
 msgid "Adding"
 msgstr "Lisamine"
 
-#: ../gtk/tr-prefs.c:262
+#: ../gtk/tr-prefs.c:260
 msgid "Automatically add .torrent files _from:"
-msgstr "Automaatselt lisa .torrent failid kaustast:"
+msgstr ""
 
-#: ../gtk/tr-prefs.c:269
+#: ../gtk/tr-prefs.c:267
 msgid "Show the Torrent Options _dialog"
 msgstr ""
 
-#: ../gtk/tr-prefs.c:273
+#: ../gtk/tr-prefs.c:271
 msgid "_Start added torrents"
-msgstr "_Käivita lisatud torrentid"
+msgstr ""
 
-#: ../gtk/tr-prefs.c:282
+#: ../gtk/tr-prefs.c:280
 msgid "Save to _Location:"
 msgstr "Salvestatakse _asukohale:"
 
-#: ../gtk/tr-prefs.c:289
+#: ../gtk/tr-prefs.c:287
 msgid "Download Queue"
-msgstr "Allalaadimise järjekord"
+msgstr ""
 
-#: ../gtk/tr-prefs.c:291
+#: ../gtk/tr-prefs.c:289
 msgid "Ma_ximum active downloads:"
-msgstr "_Maksimaalselt aktiivseid allalaadimisi:"
+msgstr ""
 
-#: ../gtk/tr-prefs.c:295
+#: ../gtk/tr-prefs.c:293
 msgid "Downloads sharing data in the last _N minutes are active:"
-msgstr "Allalaadimised mis jaganud andmeid hiljuti _N minutit on aktiivsed:"
+msgstr ""
 
-#: ../gtk/tr-prefs.c:300 ../libtransmission/torrent.c:2148
+#: ../gtk/tr-prefs.c:298 ../libtransmission/torrent.c:2170
 msgid "Incomplete"
 msgstr "Pooleliolevad torrentid"
 
-#: ../gtk/tr-prefs.c:302
+#: ../gtk/tr-prefs.c:300
 msgid "Append \"._part\" to incomplete files' names"
 msgstr "Pooleliolevate failide lõppu lisatakse \"._part\""
 
-#: ../gtk/tr-prefs.c:306
+#: ../gtk/tr-prefs.c:304
 msgid "Keep _incomplete torrents in:"
 msgstr "Pooleliolevaid _torrenteid hoitakse kaustas:"
 
-#: ../gtk/tr-prefs.c:313
+#: ../gtk/tr-prefs.c:311
 msgid "Call scrip_t when torrent is completed:"
 msgstr "Torrenti lõpetamisel käivitatav _skript:"
 
-#: ../gtk/tr-prefs.c:336
+#: ../gtk/tr-prefs.c:334
 msgid "Limits"
 msgstr "Piirangud"
 
-#: ../gtk/tr-prefs.c:338
+#: ../gtk/tr-prefs.c:336
 msgid "Stop seeding at _ratio:"
-msgstr "Peata jagamine, kui on _suhe:"
+msgstr "Levitamine peatub _suhte juures:"
 
-#: ../gtk/tr-prefs.c:345
+#: ../gtk/tr-prefs.c:343
 msgid "Stop seeding if idle for _N minutes:"
 msgstr "Levitamine peatub pärast _N minutit jõudeolekut:"
 
-#: ../gtk/tr-prefs.c:367 ../gtk/tr-prefs.c:1285
+#: ../gtk/tr-prefs.c:365 ../gtk/tr-prefs.c:1258
 msgid "Desktop"
 msgstr "Töölaud"
 
-#: ../gtk/tr-prefs.c:369
+#: ../gtk/tr-prefs.c:367
 msgid "_Inhibit hibernation when torrents are active"
 msgstr "_Aktiivsete torrentite olemasolul piiratakse talveunne jäämist"
 
-#: ../gtk/tr-prefs.c:373
+#: ../gtk/tr-prefs.c:371
 msgid "Show Transmission icon in the _notification area"
 msgstr "_Transmissioni ikooni näidatakse teatealal"
 
-#: ../gtk/tr-prefs.c:378
+#: ../gtk/tr-prefs.c:376
 msgid "Notification"
 msgstr "Teavitused"
 
-#: ../gtk/tr-prefs.c:380
+#: ../gtk/tr-prefs.c:378
 msgid "Show a notification when torrents are a_dded"
 msgstr "Torrenti _lisamisel näidatakse teavitust"
 
-#: ../gtk/tr-prefs.c:384
+#: ../gtk/tr-prefs.c:382
 msgid "Show a notification when torrents _finish"
 msgstr "Torrenti lõ_petamisel näidatakse teavitust"
 
-#: ../gtk/tr-prefs.c:388
+#: ../gtk/tr-prefs.c:386
 msgid "Play a _sound when torrents finish"
 msgstr "Torrenti lõpetamisel esitatakse _heli"
 
-#: ../gtk/tr-prefs.c:414
+#: ../gtk/tr-prefs.c:412
 #, c-format
 msgid "Blocklist contains %'d rule"
 msgid_plural "Blocklist contains %'d rules"
 msgstr[0] "Blokinimekirjas on %'d reegel."
 msgstr[1] "Blokinimekirjas on %'d reeglit."
 
-#: ../gtk/tr-prefs.c:455
-msgid "<b>Unable to update.</b>"
-msgstr "<b>Uuendamine pole võimalik.</b>"
-
-#: ../gtk/tr-prefs.c:455
-msgid "<b>Update succeeded!</b>"
-msgstr "<b>Uuendamine lõppes edukalt!</b>"
-
-#: ../gtk/tr-prefs.c:456
+#: ../gtk/tr-prefs.c:446
 #, c-format
 msgid "Blocklist has %'d rule."
 msgid_plural "Blocklist has %'d rules."
 msgstr[0] "Blokinimekirjas on %'d reegel."
 msgstr[1] "Blokinimekirjas on %'d reeglit."
 
-#: ../gtk/tr-prefs.c:467
+#: ../gtk/tr-prefs.c:450
+msgid "<b>Unable to update.</b>"
+msgstr "<b>Uuendamine pole võimalik.</b>"
+
+#: ../gtk/tr-prefs.c:450
+msgid "<b>Update succeeded!</b>"
+msgstr "<b>Uuendamine lõppes edukalt!</b>"
+
+#: ../gtk/tr-prefs.c:461
 msgid "Update Blocklist"
 msgstr "Blokinimekirja uuendamine"
 
-#: ../gtk/tr-prefs.c:469
+#: ../gtk/tr-prefs.c:463
 msgid "Getting new blocklist…"
 msgstr "Uue blokinimekirja hankimine…"
 
-#: ../gtk/tr-prefs.c:494
+#: ../gtk/tr-prefs.c:488
 msgid "Allow encryption"
 msgstr "Krüptimine on lubatud"
 
-#: ../gtk/tr-prefs.c:494
+#: ../gtk/tr-prefs.c:488
 msgid "Prefer encryption"
 msgstr "Eelistatakse krüptimist"
 
-#: ../gtk/tr-prefs.c:495
+#: ../gtk/tr-prefs.c:489
 msgid "Require encryption"
 msgstr "Krüptimine on nõutud"
 
-#: ../gtk/tr-prefs.c:517 ../gtk/tr-prefs.c:1283
+#: ../gtk/tr-prefs.c:511 ../gtk/tr-prefs.c:1256
 msgid "Privacy"
 msgstr "Privaatsus"
 
-#: ../gtk/tr-prefs.c:519
+#: ../gtk/tr-prefs.c:513
 msgid "_Encryption mode:"
 msgstr "_Krüptimisrežiim:"
 
-#: ../gtk/tr-prefs.c:524
+#: ../gtk/tr-prefs.c:518
 msgid "Blocklist"
 msgstr "Blokinimekiri"
 
-#: ../gtk/tr-prefs.c:526
+#: ../gtk/tr-prefs.c:520
 msgid "Enable _blocklist:"
 msgstr "_Blokinimekiri on lubatud:"
 
-#: ../gtk/tr-prefs.c:540
+#: ../gtk/tr-prefs.c:534
 msgid "_Update"
 msgstr "_Värskenda"
 
-#: ../gtk/tr-prefs.c:552
+#: ../gtk/tr-prefs.c:546
 msgid "Enable _automatic updates"
-msgstr "Luba _automaatne uuendamine"
+msgstr "_Automaatsed värskendused on lubatud"
 
-#: ../gtk/tr-prefs.c:766
+#: ../gtk/tr-prefs.c:747
 msgid "Remote Control"
 msgstr ""
 
 #. "enabled" checkbutton
-#: ../gtk/tr-prefs.c:769
+#: ../gtk/tr-prefs.c:750
 msgid "Allow _remote access"
 msgstr ""
 
-#: ../gtk/tr-prefs.c:775
+#: ../gtk/tr-prefs.c:756
 msgid "_Open web client"
 msgstr "_Ava veebiklient"
 
-#: ../gtk/tr-prefs.c:784
+#: ../gtk/tr-prefs.c:765
 msgid "HTTP _port:"
 msgstr "HTTP _port:"
 
 #. require authentication
-#: ../gtk/tr-prefs.c:788
+#: ../gtk/tr-prefs.c:769
 msgid "Use _authentication"
 msgstr "_Kasutatakse autentimist"
 
 #. username
-#: ../gtk/tr-prefs.c:796
+#: ../gtk/tr-prefs.c:777
 msgid "_Username:"
-msgstr "_Kasutajanimi:"
+msgstr "Kasutaja_nimi:"
 
 #. password
-#: ../gtk/tr-prefs.c:803
+#: ../gtk/tr-prefs.c:784
 msgid "Pass_word:"
-msgstr "_Parool:"
+msgstr "Pa_rool:"
 
 #. require authentication
-#: ../gtk/tr-prefs.c:811
+#: ../gtk/tr-prefs.c:792
 msgid "Only allow these IP a_ddresses:"
-msgstr "Ainult luba need IP _aadressid:"
+msgstr ""
 
-#: ../gtk/tr-prefs.c:833
+#: ../gtk/tr-prefs.c:816
 msgid "IP addresses may use wildcards, such as 192.168.*.*"
 msgstr "IP-aadressid võivad sisaldada metamärke nagu 192.168.*.*"
 
-#: ../gtk/tr-prefs.c:852
+#: ../gtk/tr-prefs.c:835
 msgid "Addresses:"
 msgstr "Aadressid:"
 
-#: ../gtk/tr-prefs.c:954
+#: ../gtk/tr-prefs.c:935
 msgid "Every Day"
 msgstr "Iga päev"
 
-#: ../gtk/tr-prefs.c:955
+#: ../gtk/tr-prefs.c:936
 msgid "Weekdays"
 msgstr "Tööpäevadel"
 
-#: ../gtk/tr-prefs.c:956
+#: ../gtk/tr-prefs.c:937
 msgid "Weekends"
 msgstr "Nädalavahetusel"
 
-#: ../gtk/tr-prefs.c:957
+#: ../gtk/tr-prefs.c:938
 msgid "Sunday"
 msgstr "Pühapäeval"
 
-#: ../gtk/tr-prefs.c:958
+#: ../gtk/tr-prefs.c:939
 msgid "Monday"
 msgstr "Esmaspäeval"
 
-#: ../gtk/tr-prefs.c:959
+#: ../gtk/tr-prefs.c:940
 msgid "Tuesday"
 msgstr "Teisipäeval"
 
-#: ../gtk/tr-prefs.c:960
+#: ../gtk/tr-prefs.c:941
 msgid "Wednesday"
 msgstr "Kolmapäeval"
 
-#: ../gtk/tr-prefs.c:961
+#: ../gtk/tr-prefs.c:942
 msgid "Thursday"
 msgstr "Neljapäeval"
 
-#: ../gtk/tr-prefs.c:962
+#: ../gtk/tr-prefs.c:943
 msgid "Friday"
 msgstr "Reedel"
 
-#: ../gtk/tr-prefs.c:963
+#: ../gtk/tr-prefs.c:944
 msgid "Saturday"
 msgstr "Laupäeval"
 
-#: ../gtk/tr-prefs.c:994
+#: ../gtk/tr-prefs.c:975
 msgid "Speed Limits"
 msgstr "Kiirusepiirangud"
 
-#: ../gtk/tr-prefs.c:996
+#: ../gtk/tr-prefs.c:977
 #, c-format
 msgid "_Upload (%s):"
-msgstr "_Üleslaadimine (%s):"
+msgstr "Ü_leslaadimine (%s):"
 
-#: ../gtk/tr-prefs.c:1003
+#: ../gtk/tr-prefs.c:984
 #, c-format
 msgid "_Download (%s):"
 msgstr "_Allalaadimine (%s):"
 
-#: ../gtk/tr-prefs.c:1012
+#: ../gtk/tr-prefs.c:993
 msgid "Alternative Speed Limits"
 msgstr "Alternatiivsed kiiruspiirangud"
 
-#: ../gtk/tr-prefs.c:1021
+#: ../gtk/tr-prefs.c:1002
 msgid "Override normal speed limits manually or at scheduled times"
 msgstr "Tavapäraste kiirusepiirangute muutmine käsitsi või määratud aegadel"
 
-#: ../gtk/tr-prefs.c:1028
+#: ../gtk/tr-prefs.c:1009
 #, c-format
 msgid "U_pload (%s):"
 msgstr "Ül_eslaadimine (%s):"
 
-#: ../gtk/tr-prefs.c:1032
+#: ../gtk/tr-prefs.c:1013
 #, c-format
 msgid "Do_wnload (%s):"
 msgstr "Allalaa_dimine (%s):"
 
-#: ../gtk/tr-prefs.c:1036
+#: ../gtk/tr-prefs.c:1017
 msgid "_Scheduled times:"
 msgstr "_Määratud ajavahemikul:"
 
-#: ../gtk/tr-prefs.c:1041
+#: ../gtk/tr-prefs.c:1022
 msgid " _to "
 msgstr " _kuni "
 
-#: ../gtk/tr-prefs.c:1052
+#: ../gtk/tr-prefs.c:1033
 msgid "_On days:"
-msgstr "_Määratud päevadel:"
+msgstr "Määratud _päevadel:"
 
-#: ../gtk/tr-prefs.c:1085 ../gtk/tr-prefs.c:1162 ../gtk/tr-prefs.c:1244
+#: ../gtk/tr-prefs.c:1064 ../gtk/tr-prefs.c:1137 ../gtk/tr-prefs.c:1219
 msgid "Status unknown"
 msgstr "Olek teadmata"
 
-#: ../gtk/tr-prefs.c:1115
+#: ../gtk/tr-prefs.c:1090
 msgid "Port is <b>closed</b>"
 msgstr "Port on <b>kinni</b>"
 
-#: ../gtk/tr-prefs.c:1115
+#: ../gtk/tr-prefs.c:1090
 msgid "Port is <b>open</b>"
 msgstr "Port on <b>avatud</b>"
 
-#: ../gtk/tr-prefs.c:1129
+#: ../gtk/tr-prefs.c:1104
 msgid "<i>Testing TCP port…</i>"
 msgstr "<i>TCP-pordi testimine…</i>"
 
-#: ../gtk/tr-prefs.c:1155
+#: ../gtk/tr-prefs.c:1130
 msgid "Listening Port"
 msgstr "Kuulatav port"
 
-#: ../gtk/tr-prefs.c:1157
+#: ../gtk/tr-prefs.c:1132
 msgid "_Port used for incoming connections:"
 msgstr "_Sissetulevate ühenduste jaoks kasutatakse porti:"
 
-#: ../gtk/tr-prefs.c:1165
+#: ../gtk/tr-prefs.c:1140
 msgid "Te_st Port"
 msgstr "Kontrolli _porti"
 
-#: ../gtk/tr-prefs.c:1172
+#: ../gtk/tr-prefs.c:1147
 msgid "Pick a _random port every time Transmission is started"
 msgstr "Transmissioni käivitamisel määratakse alati _juhuslik port"
 
-#: ../gtk/tr-prefs.c:1176
+#: ../gtk/tr-prefs.c:1151
 msgid "Use UPnP or NAT-PMP port _forwarding from my router"
 msgstr "Minu ruuteris kasutatakse UPnP või _NAT-PMP pordisuunamist"
 
-#: ../gtk/tr-prefs.c:1181
+#: ../gtk/tr-prefs.c:1156
 msgid "Peer Limits"
 msgstr "Partnerite piirangud"
 
-#: ../gtk/tr-prefs.c:1184
+#: ../gtk/tr-prefs.c:1159
 msgid "Maximum peers per _torrent:"
 msgstr "Ühendatud partnerite _arvu piirang torrenti kohta:"
 
-#: ../gtk/tr-prefs.c:1186
+#: ../gtk/tr-prefs.c:1161
 msgid "Maximum peers _overall:"
 msgstr "Ühendatud partnerite _koguarvu piirang:"
 
-#: ../gtk/tr-prefs.c:1192
+#: ../gtk/tr-prefs.c:1167
 msgid "Enable _uTP for peer communication"
 msgstr "Partneritevaheliseks ühendumiseks kasutatakse _uTP-d"
 
-#: ../gtk/tr-prefs.c:1194
+#: ../gtk/tr-prefs.c:1169
 msgid "uTP is a tool for reducing network congestion."
 msgstr "uTP on võrguummistuste vältimise tööriist."
 
-#: ../gtk/tr-prefs.c:1199
+#: ../gtk/tr-prefs.c:1174
 msgid "Use PE_X to find more peers"
 msgstr "Partnerite leidmiseks kasutatakse _PEX-i"
 
-#: ../gtk/tr-prefs.c:1201
+#: ../gtk/tr-prefs.c:1176
 msgid "PEX is a tool for exchanging peer lists with the peers you're connected to."
 msgstr "PEX on tööriist ühendatud partnerite omavaheliseks partnerite nimekirjade vahetamiseks."
 
-#: ../gtk/tr-prefs.c:1205
+#: ../gtk/tr-prefs.c:1180
 msgid "Use _DHT to find more peers"
 msgstr "Partnerite leidmiseks kasutatakse _DHT-d"
 
-#: ../gtk/tr-prefs.c:1207
+#: ../gtk/tr-prefs.c:1182
 msgid "DHT is a tool for finding peers without a tracker."
 msgstr "DHT on tööriist järjepidajata parnterite leidmiseks."
 
-#: ../gtk/tr-prefs.c:1211
+#: ../gtk/tr-prefs.c:1186
 msgid "Use _Local Peer Discovery to find more peers"
 msgstr "Lisapartnerite leidmiseks kasutatakse kohalikku partnerituvastust (_LPD)"
 
-#: ../gtk/tr-prefs.c:1213
+#: ../gtk/tr-prefs.c:1188
 msgid "LPD is a tool for finding peers on your local network."
 msgstr "LPD on tööriist kohalikust võrgust partnerite leidmiseks."
 
-#: ../gtk/tr-prefs.c:1269
+#: ../gtk/tr-prefs.c:1244
 msgid "Transmission Preferences"
 msgstr "Transmissioni eelistused"
 
-#: ../gtk/tr-prefs.c:1281
+#: ../gtk/tr-prefs.c:1254
 msgctxt "Gerund"
 msgid "Downloading"
 msgstr "Allalaadimine"
 
-#: ../gtk/tr-prefs.c:1282
+#: ../gtk/tr-prefs.c:1255
 msgctxt "Gerund"
 msgid "Seeding"
 msgstr "Levitamine"
 
-#: ../gtk/tr-prefs.c:1284
+#: ../gtk/tr-prefs.c:1257
 msgid "Network"
 msgstr "Võrk"
 
-#: ../gtk/tr-prefs.c:1286
+#: ../gtk/tr-prefs.c:1259
 msgid "Remote"
 msgstr ""
 
-#: ../gtk/tr-window.c:136
+#: ../gtk/tr-window.c:127
 msgid "Torrent"
 msgstr "Torrent"
 
-#: ../gtk/tr-window.c:240
+#: ../gtk/tr-window.c:227
 msgid "Total Ratio"
 msgstr "Kogusuhe"
 
-#: ../gtk/tr-window.c:241
+#: ../gtk/tr-window.c:228
 msgid "Session Ratio"
 msgstr "Seansi suhe"
 
-#: ../gtk/tr-window.c:242
+#: ../gtk/tr-window.c:229
 msgid "Total Transfer"
 msgstr "Kogu ülekanne"
 
-#: ../gtk/tr-window.c:243
+#: ../gtk/tr-window.c:230
 msgid "Session Transfer"
 msgstr "Seansi ülekanne"
 
-#: ../gtk/tr-window.c:268
+#: ../gtk/tr-window.c:255
 #, c-format
 msgid ""
 "Click to disable Alternative Speed Limits\n"
 " (%1$s down, %2$s up)"
 msgstr ""
-"Vajuta, et keelata Alternatiivsed kiirusepiirangud\n"
-" (%1$s alla, %2$s üles)"
 
-#: ../gtk/tr-window.c:269
+#: ../gtk/tr-window.c:256
 #, c-format
 msgid ""
 "Click to enable Alternative Speed Limits\n"
 " (%1$s down, %2$s up)"
 msgstr ""
-"Vajuta, et lubada Alternatiivsed kiirusepiirangud\n"
-" (%1$s alla, %2$s üles)"
 
-#: ../gtk/tr-window.c:329
+#: ../gtk/tr-window.c:310
 #, c-format
 msgid "Tracker will allow requests in %s"
 msgstr "Jälitaja lubab päringuid pärast %s"
 
-#: ../gtk/tr-window.c:403
+#: ../gtk/tr-window.c:380
 msgid "Unlimited"
 msgstr "Piiramatu"
 
-#: ../gtk/tr-window.c:474
+#: ../gtk/tr-window.c:451
 msgid "Seed Forever"
-msgstr "Jagatakse igavesti"
+msgstr "Levitatakse igavesti"
 
-#: ../gtk/tr-window.c:512
+#: ../gtk/tr-window.c:489
 msgid "Limit Download Speed"
 msgstr "Allalaadimise kiirusepiirang"
 
-#: ../gtk/tr-window.c:516
+#: ../gtk/tr-window.c:493
 msgid "Limit Upload Speed"
 msgstr "Üleslaadimise kiirusepiirang"
 
-#: ../gtk/tr-window.c:523
+#: ../gtk/tr-window.c:500
 msgid "Stop Seeding at Ratio"
-msgstr "Peata jagamine kui suhe on"
+msgstr "Levitamine peatub suhte juures"
 
-#: ../gtk/tr-window.c:556
+#: ../gtk/tr-window.c:533
 #, c-format
 msgid "Stop at Ratio (%s)"
 msgstr "Peatub suhtel (%s)"
 
+#: ../gtk/tr-window.c:761 ../gtk/tr-window.c:787
+#, c-format
+msgid "Ratio: %s"
+msgstr "Suhe: %s"
+
 #. Translators: "size|" is here for disambiguation. Please remove it from your translation.
 #. %1$s is the size of the data we've downloaded
 #. %2$s is the size of the data we've uploaded
-#: ../gtk/tr-window.c:794
+#: ../gtk/tr-window.c:771
 #, c-format
 msgid "Down: %1$s, Up: %2$s"
 msgstr "Alla: %1$s, Üles: %2$s"
@@ -1946,7 +1886,7 @@ msgstr "Alla: %1$s, Üles: %2$s"
 #. Translators: "size|" is here for disambiguation. Please remove it from your translation.
 #. %1$s is the size of the data we've downloaded
 #. %2$s is the size of the data we've uploaded
-#: ../gtk/tr-window.c:804
+#: ../gtk/tr-window.c:781
 #, c-format
 msgid "size|Down: %1$s, Up: %2$s"
 msgstr "Alla: %1$s, üles: %2$s"
@@ -1958,7 +1898,7 @@ msgstr "Laadi alla ja levita faile BitTorrenti kaudu"
 #. Translators: these are the application description paragraphs in the AppData file.
 #: ../gtk/transmission-gtk.appdata.xml.in:16
 msgid "BitTorrent is a peer-to-peer file-sharing protocol that is commonly used to distribute large amounts of data between multiple users."
-msgstr "BitTorrent on partnerite vaheline failide jagamise protokoll, mida tavaliselt kasutatakse suure mahuliste andmete jaganiseks mitme kasutaja vahel."
+msgstr ""
 
 #: ../gtk/transmission-gtk.appdata.xml.in:20
 msgid "Transmission is a BitTorrent client with an easy-to-use frontend on top a cross-platform backend. Native frontends are available for OS X and Windows, as well as command line and web frontends."
@@ -1975,15 +1915,15 @@ msgstr "BitTorrenti klient"
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: ../gtk/transmission-gtk.desktop.in:7
 msgid "torrents;downloading;uploading;share;sharing;"
-msgstr "torrentid;allalaadimised;üleslaadimine;jaga;jagamine;"
+msgstr ""
 
 #: ../gtk/transmission-gtk.desktop.in:21
 msgid "Start Transmission with All Torrents Paused"
-msgstr "Käivita Transmission kõikide torrentite seisatud olekuga"
+msgstr ""
 
 #: ../gtk/transmission-gtk.desktop.in:25
 msgid "Start Transmission Minimized"
-msgstr "Käivita Transmission minimeerituna"
+msgstr ""
 
 #: ../gtk/util.c:36
 msgid "KiB"
@@ -2069,7 +2009,7 @@ msgstr "Torrentfail \"%s\" sisaldab vigaseid andmeid."
 #: ../gtk/util.c:262
 #, c-format
 msgid "The torrent file \"%s\" is already in use by \"%s.\""
-msgstr "See torrent'i fail \"%s\" on juba kasutusel \"%s\" poolt."
+msgstr ""
 
 #: ../gtk/util.c:267
 #, c-format
@@ -2080,56 +2020,56 @@ msgstr "Torrentifailiga \"%s\" tekkis tundmatu veaolukord."
 msgid "Error opening torrent"
 msgstr "Viga torrenti avamisel"
 
-#: ../gtk/util.c:596
+#: ../gtk/util.c:594
 msgid "Unrecognized URL"
 msgstr "Tundmatu URL"
 
-#: ../gtk/util.c:598
+#: ../gtk/util.c:596
 #, c-format
 msgid "Transmission doesn't know how to use \"%s\""
 msgstr "Transmission ei oska URL-i \"%s\" kasutada"
 
-#: ../gtk/util.c:603
+#: ../gtk/util.c:601
 #, c-format
 msgid "This magnet link appears to be intended for something other than BitTorrent. BitTorrent magnet links have a section containing \"%s\"."
 msgstr "Tundub, et see magnetlink on millegi muu kui BitTorrenti jaoks mõeldud. BitTorrenti magnetlinkides sisaldub \"%s\"."
 
-#: ../gtk/util.c:725
+#: ../gtk/util.c:723
 #, c-format
 msgid "%s free"
-msgstr "%s vaba"
+msgstr ""
 
-#: ../libtransmission/announcer-http.c:215 ../libtransmission/announcer-http.c:383
+#: ../libtransmission/announcer-http.c:221 ../libtransmission/announcer-http.c:389
 #, c-format
 msgid "Tracker gave HTTP response code %1$ld (%2$s)"
-msgstr "Jälitaja andis HTTP vastuse koodi %1$ld (%2$s)"
+msgstr ""
 
 #: ../libtransmission/announcer-udp.c:273 ../libtransmission/announcer-udp.c:423
 msgid "Unknown error"
-msgstr "Tundmatu tõrge"
+msgstr ""
 
 #: ../libtransmission/announcer-udp.c:513
 #, c-format
 msgid "DNS Lookup failed: %s"
-msgstr "DNS otsing nurjus: %s"
+msgstr ""
 
 #: ../libtransmission/announcer-udp.c:616
 msgid "Connection failed"
-msgstr "Ühendamine nurjus"
+msgstr ""
 
-#: ../libtransmission/announcer.c:1136 ../libtransmission/announcer.c:1455
+#: ../libtransmission/announcer.c:1150 ../libtransmission/announcer.c:1469
 msgid "Could not connect to tracker"
-msgstr "Ei saanud ühendust jälitajaga"
+msgstr ""
 
-#: ../libtransmission/announcer.c:1140 ../libtransmission/announcer.c:1459
+#: ../libtransmission/announcer.c:1154 ../libtransmission/announcer.c:1473
 msgid "Tracker did not respond"
-msgstr "Jälitaja ei vastanud"
+msgstr ""
 
-#: ../libtransmission/announcer.c:1204
+#: ../libtransmission/announcer.c:1218
 msgid "Success"
-msgstr "õnnestus"
+msgstr ""
 
-#: ../libtransmission/blocklist.c:63 ../libtransmission/blocklist.c:360 ../libtransmission/utils.c:287
+#: ../libtransmission/blocklist.c:63 ../libtransmission/blocklist.c:360 ../libtransmission/utils.c:258
 #, c-format
 msgid "Couldn't read \"%1$s\": %2$s"
 msgstr "\"%1$s\" pole võimalik lugeda: %2$s"
@@ -2145,7 +2085,7 @@ msgstr "Blokinimekirjas \"%s\" on %zu kirjet"
 msgid "blocklist skipped invalid address at line %d"
 msgstr "blokinimekiri jättis vahele sobimatu aadressi real %d"
 
-#: ../libtransmission/blocklist.c:460 ../libtransmission/rpcimpl.c:1701 ../libtransmission/rpcimpl.c:1714 ../libtransmission/rpcimpl.c:1735 ../libtransmission/variant.c:1233
+#: ../libtransmission/blocklist.c:460 ../libtransmission/rpcimpl.c:1650 ../libtransmission/rpcimpl.c:1664 ../libtransmission/rpcimpl.c:1687 ../libtransmission/variant.c:1226
 #, c-format
 msgid "Couldn't save file \"%1$s\": %2$s"
 msgstr "Faili \"%1$s\" pole võimalik salvestada: %2$s"
@@ -2155,45 +2095,45 @@ msgstr "Faili \"%1$s\" pole võimalik salvestada: %2$s"
 msgid "Blocklist \"%s\" updated with %zu entries"
 msgstr "Blokinimekirjas \"%s\" uuendati %zu kirjet"
 
-#: ../libtransmission/fdlimit.c:166
+#: ../libtransmission/fdlimit.c:168
 #, c-format
 msgid "Couldn't get directory for \"%1$s\": %2$s"
 msgstr ""
 
-#: ../libtransmission/fdlimit.c:172 ../libtransmission/file-posix.c:243
+#: ../libtransmission/fdlimit.c:174 ../libtransmission/file-posix.c:243
 #, c-format
 msgid "Couldn't create \"%1$s\": %2$s"
 msgstr "Kataloogi \"%1$s\" pole võimalik luua: %2$s"
 
-#: ../libtransmission/fdlimit.c:193
+#: ../libtransmission/fdlimit.c:195
 #, c-format
 msgid "Couldn't open \"%1$s\": %2$s"
 msgstr "Faili \"%1$s\" pole võimalik avada: %2$s"
 
-#: ../libtransmission/fdlimit.c:205
+#: ../libtransmission/fdlimit.c:207
 msgid "full"
-msgstr "täis"
+msgstr ""
 
-#: ../libtransmission/fdlimit.c:210
+#: ../libtransmission/fdlimit.c:212
 msgid "sparse"
 msgstr ""
 
-#: ../libtransmission/fdlimit.c:217
+#: ../libtransmission/fdlimit.c:219
 #, c-format
 msgid "Couldn't preallocate file \"%1$s\" (%2$s, size: %3$<PRIu64>): %4$s"
-msgstr "Ei saanud hõivata faili ruumi \"%1$s\" (%2$s, suurus: %3$1<PRIu64>): %4$s"
+msgstr ""
 
-#: ../libtransmission/fdlimit.c:222
+#: ../libtransmission/fdlimit.c:224
 #, c-format
 msgid "Preallocated file \"%1$s\" (%2$s, size: %3$<PRIu64>)"
 msgstr ""
 
-#: ../libtransmission/fdlimit.c:233
+#: ../libtransmission/fdlimit.c:235
 #, c-format
 msgid "Couldn't truncate \"%1$s\": %2$s"
 msgstr "Faili \"%1$s\" pole võimalik kärpida: %2$s"
 
-#: ../libtransmission/fdlimit.c:530
+#: ../libtransmission/fdlimit.c:553
 #, c-format
 msgid "Couldn't create socket: %s"
 msgstr "Soklit pole võimalik luua: %s"
@@ -2203,17 +2143,17 @@ msgstr "Soklit pole võimalik luua: %s"
 msgid "File \"%s\" is in the way"
 msgstr "Fail \"%s\" on teel"
 
-#: ../libtransmission/makemeta.c:53
+#: ../libtransmission/makemeta.c:54
 #, c-format
 msgid "Torrent Creator is skipping file \"%s\": %s"
 msgstr "Torrenti autor jätab vahele faili \"%s\": %s"
 
-#: ../libtransmission/makemeta.c:208
+#: ../libtransmission/makemeta.c:209
 #, c-format
 msgid "Failed to set piece size to %s, leaving it at %s"
 msgstr ""
 
-#: ../libtransmission/metainfo.c:748
+#: ../libtransmission/metainfo.c:759
 #, c-format
 msgid "Invalid metadata entry \"%s\""
 msgstr "Vigane metateabe kirje \"%s\""
@@ -2232,41 +2172,41 @@ msgstr "%s õnnestus (%d)"
 msgid "Found public address \"%s\""
 msgstr "Leiti avalik aadress \"%s\""
 
-#: ../libtransmission/natpmp.c:172
+#: ../libtransmission/natpmp.c:173
 #, c-format
 msgid "no longer forwarding port %d"
 msgstr "porti %d enam ei suunata"
 
-#: ../libtransmission/natpmp.c:221
+#: ../libtransmission/natpmp.c:222
 #, c-format
 msgid "Port %d forwarded successfully"
 msgstr "Pordi %d suunamine edukas"
 
-#: ../libtransmission/net.c:332
+#: ../libtransmission/net.c:323
 #, c-format
 msgid "Couldn't set source address %s on %<PRIdMAX>: %s"
-msgstr "Ei saanud määrata allika aadressi %s asukohast %<PRIdMAX>: %s"
+msgstr ""
 
-#: ../libtransmission/net.c:348
+#: ../libtransmission/net.c:339
 #, c-format
 msgid "Couldn't connect socket %<PRIdMAX> to %s, port %d (errno %d - %s)"
 msgstr ""
 
-#: ../libtransmission/net.c:446
+#: ../libtransmission/net.c:436
 msgid "Is another copy of Transmission already running?"
 msgstr "Kas ka teine instants Transmissionist töötab?"
 
-#: ../libtransmission/net.c:455
+#: ../libtransmission/net.c:445
 #, c-format
 msgid "Couldn't bind port %d on %s: %s"
 msgstr "Porti %d polnud %s jaoks võimalik siduda: %s"
 
-#: ../libtransmission/net.c:459
+#: ../libtransmission/net.c:449
 #, c-format
 msgid "Couldn't bind port %d on %s: %s (%s)"
 msgstr "Ei suudetud siduda porti %d kohas %s: %s (%s)"
 
-#: ../libtransmission/peer-msgs.c:2120
+#: ../libtransmission/peer-msgs.c:2134
 #, c-format
 msgid "Please Verify Local Data! Piece #%zu is corrupt."
 msgstr "Kontrolli kohalikke andmeid! Tükk nr %zu on rikutud."
@@ -2296,88 +2236,83 @@ msgstr "Peatamine"
 msgid "Not forwarded"
 msgstr "Pole suunatud"
 
-#: ../libtransmission/port-forwarding.c:106 ../libtransmission/torrent.c:2268
+#: ../libtransmission/port-forwarding.c:106 ../libtransmission/torrent.c:2302
 #, c-format
 msgid "State changed from \"%1$s\" to \"%2$s\""
 msgstr "Olek muutus \"%1$s\"-st \"%2$s\"-ks"
 
-#: ../libtransmission/port-forwarding.c:199
+#: ../libtransmission/port-forwarding.c:196
 msgid "Stopped"
 msgstr "Peatatud"
 
-#: ../libtransmission/rpc-server.c:1106
+#: ../libtransmission/rpc-server.c:1096
 #, c-format
 msgid "Couldn't find settings key \"%s\""
 msgstr ""
 
-#: ../libtransmission/rpc-server.c:1240
+#: ../libtransmission/rpc-server.c:1230
 #, c-format
 msgid "%s is not a valid address"
-msgstr "%s ei ole sobilik aadress"
+msgstr ""
 
-#: ../libtransmission/rpc-server.c:1245
+#: ../libtransmission/rpc-server.c:1235
 #, c-format
 msgid "%s is not an IPv4 or IPv6 address. RPC listeners must be IPv4 or IPv6"
-msgstr "%s ei ole IPv4 ega IPv6 aadress. RPC kuulajad peavad olema IPv4 või IPv6"
+msgstr ""
 
-#: ../libtransmission/rpc-server.c:1253
+#: ../libtransmission/rpc-server.c:1243
 #, c-format
 msgid "Serving RPC and Web requests on %s:%d%s"
 msgstr ""
 
-#: ../libtransmission/rpc-server.c:1259
+#: ../libtransmission/rpc-server.c:1249
 msgid "Whitelist enabled"
 msgstr ""
 
-#: ../libtransmission/rpc-server.c:1264
+#: ../libtransmission/rpc-server.c:1254
 msgid "Password required"
-msgstr "Parool on vajalik"
-
-#: ../libtransmission/rpc-server.c:1271
-#, c-format
-msgid "Serving RPC and Web requests from directory '%s'"
 msgstr ""
 
-#: ../libtransmission/rpcimpl.c:1723
+#: ../libtransmission/rpcimpl.c:1674
 #, c-format
 msgid "Error uncompressing blocklist: %s (%d)"
-msgstr "Tõrge lahtipakkimisel blokeeringute nimekirjasid: %s (%d)"
+msgstr ""
 
 #. first %s is the application name
 #. second %s is the version number
-#: ../libtransmission/session.c:783
+#: ../libtransmission/session.c:769
 #, c-format
 msgid "%s %s started"
 msgstr "%s %s alustatud"
 
-#: ../libtransmission/session.c:2187
+#: ../libtransmission/session.c:2170
 #, c-format
 msgid "Loaded %d torrents"
 msgstr "Laaditi %d torrentit"
 
-#: ../libtransmission/torrent-magnet.c:312
+#: ../libtransmission/torrent-magnet.c:310
 msgid "Magnet torrent's metadata is not usable"
-msgstr "Magnet torrent'i meta andmed ei ole kõlbulikud"
+msgstr ""
 
-#: ../libtransmission/torrent.c:595
+#: ../libtransmission/torrent.c:616
 #, c-format
 msgid "Tracker warning: \"%s\""
-msgstr "Jälitaja hoiatus: \"%s\""
+msgstr "Järjepidaja hoiatus: \"%s\""
 
-#: ../libtransmission/torrent.c:602
+#: ../libtransmission/torrent.c:623
 #, c-format
 msgid "Tracker error: \"%s\""
-msgstr "Jälitaja veateade: \"%s\""
+msgstr "Järjepidaja veateade: \"%s\""
 
-#: ../libtransmission/torrent.c:892
+#: ../libtransmission/torrent.c:916
 msgid "No data found! Ensure your drives are connected or use \"Set Location\". To re-download, remove the torrent and re-add it."
 msgstr "Andmed ei leitud! Veendu, et kettad on ühendatud või määra torrenti asukoht. Uuesti allalaadimiseks eemalda torrent ja lisa uuesti."
 
-#: ../libtransmission/torrent.c:1846
+#: ../libtransmission/torrent.c:1868
 msgid "Restarted manually -- disabling its seed ratio"
 msgstr "Taaskäivitati käsitsi -- jagamise suhe keelatakse"
 
-#: ../libtransmission/torrent.c:2056
+#: ../libtransmission/torrent.c:2078
 msgid "Removing torrent"
 msgstr "Torrenti eemaldamine"
 
@@ -2386,18 +2321,18 @@ msgstr "Torrenti eemaldamine"
 #. "Complete" means we've downloaded every file in the torrent.
 #. "Done" means we're done downloading the files we wanted, but NOT all
 #. that exist
-#: ../libtransmission/torrent.c:2142
+#: ../libtransmission/torrent.c:2164
 msgid "Done"
 msgstr "Valmis"
 
-#: ../libtransmission/torrent.c:2145
+#: ../libtransmission/torrent.c:2167
 msgid "Complete"
 msgstr "Valmis"
 
-#: ../libtransmission/torrent.c:3496
+#: ../libtransmission/torrent.c:3466
 #, c-format
 msgid "Piece %<PRIu32>, which was just downloaded, failed its checksum test"
-msgstr "Tükk %<PRIu32>, mis oli just allalaaditud, ebaõnnestus checksum'i testi"
+msgstr ""
 
 #: ../libtransmission/upnp.c:29
 msgid "Port Forwarding (UPnP)"
@@ -2418,43 +2353,54 @@ msgstr "Kohalik aadress on \"%s\""
 msgid "Port %d isn't forwarded"
 msgstr "Port %d ei ole suunatud"
 
-#: ../libtransmission/upnp.c:237
+#: ../libtransmission/upnp.c:238
 #, c-format
 msgid "Stopping port forwarding through \"%s\", service \"%s\""
 msgstr "Portide suunamise peatamine \"%s\" kaudu, teenus \"%s\""
 
-#: ../libtransmission/upnp.c:269
+#: ../libtransmission/upnp.c:275
 #, c-format
 msgid "Port forwarding through \"%s\", service \"%s\". (local address: %s:%d)"
 msgstr "Pordi suuname \"%s\" kaudu, teenus \"%s\" (kohalik aadress: %s:%d)."
 
-#: ../libtransmission/upnp.c:274
+#: ../libtransmission/upnp.c:280
 msgid "Port forwarding successful!"
 msgstr "Pordi suunamine on edukas!"
 
-#: ../libtransmission/utils.c:299 ../libtransmission/utils.c:300
+#: ../libtransmission/utils.c:270 ../libtransmission/utils.c:271
 msgid "Not a regular file"
 msgstr "Pole tavaline fail"
 
 #. did caller give us an uninitialized val?
-#: ../libtransmission/variant.c:927
+#: ../libtransmission/variant.c:926
 msgid "Invalid metadata"
 msgstr "Vigased metaandmed"
 
-#: ../libtransmission/variant.c:1218 ../libtransmission/variant.c:1242
+#: ../libtransmission/variant.c:1211 ../libtransmission/variant.c:1235
 #, c-format
 msgid "Couldn't save temporary file \"%1$s\": %2$s"
 msgstr "Ajutist faili \"%1$s\" pole võimalik salvestada: %2$s"
 
-#: ../libtransmission/variant.c:1228
+#: ../libtransmission/variant.c:1221
 #, c-format
 msgid "Saved \"%s\""
 msgstr "Salvestatud \"%s\""
 
-#: ../libtransmission/variant.c:1271
+#: ../libtransmission/variant.c:1264
 msgid "Unable to parse file content"
-msgstr "Ei saa parsida faili sisu"
+msgstr ""
 
-#: ../libtransmission/verify.c:222
+#: ../libtransmission/verify.c:220
 msgid "Verifying torrent"
 msgstr "Torrenti kontrollimine"
+
+#, c-format
+#~ msgid "Server returned \"%1$ld %2$s\""
+#~ msgstr "Server vastas \"%1$ld %2$s\""
+
+#~ msgid "Transmission BitTorrent Client"
+#~ msgstr "Transmission, BitTorrenti klient"
+
+#, c-format
+#~ msgid "Error opening \"%s\""
+#~ msgstr "Viga \"%s\" avamisel"

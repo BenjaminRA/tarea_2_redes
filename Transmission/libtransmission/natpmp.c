@@ -144,11 +144,12 @@ int tr_natpmpPulse(struct tr_natpmp* nat, tr_port private_port, bool is_enabled,
         }
     }
 
-    if ((nat->state == TR_NATPMP_IDLE || nat->state == TR_NATPMP_ERR) &&
-        (nat->is_mapped) &&
-        (!is_enabled || nat->private_port != private_port))
+    if (nat->state == TR_NATPMP_IDLE || nat->state == TR_NATPMP_ERR)
     {
-        nat->state = TR_NATPMP_SEND_UNMAP;
+        if (nat->is_mapped && (!is_enabled || nat->private_port != private_port))
+        {
+            nat->state = TR_NATPMP_SEND_UNMAP;
+        }
     }
 
     if (nat->state == TR_NATPMP_SEND_UNMAP && canSendCommand(nat))
@@ -167,11 +168,11 @@ int tr_natpmpPulse(struct tr_natpmp* nat, tr_port private_port, bool is_enabled,
 
         if (val >= 0)
         {
-            int const unmapped_port = resp.pnu.newportmapping.privateport;
+            int const private_port = resp.pnu.newportmapping.privateport;
 
-            tr_logAddNamedInfo(getKey(), _("no longer forwarding port %d"), unmapped_port);
+            tr_logAddNamedInfo(getKey(), _("no longer forwarding port %d"), private_port);
 
-            if (nat->private_port == unmapped_port)
+            if (nat->private_port == private_port)
             {
                 nat->private_port = 0;
                 nat->public_port = 0;
@@ -231,6 +232,7 @@ int tr_natpmpPulse(struct tr_natpmp* nat, tr_port private_port, bool is_enabled,
     case TR_NATPMP_IDLE:
         *public_port = nat->public_port;
         return nat->is_mapped ? TR_PORT_MAPPED : TR_PORT_UNMAPPED;
+        break;
 
     case TR_NATPMP_DISCOVER:
         ret = TR_PORT_UNMAPPED;

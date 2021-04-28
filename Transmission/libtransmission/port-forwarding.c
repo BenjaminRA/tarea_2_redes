@@ -140,11 +140,8 @@ static void set_evtimer_from_status(tr_shared* s)
     }
 }
 
-static void onTimer(evutil_socket_t fd, short what, void* vshared)
+static void onTimer(evutil_socket_t fd UNUSED, short what UNUSED, void* vshared)
 {
-    TR_UNUSED(fd);
-    TR_UNUSED(what);
-
     tr_shared* s = vshared;
 
     TR_ASSERT(s != NULL);
@@ -226,16 +223,14 @@ static void start_timer(tr_shared* s)
     set_evtimer_from_status(s);
 }
 
-void tr_sharedTraversalEnable(tr_shared* s, bool enable)
+void tr_sharedTraversalEnable(tr_shared* s, bool isEnabled)
 {
-    if (enable)
+    if ((s->isEnabled = isEnabled))
     {
-        s->isEnabled = true;
         start_timer(s);
     }
     else
     {
-        s->isEnabled = false;
         stop_forwarding(s);
     }
 }

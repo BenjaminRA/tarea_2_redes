@@ -15,21 +15,19 @@ InteropObject::InteropObject(QObject* parent) :
 {
 }
 
-// NOLINTNEXTLINE(readability-identifier-naming)
-bool InteropObject::PresentWindow() const
+bool InteropObject::PresentWindow()
 {
-    trApp->raise();
+    qApp->raise();
     return true;
 }
 
-// NOLINTNEXTLINE(readability-identifier-naming)
-bool InteropObject::AddMetainfo(QString const& metainfo) const
+bool InteropObject::AddMetainfo(QString const& metainfo)
 {
     AddData addme(metainfo);
 
     if (addme.type != addme.NONE)
     {
-        trApp->addTorrent(addme);
+        qApp->addTorrent(addme);
     }
 
     return true;

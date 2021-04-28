@@ -21,7 +21,7 @@
 
 #include <event2/event.h>
 
-#define LIBTRANSMISSION_WATCHDIR_MODULE
+#define __LIBTRANSMISSION_WATCHDIR_MODULE__
 
 #include "transmission.h"
 #include "log.h"
@@ -61,11 +61,8 @@ tr_watchdir_kqueue;
 ****
 ***/
 
-static void tr_watchdir_kqueue_on_event(evutil_socket_t fd, short type, void* context)
+static void tr_watchdir_kqueue_on_event(evutil_socket_t fd UNUSED, short type UNUSED, void* context)
 {
-    TR_UNUSED(fd);
-    TR_UNUSED(type);
-
     tr_watchdir_t const handle = context;
     tr_watchdir_kqueue* const backend = BACKEND_UPCAST(tr_watchdir_get_backend(handle));
     struct kevent ke;

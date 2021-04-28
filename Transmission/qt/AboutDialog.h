@@ -11,26 +11,24 @@
 #include <QPointer>
 
 #include "BaseDialog.h"
-#include "Macros.h"
+
 #include "ui_AboutDialog.h"
 
 class LicenseDialog;
-class Session;
 
 class AboutDialog : public BaseDialog
 {
     Q_OBJECT
-    TR_DISABLE_COPY_MOVE(AboutDialog)
 
 public:
-    explicit AboutDialog(Session& session, QWidget* parent = nullptr);
+    AboutDialog(QWidget* parent = nullptr);
 
 private slots:
     void showCredits();
     void showLicense();
 
 private:
-    Ui::AboutDialog ui_{};
+    Ui::AboutDialog ui;
 
-    QPointer<LicenseDialog> license_dialog_;
+    QPointer<LicenseDialog> myLicenseDialog;
 };

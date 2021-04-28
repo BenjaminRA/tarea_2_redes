@@ -22,10 +22,8 @@
 #include "tr-macros.h"
 #include "utils.h"
 
-static void handle_sigchld(int i)
+static void handle_sigchld(int i UNUSED)
 {
-    TR_UNUSED(i);
-
     int rc;
 
     do
@@ -63,25 +61,25 @@ static bool tr_spawn_async_in_child(char* const* cmd, char* const* env, char con
         {
             if (putenv(env[i]) != 0)
             {
-                goto FAIL;
+                goto fail;
             }
         }
     }
 
     if (work_dir != NULL && chdir(work_dir) == -1)
     {
-        goto FAIL;
+        goto fail;
     }
 
     if (execvp(cmd[0], cmd) == -1)
     {
-        goto FAIL;
+        goto fail;
     }
 
     return true;
 
-FAIL:
-    (void)write(pipe_fd, &errno, sizeof(errno));
+fail:
+    write(pipe_fd, &errno, sizeof(errno));
     return false;
 }
 

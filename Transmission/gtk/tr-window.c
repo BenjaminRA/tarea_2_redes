@@ -75,10 +75,8 @@ static PrivateData* get_private_data(GtkWindow * w)
 ****
 ***/
 
-static void on_popup_menu(GtkWidget* self, GdkEventButton* event)
+static void on_popup_menu(GtkWidget* self UNUSED, GdkEventButton* event)
 {
-    TR_UNUSED(self);
-
     GtkWidget* menu = gtr_action_get_widget("/main-window-popup");
 
 #if GTK_CHECK_VERSION(3, 22, 0)
@@ -88,22 +86,15 @@ static void on_popup_menu(GtkWidget* self, GdkEventButton* event)
 #endif
 }
 
-static void view_row_activated(GtkTreeView* tree_view, GtkTreePath* path, GtkTreeViewColumn* column, gpointer user_data)
+static void view_row_activated(GtkTreeView* tree_view UNUSED, GtkTreePath* path UNUSED, GtkTreeViewColumn* column UNUSED,
+    gpointer user_data UNUSED)
 {
-    TR_UNUSED(tree_view);
-    TR_UNUSED(path);
-    TR_UNUSED(column);
-    TR_UNUSED(user_data);
-
     gtr_action_activate("show-torrent-properties");
 }
 
-static gboolean tree_view_search_equal_func(GtkTreeModel* model, gint column, gchar const* key, GtkTreeIter* iter,
-    gpointer search_data)
+static gboolean tree_view_search_equal_func(GtkTreeModel* model, gint column UNUSED, gchar const* key, GtkTreeIter* iter,
+    gpointer search_data UNUSED)
 {
-    TR_UNUSED(column);
-    TR_UNUSED(search_data);
-
     gboolean match;
     char* lower;
     char const* name = NULL;
@@ -161,10 +152,8 @@ static GtkWidget* makeview(PrivateData* p)
 
 static void syncAltSpeedButton(PrivateData* p);
 
-static void prefsChanged(TrCore* core, tr_quark const key, gpointer wind)
+static void prefsChanged(TrCore* core UNUSED, tr_quark const key, gpointer wind)
 {
-    TR_UNUSED(core);
-
     gboolean isEnabled;
     PrivateData* p = get_private_data(GTK_WINDOW(wind));
 
@@ -215,10 +204,8 @@ static void privateFree(gpointer vprivate)
     g_free(p);
 }
 
-static void onYinYangClicked(GtkWidget* w, gpointer vprivate)
+static void onYinYangClicked(GtkWidget* w UNUSED, gpointer vprivate)
 {
-    TR_UNUSED(w);
-
     PrivateData* p = vprivate;
 
 #if GTK_CHECK_VERSION(3, 22, 0)
@@ -255,18 +242,19 @@ static void status_menu_toggled_cb(GtkCheckMenuItem* menu_item, gpointer vprivat
 
 static void syncAltSpeedButton(PrivateData* p)
 {
-    gboolean const b = gtr_pref_flag_get(TR_KEY_alt_speed_enabled);
-    char const* const stock = b ? "alt-speed-on" : "alt-speed-off";
-    GtkWidget* const w = p->alt_speed_button;
-
     char u[32];
-    tr_formatter_speed_KBps(u, gtr_pref_int_get(TR_KEY_alt_speed_up), sizeof(u));
     char d[32];
-    tr_formatter_speed_KBps(d, gtr_pref_int_get(TR_KEY_alt_speed_down), sizeof(d));
+    char* str;
+    char const* fmt;
+    gboolean const b = gtr_pref_flag_get(TR_KEY_alt_speed_enabled);
+    char const* stock = b ? "alt-speed-on" : "alt-speed-off";
+    GtkWidget* w = p->alt_speed_button;
 
-    char* const str = b ?
-        g_strdup_printf(_("Click to disable Alternative Speed Limits\n (%1$s down, %2$s up)"), d, u) :
-        g_strdup_printf(_("Click to enable Alternative Speed Limits\n (%1$s down, %2$s up)"), d, u);
+    tr_formatter_speed_KBps(u, gtr_pref_int_get(TR_KEY_alt_speed_up), sizeof(u));
+    tr_formatter_speed_KBps(d, gtr_pref_int_get(TR_KEY_alt_speed_down), sizeof(d));
+    fmt = b ? _("Click to disable Alternative Speed Limits\n (%1$s down, %2$s up)") :
+        _("Click to enable Alternative Speed Limits\n (%1$s down, %2$s up)");
+    str = g_strdup_printf(fmt, d, u);
 
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(w), b);
     gtk_image_set_from_stock(GTK_IMAGE(p->alt_speed_image), stock, -1);
@@ -287,10 +275,8 @@ static void alt_speed_toggled_cb(GtkToggleButton* button, gpointer vprivate)
 ****  FILTER
 ***/
 
-static void findMaxAnnounceTime(GtkTreeModel* model, GtkTreePath* path, GtkTreeIter* iter, gpointer gmaxTime)
+static void findMaxAnnounceTime(GtkTreeModel* model, GtkTreePath* path UNUSED, GtkTreeIter* iter, gpointer gmaxTime)
 {
-    TR_UNUSED(path);
-
     tr_torrent* tor;
     tr_stat const* torStat;
     time_t* maxTime = gmaxTime;
@@ -300,14 +286,9 @@ static void findMaxAnnounceTime(GtkTreeModel* model, GtkTreePath* path, GtkTreeI
     *maxTime = MAX(*maxTime, torStat->manualAnnounceTime);
 }
 
-static gboolean onAskTrackerQueryTooltip(GtkWidget* widget, gint x, gint y, gboolean keyboard_tip, GtkTooltip* tooltip,
-    gpointer gdata)
+static gboolean onAskTrackerQueryTooltip(GtkWidget* widget UNUSED, gint x UNUSED, gint y UNUSED, gboolean keyboard_tip UNUSED,
+    GtkTooltip* tooltip, gpointer gdata)
 {
-    TR_UNUSED(widget);
-    TR_UNUSED(x);
-    TR_UNUSED(y);
-    TR_UNUSED(keyboard_tip);
-
     gboolean handled;
     time_t maxTime = 0;
     PrivateData* p = gdata;
@@ -343,12 +324,8 @@ static gboolean onAltSpeedToggledIdle(gpointer vp)
     return G_SOURCE_REMOVE;
 }
 
-static void onAltSpeedToggled(tr_session* s, bool isEnabled, bool byUser, void* p)
+static void onAltSpeedToggled(tr_session* s UNUSED, bool isEnabled UNUSED, bool byUser UNUSED, void* p)
 {
-    TR_UNUSED(s);
-    TR_UNUSED(isEnabled);
-    TR_UNUSED(byUser);
-
     gdk_threads_add_idle(onAltSpeedToggledIdle, p);
 }
 
@@ -733,13 +710,13 @@ GtkWidget* gtr_window_new(GtkApplication* app, GtkUIManager* ui_mgr, TrCore* cor
 
     {
         /* this is to determine the maximum width/height for the label */
-        int width = 0;
-        int height = 0;
+        int w = 0;
+        int h = 0;
         PangoLayout* pango_layout;
         pango_layout = gtk_widget_create_pango_layout(ul_lb, "999.99 kB/s");
-        pango_layout_get_pixel_size(pango_layout, &width, &height);
-        gtk_widget_set_size_request(ul_lb, width, height);
-        gtk_widget_set_size_request(dl_lb, width, height);
+        pango_layout_get_pixel_size(pango_layout, &w, &h);
+        gtk_widget_set_size_request(ul_lb, w, h);
+        gtk_widget_set_size_request(dl_lb, w, h);
         g_object_set(ul_lb, "halign", GTK_ALIGN_END, "valign", GTK_ALIGN_CENTER, NULL);
         g_object_set(dl_lb, "halign", GTK_ALIGN_END, "valign", GTK_ALIGN_CENTER, NULL);
         g_object_unref(G_OBJECT(pango_layout));
@@ -766,15 +743,16 @@ GtkWidget* gtr_window_new(GtkApplication* app, GtkUIManager* ui_mgr, TrCore* cor
 
 static void updateStats(PrivateData* p)
 {
+    char const* pch;
     char up[32];
     char down[32];
     char ratio[32];
     char buf[512];
     struct tr_session_stats stats;
-    tr_session const* const session = gtr_core_session(p->core);
+    tr_session* session = gtr_core_session(p->core);
 
     /* update the stats */
-    char const* pch = gtr_pref_string_get(TR_KEY_statusbar_stats);
+    pch = gtr_pref_string_get(TR_KEY_statusbar_stats);
 
     if (g_strcmp0(pch, "session-ratio") == 0)
     {
@@ -814,7 +792,7 @@ static void updateStats(PrivateData* p)
 
 static void updateSpeeds(PrivateData* p)
 {
-    tr_session const* const session = gtr_core_session(p->core);
+    tr_session* session = gtr_core_session(p->core);
 
     if (session != NULL)
     {

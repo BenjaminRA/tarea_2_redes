@@ -18,7 +18,7 @@ int TrackerModel::rowCount(QModelIndex const& parent) const
 {
     Q_UNUSED(parent)
 
-    return parent.isValid() ? 0 : rows_.size();
+    return parent.isValid() ? 0 : myRows.size();
 }
 
 QVariant TrackerModel::data(QModelIndex const& index, int role) const
@@ -27,22 +27,22 @@ QVariant TrackerModel::data(QModelIndex const& index, int role) const
 
     int const row = index.row();
 
-    if (0 <= row && row < rows_.size())
+    if (0 <= row && row < myRows.size())
     {
-        TrackerInfo const& tracker_info = rows_.at(row);
+        TrackerInfo const& trackerInfo = myRows.at(row);
 
         switch (role)
         {
         case Qt::DisplayRole:
-            var = tracker_info.st.announce;
+            var = trackerInfo.st.announce;
             break;
 
         case Qt::DecorationRole:
-            var = QIcon(tracker_info.st.getFavicon());
+            var = QIcon(trackerInfo.st.getFavicon());
             break;
 
         case TrackerRole:
-            var = QVariant::fromValue(tracker_info);
+            var = qVariantFromValue(trackerInfo);
             break;
 
         default:
@@ -61,9 +61,9 @@ struct CompareTrackers
 {
     bool operator ()(TrackerInfo const& a, TrackerInfo const& b) const
     {
-        if (a.torrent_id != b.torrent_id)
+        if (a.torrentId != b.torrentId)
         {
-            return a.torrent_id < b.torrent_id;
+            return a.torrentId < b.torrentId;
         }
 
         if (a.st.tier != b.st.tier)
@@ -71,34 +71,34 @@ struct CompareTrackers
             return a.st.tier < b.st.tier;
         }
 
-        if (a.st.is_backup != b.st.is_backup)
+        if (a.st.isBackup != b.st.isBackup)
         {
-            return !a.st.is_backup;
+            return !a.st.isBackup;
         }
 
         return a.st.announce < b.st.announce;
     }
 };
 
-void TrackerModel::refresh(TorrentModel const& torrent_model, torrent_ids_t const& ids)
+void TrackerModel::refresh(TorrentModel const& torrentModel, torrent_ids_t const& ids)
 {
     // build a list of the TrackerInfos
     QVector<TrackerInfo> trackers;
 
     for (int const id : ids)
     {
-        Torrent const* tor = torrent_model.getTorrentFromId(id);
+        Torrent const* tor = torrentModel.getTorrentFromId(id);
 
         if (tor != nullptr)
         {
-            TrackerStatsList const tracker_list = tor->trackerStats();
+            TrackerStatsList const trackerList = tor->trackerStats();
 
-            for (TrackerStat const& st : tracker_list)
+            for (TrackerStat const& st : trackerList)
             {
-                TrackerInfo tracker_info;
-                tracker_info.st = st;
-                tracker_info.torrent_id = id;
-                trackers.append(tracker_info);
+                TrackerInfo trackerInfo;
+                trackerInfo.st = st;
+                trackerInfo.torrentId = id;
+                trackers.append(trackerInfo);
             }
         }
     }
@@ -108,47 +108,47 @@ void TrackerModel::refresh(TorrentModel const& torrent_model, torrent_ids_t cons
     std::sort(trackers.begin(), trackers.end(), comp);
 
     // merge 'em with the existing list
-    int old_index = 0;
-    int new_index = 0;
+    int oldIndex = 0;
+    int newIndex = 0;
 
-    while (old_index < rows_.size() || new_index < trackers.size())
+    while (oldIndex < myRows.size() || newIndex < trackers.size())
     {
-        bool const is_end_of_old = old_index == rows_.size();
-        bool const is_end_of_new = new_index == trackers.size();
+        bool const isEndOfOld = oldIndex == myRows.size();
+        bool const isEndOfNew = newIndex == trackers.size();
 
-        if (is_end_of_old || (!is_end_of_new && comp(trackers.at(new_index), rows_.at(old_index))))
+        if (isEndOfOld || (!isEndOfNew && comp(trackers.at(newIndex), myRows.at(oldIndex))))
         {
             // add this new row
-            beginInsertRows(QModelIndex(), old_index, old_index);
-            rows_.insert(old_index, trackers.at(new_index));
+            beginInsertRows(QModelIndex(), oldIndex, oldIndex);
+            myRows.insert(oldIndex, trackers.at(newIndex));
             endInsertRows();
-            ++old_index;
-            ++new_index;
+            ++oldIndex;
+            ++newIndex;
         }
-        else if (is_end_of_new || (!is_end_of_old && comp(rows_.at(old_index), trackers.at(new_index))))
+        else if (isEndOfNew || (!isEndOfOld && comp(myRows.at(oldIndex), trackers.at(newIndex))))
         {
             // remove this old row
-            beginRemoveRows(QModelIndex(), old_index, old_index);
-            rows_.remove(old_index);
+            beginRemoveRows(QModelIndex(), oldIndex, oldIndex);
+            myRows.remove(oldIndex);
             endRemoveRows();
         }
         else // update existing row
         {
-            rows_[old_index].st = trackers.at(new_index).st;
-            emit dataChanged(index(old_index, 0), index(old_index, 0));
-            ++old_index;
-            ++new_index;
+            myRows[oldIndex].st = trackers.at(newIndex).st;
+            emit dataChanged(index(oldIndex, 0), index(oldIndex, 0));
+            ++oldIndex;
+            ++newIndex;
         }
     }
 }
 
-int TrackerModel::find(int torrent_id, QString const& url) const
+int TrackerModel::find(int torrentId, QString const& url) const
 {
-    for (int i = 0, n = rows_.size(); i < n; ++i)
+    for (int i = 0, n = myRows.size(); i < n; ++i)
     {
-        TrackerInfo const& inf = rows_.at(i);
+        TrackerInfo const& inf = myRows.at(i);
 
-        if (inf.torrent_id == torrent_id && url == inf.st.announce)
+        if (inf.torrentId == torrentId && url == inf.st.announce)
         {
             return i;
         }

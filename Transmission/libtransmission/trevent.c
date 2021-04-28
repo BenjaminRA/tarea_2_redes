@@ -305,11 +305,7 @@ void tr_eventClose(tr_session* session)
     }
 
     session->events->die = true;
-    if (tr_logGetDeepEnabled())
-    {
-        tr_logAddDeep(__FILE__, __LINE__, NULL, "closing trevent pipe");
-    }
-
+    tr_logAddDeep(__FILE__, __LINE__, NULL, "closing trevent pipe");
     tr_netCloseSocket(session->events->fds[1]);
 }
 

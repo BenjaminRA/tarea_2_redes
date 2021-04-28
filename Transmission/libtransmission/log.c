@@ -33,6 +33,10 @@ static inline bool IsDebuggerPresent(void)
     return false;
 }
 
+static inline void OutputDebugStringA(void const* unused UNUSED)
+{
+}
+
 #endif
 
 /***
@@ -135,19 +139,20 @@ void tr_logFreeQueue(tr_log_message* list)
 
 char* tr_logGetTimeStr(char* buf, size_t buflen)
 {
-    struct timeval tv;
-    tr_gettimeofday(&tv);
-    time_t const seconds = tv.tv_sec;
-    int const milliseconds = (int)(tv.tv_usec / 1000);
-    char msec_str[8];
-    tr_snprintf(msec_str, sizeof msec_str, "%03d", milliseconds);
-
+    char tmp[64];
     struct tm now_tm;
-    tr_localtime_r(&seconds, &now_tm);
-    char date_str[32];
-    strftime(date_str, sizeof(date_str), "%Y-%m-%d %H:%M:%S", &now_tm);
+    struct timeval tv;
+    time_t seconds;
+    int milliseconds;
 
-    tr_snprintf(buf, buflen, "%s.%s", date_str, msec_str);
+    tr_gettimeofday(&tv);
+
+    seconds = tv.tv_sec;
+    tr_localtime_r(&seconds, &now_tm);
+    strftime(tmp, sizeof(tmp), "%Y-%m-%d %H:%M:%S.%%03d", &now_tm);
+    milliseconds = tv.tv_usec / 1000;
+    tr_snprintf(buf, buflen, tmp, milliseconds);
+
     return buf;
 }
 
@@ -169,10 +174,13 @@ void tr_logAddDeep(char const* file, int line, char const* name, char const* fmt
 
     if (fp != TR_BAD_SYS_FILE || IsDebuggerPresent())
     {
+        va_list args;
+        char timestr[64];
+        char* message;
+        size_t message_len;
         struct evbuffer* buf = evbuffer_new();
         char* base = tr_sys_path_basename(file, NULL);
 
-        char timestr[64];
         evbuffer_add_printf(buf, "[%s] ", tr_logGetTimeStr(timestr, sizeof(timestr)));
 
         if (name != NULL)
@@ -180,18 +188,13 @@ void tr_logAddDeep(char const* file, int line, char const* name, char const* fmt
             evbuffer_add_printf(buf, "%s ", name);
         }
 
-        va_list args;
         va_start(args, fmt);
         evbuffer_add_vprintf(buf, fmt, args);
         va_end(args);
         evbuffer_add_printf(buf, " (%s:%d)" TR_NATIVE_EOL_STR, base, line);
-
-        size_t message_len = 0;
-        char* const message = evbuffer_free_to_str(buf, &message_len);
-
-#ifdef _WIN32
+        /* FIXME (libevent2) ifdef this out for nonwindows platforms */
+        message = evbuffer_free_to_str(buf, &message_len);
         OutputDebugStringA(message);
-#endif
 
         if (fp != TR_BAD_SYS_FILE)
         {
@@ -223,7 +226,7 @@ void tr_logAddMessage(char const* file, int line, tr_log_level level, char const
 
     if (buf_len < 0)
     {
-        goto FINISH;
+        goto finish;
     }
 
 #ifdef _WIN32
@@ -297,7 +300,7 @@ void tr_logAddMessage(char const* file, int line, tr_log_level level, char const
         }
     }
 
-FINISH:
+finish:
     tr_lockUnlock(getMessageLock());
     errno = err;
 }

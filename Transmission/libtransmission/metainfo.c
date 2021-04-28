@@ -265,11 +265,13 @@ static char const* parseFiles(tr_info* inf, tr_variant* files, tr_variant const*
                 break;
             }
 
-            if (!tr_variantDictFindList(file, TR_KEY_path_utf_8, &path) &&
-                !tr_variantDictFindList(file, TR_KEY_path, &path))
+            if (!tr_variantDictFindList(file, TR_KEY_path_utf_8, &path))
             {
-                result = "path";
-                break;
+                if (!tr_variantDictFindList(file, TR_KEY_path, &path))
+                {
+                    result = "path";
+                    break;
+                }
             }
 
             bool is_file_adjusted;
@@ -377,8 +379,7 @@ static char const* getannounce(tr_info* inf, tr_variant* meta)
 
         trackers = tr_new0(tr_tracker_info, n);
 
-        int validTiers = 0;
-        for (int i = 0; i < numTiers; ++i)
+        for (int i = 0, validTiers = 0; i < numTiers; i++)
         {
             tr_variant* tier = tr_variantListChild(tiers, i);
             int const tierSize = tr_variantListSize(tier);
@@ -439,6 +440,7 @@ static char const* getannounce(tr_info* inf, tr_variant* meta)
             trackers[trackerCount].scrape = tr_convertAnnounceToScrape(url);
             trackers[trackerCount].id = 0;
             trackerCount++;
+            /* fprintf(stderr, "single announce: [%s]\n", url); */
         }
     }
 
@@ -593,14 +595,14 @@ static char const* tr_metainfoParseImpl(tr_session const* session, tr_info* inf,
     }
     else
     {
-        size_t blen;
-        char* bstr = tr_variantToStr(infoDict, TR_VARIANT_FMT_BENC, &blen);
-        tr_sha1(inf->hash, bstr, (int)blen, NULL);
+        size_t len;
+        char* bstr = tr_variantToStr(infoDict, TR_VARIANT_FMT_BENC, &len);
+        tr_sha1(inf->hash, bstr, (int)len, NULL);
         tr_sha1_to_hex(inf->hashString, inf->hash);
 
         if (infoDictLength != NULL)
         {
-            *infoDictLength = blen;
+            *infoDictLength = len;
         }
 
         tr_free(bstr);
@@ -611,10 +613,12 @@ static char const* tr_metainfoParseImpl(tr_session const* session, tr_info* inf,
     {
         len = 0;
 
-        if (!tr_variantDictFindStr(infoDict, TR_KEY_name_utf_8, &str, &len) &&
-            !tr_variantDictFindStr(infoDict, TR_KEY_name, &str, &len))
+        if (!tr_variantDictFindStr(infoDict, TR_KEY_name_utf_8, &str, &len))
         {
-            str = "";
+            if (!tr_variantDictFindStr(infoDict, TR_KEY_name, &str, &len))
+            {
+                str = "";
+            }
         }
 
         if (tr_str_is_empty(str))
@@ -631,10 +635,12 @@ static char const* tr_metainfoParseImpl(tr_session const* session, tr_info* inf,
     /* comment */
     len = 0;
 
-    if (!tr_variantDictFindStr(meta, TR_KEY_comment_utf_8, &str, &len) &&
-        !tr_variantDictFindStr(meta, TR_KEY_comment, &str, &len))
+    if (!tr_variantDictFindStr(meta, TR_KEY_comment_utf_8, &str, &len))
     {
-        str = "";
+        if (!tr_variantDictFindStr(meta, TR_KEY_comment, &str, &len))
+        {
+            str = "";
+        }
     }
 
     tr_free(inf->comment);
@@ -643,10 +649,12 @@ static char const* tr_metainfoParseImpl(tr_session const* session, tr_info* inf,
     /* created by */
     len = 0;
 
-    if (!tr_variantDictFindStr(meta, TR_KEY_created_by_utf_8, &str, &len) &&
-        !tr_variantDictFindStr(meta, TR_KEY_created_by, &str, &len))
+    if (!tr_variantDictFindStr(meta, TR_KEY_created_by_utf_8, &str, &len))
     {
-        str = "";
+        if (!tr_variantDictFindStr(meta, TR_KEY_created_by, &str, &len))
+        {
+            str = "";
+        }
     }
 
     tr_free(inf->creator);
@@ -661,10 +669,12 @@ static char const* tr_metainfoParseImpl(tr_session const* session, tr_info* inf,
     inf->dateCreated = i;
 
     /* private */
-    if (!tr_variantDictFindInt(infoDict, TR_KEY_private, &i) &&
-        !tr_variantDictFindInt(meta, TR_KEY_private, &i))
+    if (!tr_variantDictFindInt(infoDict, TR_KEY_private, &i))
     {
-        i = 0;
+        if (!tr_variantDictFindInt(meta, TR_KEY_private, &i))
+        {
+            i = 0;
+        }
     }
 
     inf->isPrivate = i != 0;
@@ -696,9 +706,9 @@ static char const* tr_metainfoParseImpl(tr_session const* session, tr_info* inf,
         inf->pieceCount = len / SHA_DIGEST_LENGTH;
         inf->pieces = tr_new0(tr_piece, inf->pieceCount);
 
-        for (tr_piece_index_t pi = 0; pi < inf->pieceCount; ++pi)
+        for (tr_piece_index_t i = 0; i < inf->pieceCount; i++)
         {
-            memcpy(inf->pieces[pi].hash, &raw[pi * SHA_DIGEST_LENGTH], SHA_DIGEST_LENGTH);
+            memcpy(inf->pieces[i].hash, &raw[i * SHA_DIGEST_LENGTH], SHA_DIGEST_LENGTH);
         }
     }
 

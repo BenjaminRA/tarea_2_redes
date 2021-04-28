@@ -6,8 +6,9 @@
  *
  */
 
-#include <algorithm>
+#include <algorithm> // std::any_of
 #include <cassert>
+#include <climits> /* INT_MAX */
 #include <ctime>
 
 #include <QDateTime>
@@ -54,10 +55,9 @@ class Session;
 namespace
 {
 
-int constexpr DebounceIntervalMSec = 100;
-int constexpr RefreshIntervalMSec = 4000;
+int const REFRESH_INTERVAL_MSEC = 4000;
 
-char const constexpr* const PrefKey = "pref_key";
+char const* PREF_KEY("pref-key");
 
 enum // peer columns
 {
@@ -71,49 +71,14 @@ enum // peer columns
     N_COLUMNS
 };
 
-int measureViewItem(QTreeWidget const* view, int column, QString const& text)
+int measureViewItem(QTreeWidget* view, int column, QString const& text)
 {
-    QTreeWidgetItem const* header_item = view->headerItem();
+    QTreeWidgetItem const* headerItem = view->headerItem();
 
-    int const item_width = Utils::measureViewItem(view, text);
-    int const header_width = Utils::measureHeaderItem(view->header(), header_item->text(column));
+    int const itemWidth = Utils::measureViewItem(view, text);
+    int const headerWidth = Utils::measureHeaderItem(view->header(), headerItem->text(column));
 
-    return std::max(item_width, header_width);
-}
-
-QString collateAddress(QString const& address)
-{
-    QString collated;
-
-    QHostAddress ip_address;
-    if (ip_address.setAddress(address))
-    {
-        if (ip_address.protocol() == QAbstractSocket::IPv4Protocol)
-        {
-            quint32 const ipv4_address = ip_address.toIPv4Address();
-            collated = QStringLiteral("1-") +
-                QString::fromUtf8(QByteArray::number(ipv4_address, 16).rightJustified(8, '0'));
-        }
-        else if (ip_address.protocol() == QAbstractSocket::IPv6Protocol)
-        {
-            Q_IPV6ADDR const ipv6_address = ip_address.toIPv6Address();
-            QByteArray tmp(16, '\0');
-
-            for (int i = 0; i < 16; ++i)
-            {
-                tmp[i] = ipv6_address[i];
-            }
-
-            collated = QStringLiteral("2-") + QString::fromUtf8(tmp.toHex());
-        }
-    }
-
-    if (collated.isEmpty())
-    {
-        collated = QStringLiteral("3-") + address.toLower();
-    }
-
-    return collated;
+    return std::max(itemWidth, headerWidth);
 }
 
 } // namespace
@@ -124,35 +89,40 @@ QString collateAddress(QString const& address)
 
 class PeerItem : public QTreeWidgetItem
 {
-    Peer peer_;
-    QString mutable collated_address_;
-    QString status_;
+    Peer peer;
+    QString mutable collatedAddress;
+    QString status;
 
 public:
-    explicit PeerItem(Peer p) :
-        peer_(std::move(p))
+    PeerItem(Peer const& p) :
+        peer(p)
     {
     }
 
+    virtual ~PeerItem()
+    {
+    }
+
+public:
     void refresh(Peer const& p)
     {
-        if (p.address != peer_.address)
+        if (p.address != peer.address)
         {
-            collated_address_.clear();
+            collatedAddress.clear();
         }
 
-        peer_ = p;
+        peer = p;
     }
 
     void setStatus(QString const& s)
     {
-        status_ = s;
+        status = s;
     }
 
-    bool operator <(QTreeWidgetItem const& other) const override
+    virtual bool operator <(QTreeWidgetItem const& other) const
     {
-        auto const* i = dynamic_cast<PeerItem const*>(&other);
-        auto const* tw = treeWidget();
+        PeerItem const* i = dynamic_cast<PeerItem const*>(&other);
+        QTreeWidget* tw(treeWidget());
         int const column = tw != nullptr ? tw->sortColumn() : 0;
 
         assert(i != nullptr);
@@ -160,22 +130,22 @@ public:
         switch (column)
         {
         case COL_UP:
-            return peer_.rate_to_peer < i->peer_.rate_to_peer;
+            return peer.rateToPeer < i->peer.rateToPeer;
 
         case COL_DOWN:
-            return peer_.rate_to_client < i->peer_.rate_to_client;
+            return peer.rateToClient < i->peer.rateToClient;
 
         case COL_PERCENT:
-            return peer_.progress < i->peer_.progress;
+            return peer.progress < i->peer.progress;
 
         case COL_STATUS:
-            return status_ < i->status_;
+            return status < i->status;
 
         case COL_CLIENT:
-            return peer_.client_name < i->peer_.client_name;
+            return peer.clientName < i->peer.clientName;
 
         case COL_LOCK:
-            return peer_.is_encrypted && !i->peer_.is_encrypted;
+            return peer.isEncrypted && !i->peer.isEncrypted;
 
         default:
             return address() < i->address();
@@ -185,12 +155,39 @@ public:
 private:
     QString const& address() const
     {
-        if (collated_address_.isEmpty())
+        if (collatedAddress.isEmpty())
         {
-            collated_address_ = collateAddress(peer_.address);
+            QHostAddress ipAddress;
+
+            if (ipAddress.setAddress(peer.address))
+            {
+                if (ipAddress.protocol() == QAbstractSocket::IPv4Protocol)
+                {
+                    quint32 const ipv4Address = ipAddress.toIPv4Address();
+                    collatedAddress = QLatin1String("1-") + QString::fromLatin1(QByteArray::number(ipv4Address, 16).
+                        rightJustified(8, '0'));
+                }
+                else if (ipAddress.protocol() == QAbstractSocket::IPv6Protocol)
+                {
+                    Q_IPV6ADDR const ipv6Address = ipAddress.toIPv6Address();
+                    QByteArray tmp(16, '\0');
+
+                    for (int i = 0; i < 16; ++i)
+                    {
+                        tmp[i] = ipv6Address[i];
+                    }
+
+                    collatedAddress = QLatin1String("2-") + QString::fromLatin1(tmp.toHex());
+                }
+            }
+
+            if (collatedAddress.isEmpty())
+            {
+                collatedAddress = QLatin1String("3-") + peer.address.toLower();
+            }
         }
 
-        return collated_address_;
+        return collatedAddress;
     }
 };
 
@@ -198,7 +195,7 @@ private:
 ****
 ***/
 
-QIcon DetailsDialog::getStockIcon(QString const& freedesktop_name, int fallback) const
+QIcon DetailsDialog::getStockIcon(QString const& freedesktop_name, int fallback)
 {
     QIcon icon = QIcon::fromTheme(freedesktop_name);
 
@@ -212,11 +209,13 @@ QIcon DetailsDialog::getStockIcon(QString const& freedesktop_name, int fallback)
 
 DetailsDialog::DetailsDialog(Session& session, Prefs& prefs, TorrentModel const& model, QWidget* parent) :
     BaseDialog(parent),
-    session_(session),
-    prefs_(prefs),
-    model_(model)
+    mySession(session),
+    myPrefs(prefs),
+    myModel(model),
+    myChangedTorrents(false),
+    myHavePendingRefresh(false)
 {
-    ui_.setupUi(this);
+    ui.setupUi(this);
 
     initInfoTab();
     initPeersTab();
@@ -225,64 +224,72 @@ DetailsDialog::DetailsDialog(Session& session, Prefs& prefs, TorrentModel const&
     initOptionsTab();
 
     adjustSize();
-    ui_.commentBrowser->setMaximumHeight(QWIDGETSIZE_MAX);
+    ui.commentBrowser->setMaximumHeight(QWIDGETSIZE_MAX);
 
-    static std::array<int, 2> constexpr InitKeys =
-    {
-        Prefs::SHOW_TRACKER_SCRAPES,
-        Prefs::SHOW_BACKUP_TRACKERS
-    };
+    QList<int> initKeys;
+    initKeys << Prefs::SHOW_TRACKER_SCRAPES << Prefs::SHOW_BACKUP_TRACKERS;
 
-    for (int const key : InitKeys)
+    for (int const key : initKeys)
     {
         refreshPref(key);
     }
 
-    connect(&model_, &TorrentModel::torrentsChanged, this, &DetailsDialog::onTorrentsChanged);
-    connect(&model_, &TorrentModel::torrentsEdited, this, &DetailsDialog::onTorrentsEdited);
-    connect(&prefs_, &Prefs::changed, this, &DetailsDialog::refreshPref);
+    connect(&myModel, &TorrentModel::torrentsChanged, this, &DetailsDialog::onTorrentsChanged);
+    connect(&myPrefs, &Prefs::changed, this, &DetailsDialog::refreshPref);
+    connect(&myTimer, &QTimer::timeout, this, &DetailsDialog::onTimer);
 
-    // call refreshModel periodically
-    connect(&model_timer_, &QTimer::timeout, this, &DetailsDialog::refreshModel);
-    model_timer_.setSingleShot(false);
-    model_timer_.start(RefreshIntervalMSec);
-    refreshModel();
+    onTimer();
+    myTimer.setSingleShot(false);
+    myTimer.start(REFRESH_INTERVAL_MSEC);
+}
 
-    // set up the debounce timer
-    connect(&ui_debounce_timer_, &QTimer::timeout, this, &DetailsDialog::refreshUI);
-    ui_debounce_timer_.setSingleShot(true);
+DetailsDialog::~DetailsDialog()
+{
+    myTrackerDelegate->deleteLater();
+    myTrackerFilter->deleteLater();
+    myTrackerModel->deleteLater();
 }
 
 void DetailsDialog::setIds(torrent_ids_t const& ids)
 {
-    if (ids != ids_)
+    if (ids != myIds)
     {
         setEnabled(false);
-        ui_.filesView->clear();
+        ui.filesView->clear();
 
-        ids_ = ids;
-        session_.refreshDetailInfo(ids_);
-        tracker_model_->refresh(model_, ids_);
-
-        refreshModel();
-        refreshUI();
+        myIds = ids;
+        mySession.refreshDetailInfo(myIds);
+        myChangedTorrents = true;
+        myTrackerModel->refresh(myModel, myIds);
+        onTimer();
     }
 }
 
 void DetailsDialog::refreshPref(int key)
 {
-    if (key == Prefs::SHOW_TRACKER_SCRAPES)
+    QString str;
+
+    switch (key)
     {
-        auto* selection_model = ui_.trackersView->selectionModel();
-        tracker_delegate_->setShowMore(prefs_.getBool(key));
-        selection_model->clear();
-        ui_.trackersView->reset();
-        selection_model->select(selection_model->selection(), QItemSelectionModel::Select);
-        selection_model->setCurrentIndex(selection_model->currentIndex(), QItemSelectionModel::NoUpdate);
-    }
-    else if (key == Prefs::SHOW_BACKUP_TRACKERS)
-    {
-        tracker_filter_->setShowBackupTrackers(prefs_.getBool(key));
+    case Prefs::SHOW_TRACKER_SCRAPES:
+        {
+            QItemSelectionModel* selectionModel(ui.trackersView->selectionModel());
+            QItemSelection const selection(selectionModel->selection());
+            QModelIndex const currentIndex(selectionModel->currentIndex());
+            myTrackerDelegate->setShowMore(myPrefs.getBool(key));
+            selectionModel->clear();
+            ui.trackersView->reset();
+            selectionModel->select(selection, QItemSelectionModel::Select);
+            selectionModel->setCurrentIndex(currentIndex, QItemSelectionModel::NoUpdate);
+            break;
+        }
+
+    case Prefs::SHOW_BACKUP_TRACKERS:
+        myTrackerFilter->setShowBackupTrackers(myPrefs.getBool(key));
+        break;
+
+    default:
+        break;
     }
 }
 
@@ -290,61 +297,39 @@ void DetailsDialog::refreshPref(int key)
 ****
 ***/
 
-void DetailsDialog::refreshModel()
+void DetailsDialog::onTimer()
 {
-    if (!ids_.empty())
+    getNewData();
+}
+
+void DetailsDialog::getNewData()
+{
+    if (!myIds.empty())
     {
-        session_.refreshExtraStats(ids_);
+        mySession.refreshExtraStats(myIds);
     }
 }
 
-void DetailsDialog::onTorrentsEdited(torrent_ids_t const& ids)
+void DetailsDialog::onTorrentEdited(torrent_ids_t const& /*ids*/)
 {
-    // std::set_intersection requires sorted inputs
-    auto a = std::vector<int>{ ids.begin(), ids.end() };
-    std::sort(std::begin(a), std::end(a));
-    auto b = std::vector<int>{ ids_.begin(), ids_.end() };
-    std::sort(std::begin(b), std::end(b));
-
-    // are any of the edited torrents on display here?
-    torrent_ids_t interesting_ids;
-    std::set_intersection(std::begin(a), std::end(a),
-        std::begin(b), std::end(b),
-        std::inserter(interesting_ids, std::begin(interesting_ids)));
-
-    if (!interesting_ids.empty())
-    {
-        session_.refreshDetailInfo(interesting_ids);
-    }
+    // FIXME
+    // refreshDetailInfo({ tor.id() });
 }
 
-void DetailsDialog::onTorrentsChanged(torrent_ids_t const& ids, Torrent::fields_t const& fields)
+void DetailsDialog::onTorrentsChanged(torrent_ids_t const& ids)
 {
-    Q_UNUSED(fields)
-
-    if (ui_debounce_timer_.isActive())
+    if (myHavePendingRefresh)
     {
         return;
     }
 
-    if (!std::any_of(ids.begin(), ids.end(), [this](auto const& id) { return ids_.count(id) != 0; }))
+    if (!std::any_of(ids.begin(), ids.end(), [this](auto const& id) { return myIds.count(id) != 0; }))
     {
         return;
     }
 
-    ui_debounce_timer_.start(DebounceIntervalMSec);
-}
-
-void DetailsDialog::onSessionCalled(Session::Tag tag)
-{
-    if ((pending_changes_tags_.erase(tag) > 0) && canEdit())
-    {
-        // no pending changes left, so stop listening
-        disconnect(pending_changes_connection_);
-        pending_changes_connection_ = {};
-
-        refreshModel();
-    }
+    myHavePendingRefresh = true;
+    QTimer::singleShot(100, this, SLOT(refresh()));
 }
 
 namespace
@@ -382,9 +367,10 @@ void setIfIdle(QSpinBox* spin, int value)
 
 } // namespace
 
-void DetailsDialog::refreshUI()
+void DetailsDialog::refresh()
 {
-    bool const single = ids_.size() == 1;
+    int const n = myIds.size();
+    bool const single = n == 1;
     QString const blank;
     QFontMetrics const fm(fontMetrics());
     QList<Torrent const*> torrents;
@@ -392,13 +378,11 @@ void DetailsDialog::refreshUI()
     QString const none = tr("None");
     QString const mixed = tr("Mixed");
     QString const unknown = tr("Unknown");
-    auto const now = time(nullptr);
-    auto const& fmt = Formatter::get();
 
     // build a list of torrents
-    for (int const id : ids_)
+    for (int const id : myIds)
     {
-        Torrent const* tor = model_.getTorrentFromId(id);
+        Torrent const* tor = myModel.getTorrentFromId(id);
 
         if (tor != nullptr)
         {
@@ -417,9 +401,9 @@ void DetailsDialog::refreshUI()
     }
     else
     {
-        bool is_mixed = false;
-        bool all_paused = true;
-        bool all_finished = true;
+        bool isMixed = false;
+        bool allPaused = true;
+        bool allFinished = true;
         tr_torrent_activity const baseline = torrents[0]->getActivity();
 
         for (Torrent const* const t : torrents)
@@ -428,29 +412,29 @@ void DetailsDialog::refreshUI()
 
             if (activity != baseline)
             {
-                is_mixed = true;
+                isMixed = true;
             }
 
             if (activity != TR_STATUS_STOPPED)
             {
-                all_paused = all_finished = false;
+                allPaused = allFinished = false;
             }
 
             if (!t->isFinished())
             {
-                all_finished = false;
+                allFinished = false;
             }
         }
 
-        if (is_mixed)
+        if (isMixed)
         {
             string = mixed;
         }
-        else if (all_finished)
+        else if (allFinished)
         {
             string = tr("Finished");
         }
-        else if (all_paused)
+        else if (allPaused)
         {
             string = tr("Paused");
         }
@@ -460,11 +444,11 @@ void DetailsDialog::refreshUI()
         }
     }
 
-    ui_.stateValueLabel->setText(string);
-    QString const state_string = string;
+    ui.stateValueLabel->setText(string);
+    QString const stateString = string;
 
     // myHaveLabel
-    uint64_t size_when_done = 0;
+    uint64_t sizeWhenDone = 0;
     uint64_t available = 0;
 
     if (torrents.empty())
@@ -473,54 +457,49 @@ void DetailsDialog::refreshUI()
     }
     else
     {
-        uint64_t left_until_done = 0;
-        int64_t have_total = 0;
-        int64_t have_verified = 0;
-        int64_t have_unverified = 0;
-        int64_t verified_pieces = 0;
+        uint64_t leftUntilDone = 0;
+        int64_t haveTotal = 0;
+        int64_t haveVerified = 0;
+        int64_t haveUnverified = 0;
+        int64_t verifiedPieces = 0;
 
         for (Torrent const* const t : torrents)
         {
             if (t->hasMetadata())
             {
-                have_total += t->haveTotal();
-                have_unverified += t->haveUnverified();
+                haveTotal += t->haveTotal();
+                haveUnverified += t->haveUnverified();
                 uint64_t const v = t->haveVerified();
-                have_verified += v;
+                haveVerified += v;
 
                 if (t->pieceSize())
                 {
-                    verified_pieces += v / t->pieceSize();
+                    verifiedPieces += v / t->pieceSize();
                 }
 
-                size_when_done += t->sizeWhenDone();
-                left_until_done += t->leftUntilDone();
+                sizeWhenDone += t->sizeWhenDone();
+                leftUntilDone += t->leftUntilDone();
                 available += t->sizeWhenDone() - t->leftUntilDone() + t->desiredAvailable();
             }
         }
 
-        double const d = size_when_done == 0 ?
-            100.0 :
-            100.0 * static_cast<double>(size_when_done - left_until_done) / static_cast<double>(size_when_done);
-        auto const pct = fmt.percentToString(d);
-        auto const size_when_done_str = fmt.sizeToString(size_when_done);
+        double const d = sizeWhenDone != 0 ? 100.0 * (sizeWhenDone - leftUntilDone) / sizeWhenDone : 100.0;
+        QString pct = Formatter::percentToString(d);
 
-        if (have_unverified == 0 && left_until_done == 0)
+        if (haveUnverified == 0 && leftUntilDone == 0)
         {
             //: Text following the "Have:" label in torrent properties dialog;
             //: %1 is amount of downloaded and verified data
-            string = tr("%1 (100%)").arg(fmt.sizeToString(have_verified));
+            string = tr("%1 (100%)").arg(Formatter::sizeToString(haveVerified));
         }
-        else if (have_unverified == 0)
+        else if (haveUnverified == 0)
         {
             //: Text following the "Have:" label in torrent properties dialog;
             //: %1 is amount of downloaded and verified data,
             //: %2 is overall size of torrent data,
             //: %3 is percentage (%1/%2*100)
-            string = tr("%1 of %2 (%3%)")
-                .arg(fmt.sizeToString(have_verified))
-                .arg(size_when_done_str)
-                .arg(pct);
+            string = tr("%1 of %2 (%3%)").arg(Formatter::sizeToString(haveVerified)).arg(Formatter::sizeToString(sizeWhenDone)).
+                arg(pct);
         }
         else
         {
@@ -529,28 +508,28 @@ void DetailsDialog::refreshUI()
             //: %2 is overall size of torrent data,
             //: %3 is percentage (%1/%2*100),
             //: %4 is amount of downloaded but not yet verified data
-            string = tr("%1 of %2 (%3%), %4 Unverified")
-                .arg(fmt.sizeToString(have_verified + have_unverified))
-                .arg(size_when_done_str)
-                .arg(pct)
-                .arg(fmt.sizeToString(have_unverified));
+            string = tr("%1 of %2 (%3%), %4 Unverified").arg(Formatter::sizeToString(haveVerified + haveUnverified)).
+                arg(Formatter::sizeToString(sizeWhenDone)).arg(pct).arg(Formatter::sizeToString(haveUnverified));
         }
     }
 
-    ui_.haveValueLabel->setText(string);
+    ui.haveValueLabel->setText(string);
 
     // myAvailabilityLabel
-    if (torrents.empty() || size_when_done == 0)
+    if (torrents.empty())
+    {
+        string = none;
+    }
+    else if (sizeWhenDone == 0)
     {
         string = none;
     }
     else
     {
-        auto const percent = 100.0 * static_cast<double>(available) / static_cast<double>(size_when_done);
-        string = QStringLiteral("%1%").arg(fmt.percentToString(percent));
+        string = QString::fromLatin1("%1%").arg(Formatter::percentToString((100.0 * available) / sizeWhenDone));
     }
 
-    ui_.availabilityValueLabel->setText(string);
+    ui.availabilityValueLabel->setText(string);
 
     // myDownloadedLabel
     if (torrents.empty())
@@ -559,8 +538,8 @@ void DetailsDialog::refreshUI()
     }
     else
     {
-        auto d = uint64_t{};
-        auto f = uint64_t{};
+        uint64_t d = 0;
+        uint64_t f = 0;
 
         for (Torrent const* const t : torrents)
         {
@@ -568,8 +547,8 @@ void DetailsDialog::refreshUI()
             f += t->failedEver();
         }
 
-        QString const dstr = fmt.sizeToString(d);
-        QString const fstr = fmt.sizeToString(f);
+        QString const dstr = Formatter::sizeToString(d);
+        QString const fstr = Formatter::sizeToString(f);
 
         if (f != 0)
         {
@@ -581,7 +560,7 @@ void DetailsDialog::refreshUI()
         }
     }
 
-    ui_.downloadedValueLabel->setText(string);
+    ui.downloadedValueLabel->setText(string);
 
     //  myUploadedLabel
     if (torrents.empty())
@@ -590,8 +569,8 @@ void DetailsDialog::refreshUI()
     }
     else
     {
-        auto u = uint64_t{};
-        auto d = uint64_t{};
+        uint64_t u = 0;
+        uint64_t d = 0;
 
         for (Torrent const* const t : torrents)
         {
@@ -599,12 +578,10 @@ void DetailsDialog::refreshUI()
             d += t->downloadedEver();
         }
 
-        string = tr("%1 (Ratio: %2)")
-            .arg(fmt.sizeToString(u))
-            .arg(fmt.ratioToString(tr_getRatio(u, d)));
+        string = tr("%1 (Ratio: %2)").arg(Formatter::sizeToString(u)).arg(Formatter::ratioToString(tr_getRatio(u, d)));
     }
 
-    ui_.uploadedValueLabel->setText(string);
+    ui.uploadedValueLabel->setText(string);
 
     // myRunTimeLabel
     if (torrents.empty())
@@ -613,7 +590,7 @@ void DetailsDialog::refreshUI()
     }
     else
     {
-        bool all_paused = true;
+        bool allPaused = true;
         auto baseline = torrents[0]->lastStarted();
 
         for (Torrent const* const t : torrents)
@@ -625,13 +602,13 @@ void DetailsDialog::refreshUI()
 
             if (!t->isPaused())
             {
-                all_paused = false;
+                allPaused = false;
             }
         }
 
-        if (all_paused)
+        if (allPaused)
         {
-            string = state_string; // paused || finished
+            string = stateString; // paused || finished
         }
         else if (baseline == 0)
         {
@@ -639,12 +616,13 @@ void DetailsDialog::refreshUI()
         }
         else
         {
+            auto const now = time(nullptr);
             auto const seconds = int(std::difftime(now, baseline));
-            string = fmt.timeToString(seconds);
+            string = Formatter::timeToString(seconds);
         }
     }
 
-    ui_.runningTimeValueLabel->setText(string);
+    ui.runningTimeValueLabel->setText(string);
 
     // myETALabel
     string.clear();
@@ -674,12 +652,12 @@ void DetailsDialog::refreshUI()
             }
             else
             {
-                string = fmt.timeToString(baseline);
+                string = Formatter::timeToString(baseline);
             }
         }
     }
 
-    ui_.remainingTimeValueLabel->setText(string);
+    ui.remainingTimeValueLabel->setText(string);
 
     // myLastActivityLabel
     if (torrents.empty())
@@ -700,6 +678,7 @@ void DetailsDialog::refreshUI()
             }
         }
 
+        auto const now = time(nullptr);
         auto const seconds = int(std::difftime(now, latest));
 
         if (seconds < 0)
@@ -712,11 +691,11 @@ void DetailsDialog::refreshUI()
         }
         else
         {
-            string = tr("%1 ago").arg(fmt.timeToString(seconds));
+            string = tr("%1 ago").arg(Formatter::timeToString(seconds));
         }
     }
 
-    ui_.lastActivityValueLabel->setText(string);
+    ui.lastActivityValueLabel->setText(string);
 
     if (torrents.empty())
     {
@@ -741,7 +720,7 @@ void DetailsDialog::refreshUI()
         string = none;
     }
 
-    ui_.errorValueLabel->setText(string);
+    ui.errorValueLabel->setText(string);
 
     ///
     /// information tab
@@ -755,17 +734,17 @@ void DetailsDialog::refreshUI()
     else
     {
         int pieces = 0;
-        auto size = uint64_t{};
-        uint32_t piece_size = torrents[0]->pieceSize();
+        uint64_t size = 0;
+        uint32_t pieceSize = torrents[0]->pieceSize();
 
         for (Torrent const* const t : torrents)
         {
             pieces += t->pieceCount();
             size += t->totalSize();
 
-            if (piece_size != t->pieceSize())
+            if (pieceSize != t->pieceSize())
             {
-                piece_size = 0;
+                pieceSize = 0;
             }
         }
 
@@ -773,36 +752,37 @@ void DetailsDialog::refreshUI()
         {
             string = none;
         }
-        else if (piece_size > 0)
+        else if (pieceSize > 0)
         {
-            string = tr("%1 (%Ln pieces @ %2)", "", pieces)
-                .arg(fmt.sizeToString(size))
-                .arg(fmt.memToString(piece_size));
+            string = tr("%1 (%Ln pieces @ %2)", "", pieces).arg(Formatter::sizeToString(size)).
+                arg(Formatter::memToString(pieceSize));
         }
         else
         {
-            string = tr("%1 (%Ln pieces)", "", pieces)
-                .arg(fmt.sizeToString(size));
+            string = tr("%1 (%Ln pieces)", "", pieces).arg(Formatter::sizeToString(size));
         }
     }
 
-    ui_.sizeValueLabel->setText(string);
+    ui.sizeValueLabel->setText(string);
 
     // myHashLabel
-    if (torrents.empty())
+    string = none;
+
+    if (!torrents.empty())
     {
-        string = none;
-    }
-    else if (torrents.size() > 1)
-    {
-        string = mixed;
-    }
-    else
-    {
-        string = torrents.front()->hash().toString();
+        string = torrents[0]->hashString();
+
+        for (Torrent const* const t : torrents)
+        {
+            if (string != t->hashString())
+            {
+                string = mixed;
+                break;
+            }
+        }
     }
 
-    ui_.hashValueLabel->setText(string);
+    ui.hashValueLabel->setText(string);
 
     // myPrivacyLabel
     string = none;
@@ -822,11 +802,11 @@ void DetailsDialog::refreshUI()
         }
     }
 
-    ui_.privacyValueLabel->setText(string);
+    ui.privacyValueLabel->setText(string);
 
     // myCommentBrowser
     string = none;
-    bool is_comment_mixed = false;
+    bool isCommentMixed = false;
 
     if (!torrents.empty())
     {
@@ -837,18 +817,18 @@ void DetailsDialog::refreshUI()
             if (string != t->comment())
             {
                 string = mixed;
-                is_comment_mixed = true;
+                isCommentMixed = true;
                 break;
             }
         }
     }
 
-    if (ui_.commentBrowser->toPlainText() != string)
+    if (ui.commentBrowser->toPlainText() != string)
     {
-        ui_.commentBrowser->setText(string);
+        ui.commentBrowser->setText(string);
     }
 
-    ui_.commentBrowser->setEnabled(!is_comment_mixed && !string.isEmpty());
+    ui.commentBrowser->setEnabled(!isCommentMixed && !string.isEmpty());
 
     // myOriginLabel
     string = none;
@@ -883,17 +863,17 @@ void DetailsDialog::refreshUI()
         }
         else if (empty_creator && !empty_date)
         {
-            auto const date_str = QDateTime::fromSecsSinceEpoch(date).toString();
-            string = tr("Created on %1").arg(date_str);
+            auto const dateStr = QDateTime::fromSecsSinceEpoch(date).toString();
+            string = tr("Created on %1").arg(dateStr);
         }
         else
         {
-            auto const date_str = QDateTime::fromSecsSinceEpoch(date).toString();
-            string = tr("Created by %1 on %2").arg(creator).arg(date_str);
+            auto const dateStr = QDateTime::fromSecsSinceEpoch(date).toString();
+            string = tr("Created by %1 on %2").arg(creator).arg(dateStr);
         }
     }
 
-    ui_.originValueLabel->setText(string);
+    ui.originValueLabel->setText(string);
 
     // myLocationLabel
     string = none;
@@ -912,72 +892,72 @@ void DetailsDialog::refreshUI()
         }
     }
 
-    ui_.locationValueLabel->setText(string);
+    ui.locationValueLabel->setText(string);
 
     ///
     ///  Options Tab
     ///
 
-    if (canEdit() && !torrents.empty())
+    if (myChangedTorrents && !torrents.empty())
     {
         int i;
         bool uniform;
-        bool baseline_flag;
-        int baseline_int;
+        bool baselineFlag;
+        int baselineInt;
         Torrent const& baseline = *torrents.front();
 
         // mySessionLimitCheck
         uniform = true;
-        baseline_flag = baseline.honorsSessionLimits();
+        baselineFlag = baseline.honorsSessionLimits();
 
         for (Torrent const* const tor : torrents)
         {
-            if (baseline_flag != tor->honorsSessionLimits())
+            if (baselineFlag != tor->honorsSessionLimits())
             {
                 uniform = false;
                 break;
             }
         }
 
-        ui_.sessionLimitCheck->setChecked(uniform && baseline_flag);
+        ui.sessionLimitCheck->setChecked(uniform && baselineFlag);
 
         // mySingleDownCheck
         uniform = true;
-        baseline_flag = baseline.downloadIsLimited();
+        baselineFlag = baseline.downloadIsLimited();
 
         for (Torrent const* const tor : torrents)
         {
-            if (baseline_flag != tor->downloadIsLimited())
+            if (baselineFlag != tor->downloadIsLimited())
             {
                 uniform = false;
                 break;
             }
         }
 
-        ui_.singleDownCheck->setChecked(uniform && baseline_flag);
+        ui.singleDownCheck->setChecked(uniform && baselineFlag);
 
         // mySingleUpCheck
         uniform = true;
-        baseline_flag = baseline.uploadIsLimited();
+        baselineFlag = baseline.uploadIsLimited();
 
         for (Torrent const* const tor : torrents)
         {
-            if (baseline_flag != tor->uploadIsLimited())
+            if (baselineFlag != tor->uploadIsLimited())
             {
                 uniform = false;
                 break;
             }
         }
 
-        ui_.singleUpCheck->setChecked(uniform && baseline_flag);
+        ui.singleUpCheck->setChecked(uniform && baselineFlag);
 
         // myBandwidthPriorityCombo
         uniform = true;
-        baseline_int = baseline.getBandwidthPriority();
+        baselineInt = baseline.getBandwidthPriority();
 
         for (Torrent const* const tor : torrents)
         {
-            if (baseline_int != tor->getBandwidthPriority())
+            if (baselineInt != tor->getBandwidthPriority())
             {
                 uniform = false;
                 break;
@@ -986,18 +966,18 @@ void DetailsDialog::refreshUI()
 
         if (uniform)
         {
-            i = ui_.bandwidthPriorityCombo->findData(baseline_int);
+            i = ui.bandwidthPriorityCombo->findData(baselineInt);
         }
         else
         {
             i = -1;
         }
 
-        setIfIdle(ui_.bandwidthPriorityCombo, i);
+        setIfIdle(ui.bandwidthPriorityCombo, i);
 
-        setIfIdle(ui_.singleDownSpin, int(baseline.downloadLimit().getKBps()));
-        setIfIdle(ui_.singleUpSpin, int(baseline.uploadLimit().getKBps()));
-        setIfIdle(ui_.peerLimitSpin, baseline.peerLimit());
+        setIfIdle(ui.singleDownSpin, int(baseline.downloadLimit().KBps()));
+        setIfIdle(ui.singleUpSpin, int(baseline.uploadLimit().KBps()));
+        setIfIdle(ui.peerLimitSpin, baseline.peerLimit());
     }
 
     if (!torrents.empty())
@@ -1006,39 +986,39 @@ void DetailsDialog::refreshUI()
 
         // ratio
         bool uniform = true;
-        int baseline_int = baseline.seedRatioMode();
+        int baselineInt = baseline.seedRatioMode();
 
         for (Torrent const* const tor : torrents)
         {
-            if (baseline_int != tor->seedRatioMode())
+            if (baselineInt != tor->seedRatioMode())
             {
                 uniform = false;
                 break;
             }
         }
 
-        setIfIdle(ui_.ratioCombo, uniform ? ui_.ratioCombo->findData(baseline_int) : -1);
-        ui_.ratioSpin->setVisible(uniform && baseline_int == TR_RATIOLIMIT_SINGLE);
+        setIfIdle(ui.ratioCombo, uniform ? ui.ratioCombo->findData(baselineInt) : -1);
+        ui.ratioSpin->setVisible(uniform && baselineInt == TR_RATIOLIMIT_SINGLE);
 
-        setIfIdle(ui_.ratioSpin, baseline.seedRatioLimit());
+        setIfIdle(ui.ratioSpin, baseline.seedRatioLimit());
 
         // idle
         uniform = true;
-        baseline_int = baseline.seedIdleMode();
+        baselineInt = baseline.seedIdleMode();
 
         for (Torrent const* const tor : torrents)
         {
-            if (baseline_int != tor->seedIdleMode())
+            if (baselineInt != tor->seedIdleMode())
             {
                 uniform = false;
                 break;
             }
         }
 
-        setIfIdle(ui_.idleCombo, uniform ? ui_.idleCombo->findData(baseline_int) : -1);
-        ui_.idleSpin->setVisible(uniform && baseline_int == TR_RATIOLIMIT_SINGLE);
+        setIfIdle(ui.idleCombo, uniform ? ui.idleCombo->findData(baselineInt) : -1);
+        ui.idleSpin->setVisible(uniform && baselineInt == TR_RATIOLIMIT_SINGLE);
 
-        setIfIdle(ui_.idleSpin, baseline.seedIdleLimit());
+        setIfIdle(ui.idleSpin, baseline.seedIdleLimit());
         onIdleLimitChanged();
     }
 
@@ -1046,43 +1026,45 @@ void DetailsDialog::refreshUI()
     ///  Tracker tab
     ///
 
-    tracker_model_->refresh(model_, ids_);
+    myTrackerModel->refresh(myModel, myIds);
 
     ///
     ///  Peers tab
     ///
 
     QMap<QString, QTreeWidgetItem*> peers2;
-    QList<QTreeWidgetItem*> new_items;
+    QList<QTreeWidgetItem*> newItems;
 
     for (Torrent const* const t : torrents)
     {
-        QString const id_str(QString::number(t->id()));
+        QString const idStr(QString::number(t->id()));
         PeerList peers = t->peers();
 
         for (Peer const& peer : peers)
         {
-            QString const key = id_str + QLatin1Char(':') + peer.address;
-            PeerItem* item = static_cast<PeerItem*>(peers_.value(key, nullptr));
+            QString const key = idStr + QLatin1Char(':') + peer.address;
+            PeerItem* item = static_cast<PeerItem*>(myPeers.value(key, nullptr));
 
             if (item == nullptr) // new peer has connected
             {
+                static QIcon const myEncryptionIcon(QLatin1String(":/icons/encrypted.png"));
+                static QIcon const myEmptyIcon;
                 item = new PeerItem(peer);
                 item->setTextAlignment(COL_UP, Qt::AlignRight | Qt::AlignVCenter);
                 item->setTextAlignment(COL_DOWN, Qt::AlignRight | Qt::AlignVCenter);
                 item->setTextAlignment(COL_PERCENT, Qt::AlignRight | Qt::AlignVCenter);
-                item->setIcon(COL_LOCK, peer.is_encrypted ? icon_encrypted_ : icon_unencrypted_);
-                item->setToolTip(COL_LOCK, peer.is_encrypted ? tr("Encrypted connection") : QString());
+                item->setIcon(COL_LOCK, peer.isEncrypted ? myEncryptionIcon : myEmptyIcon);
+                item->setToolTip(COL_LOCK, peer.isEncrypted ? tr("Encrypted connection") : QString());
                 item->setText(COL_ADDRESS, peer.address);
-                item->setText(COL_CLIENT, peer.client_name);
-                new_items << item;
+                item->setText(COL_CLIENT, peer.clientName);
+                newItems << item;
             }
 
-            QString const code = peer.flags;
+            QString const code = peer.flagStr;
             item->setStatus(code);
             item->refresh(peer);
 
-            QString code_tip;
+            QString codeTip;
 
             for (QChar const ch : code)
             {
@@ -1137,63 +1119,65 @@ void DetailsDialog::refreshUI()
                 case 'T':
                     txt = tr("Peer is connected over uTP");
                     break;
-
-                default:
-                    break;
                 }
 
                 if (!txt.isEmpty())
                 {
-                    code_tip += QStringLiteral("%1: %2\n").arg(ch).arg(txt);
+                    codeTip += QString::fromLatin1("%1: %2\n").arg(ch).arg(txt);
                 }
             }
 
-            if (!code_tip.isEmpty())
+            if (!codeTip.isEmpty())
             {
-                code_tip.resize(code_tip.size() - 1); // eat the trailing linefeed
+                codeTip.resize(codeTip.size() - 1); // eat the trailing linefeed
             }
 
-            item->setText(COL_UP, peer.rate_to_peer.isZero() ? QString() : fmt.speedToString(peer.rate_to_peer));
-            item->setText(COL_DOWN,
-                peer.rate_to_client.isZero() ? QString() : fmt.speedToString(peer.rate_to_client));
-            item->setText(COL_PERCENT, peer.progress > 0 ? QStringLiteral("%1%").arg(int(peer.progress * 100.0)) :
+            item->setText(COL_UP, peer.rateToPeer.isZero() ? QString() : Formatter::speedToString(peer.rateToPeer));
+            item->setText(COL_DOWN, peer.rateToClient.isZero() ? QString() : Formatter::speedToString(peer.rateToClient));
+            item->setText(COL_PERCENT, peer.progress > 0 ? QString::fromLatin1("%1%").arg(int(peer.progress * 100.0)) :
                 QString());
             item->setText(COL_STATUS, code);
-            item->setToolTip(COL_STATUS, code_tip);
+            item->setToolTip(COL_STATUS, codeTip);
 
             peers2.insert(key, item);
         }
     }
 
-    ui_.peersView->addTopLevelItems(new_items);
+    ui.peersView->addTopLevelItems(newItems);
 
-    for (QString const& key : peers_.keys())
+    for (QString const& key : myPeers.keys())
     {
         if (!peers2.contains(key)) // old peer has disconnected
         {
-            QTreeWidgetItem* item = peers_.value(key, nullptr);
-            ui_.peersView->takeTopLevelItem(ui_.peersView->indexOfTopLevelItem(item));
+            QTreeWidgetItem* item = myPeers.value(key, nullptr);
+            ui.peersView->takeTopLevelItem(ui.peersView->indexOfTopLevelItem(item));
             delete item;
         }
     }
 
-    peers_ = peers2;
+    myPeers = peers2;
+
+    if (!single)
+    {
+        ui.filesView->clear();
+    }
 
     if (single)
     {
-        ui_.filesView->update(torrents[0]->files(), canEdit());
-    }
-    else
-    {
-        ui_.filesView->clear();
+        ui.filesView->update(torrents[0]->files(), myChangedTorrents);
     }
 
+    myChangedTorrents = false;
+    myHavePendingRefresh = false;
     setEnabled(true);
 }
 
 void DetailsDialog::setEnabled(bool enabled)
 {
-    ui_.tabs->setEnabled(enabled);
+    for (int i = 0; i < ui.tabs->count(); ++i)
+    {
+        ui.tabs->widget(i)->setEnabled(enabled);
+    }
 }
 
 /***
@@ -1202,12 +1186,12 @@ void DetailsDialog::setEnabled(bool enabled)
 
 void DetailsDialog::initInfoTab()
 {
-    int const h = QFontMetrics(ui_.commentBrowser->font()).lineSpacing() * 4;
-    ui_.commentBrowser->setFixedHeight(h);
+    int const h = QFontMetrics(ui.commentBrowser->font()).lineSpacing() * 4;
+    ui.commentBrowser->setFixedHeight(h);
 
-    auto* cr = new ColumnResizer(this);
-    cr->addLayout(ui_.activitySectionLayout);
-    cr->addLayout(ui_.detailsSectionLayout);
+    ColumnResizer* cr(new ColumnResizer(this));
+    cr->addLayout(ui.activitySectionLayout);
+    cr->addLayout(ui.detailsSectionLayout);
     cr->update();
 }
 
@@ -1217,82 +1201,89 @@ void DetailsDialog::initInfoTab()
 
 void DetailsDialog::onShowTrackerScrapesToggled(bool val)
 {
-    prefs_.set(Prefs::SHOW_TRACKER_SCRAPES, val);
+    myPrefs.set(Prefs::SHOW_TRACKER_SCRAPES, val);
 }
 
 void DetailsDialog::onShowBackupTrackersToggled(bool val)
 {
-    prefs_.set(Prefs::SHOW_BACKUP_TRACKERS, val);
+    myPrefs.set(Prefs::SHOW_BACKUP_TRACKERS, val);
 }
 
 void DetailsDialog::onHonorsSessionLimitsToggled(bool val)
 {
-    torrentSet(TR_KEY_honorsSessionLimits, val);
+    mySession.torrentSet(myIds, TR_KEY_honorsSessionLimits, val);
+    getNewData();
 }
 
 void DetailsDialog::onDownloadLimitedToggled(bool val)
 {
-    torrentSet(TR_KEY_downloadLimited, val);
+    mySession.torrentSet(myIds, TR_KEY_downloadLimited, val);
+    getNewData();
 }
 
 void DetailsDialog::onSpinBoxEditingFinished()
 {
     QObject const* spin = sender();
-    tr_quark const key = spin->property(PrefKey).toInt();
-    auto const* d = qobject_cast<QDoubleSpinBox const*>(spin);
+    tr_quark const key = spin->property(PREF_KEY).toInt();
+    QDoubleSpinBox const* d = qobject_cast<QDoubleSpinBox const*>(spin);
 
     if (d != nullptr)
     {
-        torrentSet(key, d->value());
+        mySession.torrentSet(myIds, key, d->value());
     }
     else
     {
-        torrentSet(key, qobject_cast<QSpinBox const*>(spin)->value());
+        mySession.torrentSet(myIds, key, qobject_cast<QSpinBox const*>(spin)->value());
     }
+
+    getNewData();
 }
 
 void DetailsDialog::onUploadLimitedToggled(bool val)
 {
-    torrentSet(TR_KEY_uploadLimited, val);
+    mySession.torrentSet(myIds, TR_KEY_uploadLimited, val);
+    getNewData();
 }
 
 void DetailsDialog::onIdleModeChanged(int index)
 {
-    int const val = ui_.idleCombo->itemData(index).toInt();
-    torrentSet(TR_KEY_seedIdleMode, val);
+    int const val = ui.idleCombo->itemData(index).toInt();
+    mySession.torrentSet(myIds, TR_KEY_seedIdleMode, val);
+    getNewData();
 }
 
 void DetailsDialog::onIdleLimitChanged()
 {
     //: Spin box suffix, "Stop seeding if idle for: [ 5 minutes ]" (includes leading space after the number, if needed)
-    QString const units_suffix = tr(" minute(s)", nullptr, ui_.idleSpin->value());
+    QString const unitsSuffix = tr(" minute(s)", nullptr, ui.idleSpin->value());
 
-    if (ui_.idleSpin->suffix() != units_suffix)
+    if (ui.idleSpin->suffix() != unitsSuffix)
     {
-        ui_.idleSpin->setSuffix(units_suffix);
+        ui.idleSpin->setSuffix(unitsSuffix);
     }
 }
 
 void DetailsDialog::onRatioModeChanged(int index)
 {
-    int const val = ui_.ratioCombo->itemData(index).toInt();
-    torrentSet(TR_KEY_seedRatioMode, val);
+    int const val = ui.ratioCombo->itemData(index).toInt();
+    mySession.torrentSet(myIds, TR_KEY_seedRatioMode, val);
 }
 
 void DetailsDialog::onBandwidthPriorityChanged(int index)
 {
     if (index != -1)
     {
-        int const priority = ui_.bandwidthPriorityCombo->itemData(index).toInt();
-        torrentSet(TR_KEY_bandwidthPriority, priority);
+        int const priority = ui.bandwidthPriorityCombo->itemData(index).toInt();
+        mySession.torrentSet(myIds, TR_KEY_bandwidthPriority, priority);
+        getNewData();
     }
 }
 
 void DetailsDialog::onTrackerSelectionChanged()
 {
-    int const selection_count = ui_.trackersView->selectionModel()->selectedRows().size();
-    ui_.editTrackerButton->setEnabled(selection_count == 1);
-    ui_.removeTrackerButton->setEnabled(selection_count > 0);
+    int const selectionCount = ui.trackersView->selectionModel()->selectedRows().size();
+    ui.editTrackerButton->setEnabled(selectionCount == 1);
+    ui.removeTrackerButton->setEnabled(selectionCount > 0);
 }
 
 void DetailsDialog::onAddTrackerClicked()
@@ -1313,9 +1304,9 @@ void DetailsDialog::onAddTrackerClicked()
     {
         torrent_ids_t ids;
 
-        for (int const id : ids_)
+        for (int const id : myIds)
         {
-            if (tracker_model_->find(id, url) == -1)
+            if (myTrackerModel->find(id, url) == -1)
             {
                 ids.insert(id);
             }
@@ -1327,23 +1318,25 @@ void DetailsDialog::onAddTrackerClicked()
         }
         else
         {
-            auto const urls = QStringList{ url };
-            torrentSet(ids, TR_KEY_trackerAdd, urls);
+            QStringList urls;
+            urls << url;
+            mySession.torrentSet(ids, TR_KEY_trackerAdd, urls);
+            getNewData();
         }
     }
 }
 
 void DetailsDialog::onEditTrackerClicked()
 {
-    QItemSelectionModel* selection_model = ui_.trackersView->selectionModel();
-    QModelIndexList selected_rows = selection_model->selectedRows();
-    assert(selected_rows.size() == 1);
-    QModelIndex i = selection_model->currentIndex();
-    auto const tracker_info = ui_.trackersView->model()->data(i, TrackerModel::TrackerRole).value<TrackerInfo>();
+    QItemSelectionModel* selectionModel = ui.trackersView->selectionModel();
+    QModelIndexList selectedRows = selectionModel->selectedRows();
+    assert(selectedRows.size() == 1);
+    QModelIndex i = selectionModel->currentIndex();
+    TrackerInfo const trackerInfo = ui.trackersView->model()->data(i, TrackerModel::TrackerRole).value<TrackerInfo>();
 
     bool ok = false;
     QString const newval = QInputDialog::getText(this, tr("Edit URL "), tr("Edit tracker announce URL:"), QLineEdit::Normal,
-        tracker_info.st.announce, &ok);
+        trackerInfo.st.announce, &ok);
 
     if (!ok)
     {
@@ -1355,83 +1348,85 @@ void DetailsDialog::onEditTrackerClicked()
     }
     else
     {
-        torrent_ids_t ids{ tracker_info.torrent_id };
+        torrent_ids_t ids{ trackerInfo.torrentId };
 
-        QPair<int, QString> const id_url = qMakePair(tracker_info.st.id, newval);
+        QPair<int, QString> const idUrl = qMakePair(trackerInfo.st.id, newval);
 
-        torrentSet(ids, TR_KEY_trackerReplace, id_url);
+        mySession.torrentSet(ids, TR_KEY_trackerReplace, idUrl);
+        getNewData();
     }
 }
 
 void DetailsDialog::onRemoveTrackerClicked()
 {
     // make a map of torrentIds to announce URLs to remove
-    QItemSelectionModel* selection_model = ui_.trackersView->selectionModel();
-    QModelIndexList selected_rows = selection_model->selectedRows();
-    QMap<int, int> torrent_id_to_tracker_ids;
+    QItemSelectionModel* selectionModel = ui.trackersView->selectionModel();
+    QModelIndexList selectedRows = selectionModel->selectedRows();
+    QMap<int, int> torrentId_to_trackerIds;
 
-    for (QModelIndex const& i : selected_rows)
+    for (QModelIndex const& i : selectedRows)
     {
-        auto const inf = ui_.trackersView->model()->data(i, TrackerModel::TrackerRole).value<TrackerInfo>();
-        torrent_id_to_tracker_ids.insertMulti(inf.torrent_id, inf.st.id);
+        TrackerInfo const inf = ui.trackersView->model()->data(i, TrackerModel::TrackerRole).value<TrackerInfo>();
+        torrentId_to_trackerIds.insertMulti(inf.torrentId, inf.st.id);
     }
 
     // batch all of a tracker's torrents into one command
-    for (int const id : torrent_id_to_tracker_ids.uniqueKeys())
+    for (int const id : torrentId_to_trackerIds.uniqueKeys())
     {
         torrent_ids_t const ids{ id };
-        torrentSet(ids, TR_KEY_trackerRemove, torrent_id_to_tracker_ids.values(id));
+        mySession.torrentSet(ids, TR_KEY_trackerRemove, torrentId_to_trackerIds.values(id));
     }
 
-    selection_model->clearSelection();
+    selectionModel->clearSelection();
+    getNewData();
 }
 
 void DetailsDialog::initOptionsTab()
 {
-    auto const speed_unit_str = Formatter::get().unitStr(Formatter::SPEED, Formatter::KB);
+    QString const speed_K_str = Formatter::unitStr(Formatter::SPEED, Formatter::KB);
 
-    ui_.singleDownSpin->setSuffix(QStringLiteral(" %1").arg(speed_unit_str));
-    ui_.singleUpSpin->setSuffix(QStringLiteral(" %1").arg(speed_unit_str));
+    ui.singleDownSpin->setSuffix(QString::fromLatin1(" %1").arg(speed_K_str));
+    ui.singleUpSpin->setSuffix(QString::fromLatin1(" %1").arg(speed_K_str));
 
-    ui_.singleDownSpin->setProperty(PrefKey, TR_KEY_downloadLimit);
-    ui_.singleUpSpin->setProperty(PrefKey, TR_KEY_uploadLimit);
-    ui_.ratioSpin->setProperty(PrefKey, TR_KEY_seedRatioLimit);
-    ui_.idleSpin->setProperty(PrefKey, TR_KEY_seedIdleLimit);
-    ui_.peerLimitSpin->setProperty(PrefKey, TR_KEY_peer_limit);
+    ui.singleDownSpin->setProperty(PREF_KEY, TR_KEY_downloadLimit);
+    ui.singleUpSpin->setProperty(PREF_KEY, TR_KEY_uploadLimit);
+    ui.ratioSpin->setProperty(PREF_KEY, TR_KEY_seedRatioLimit);
+    ui.idleSpin->setProperty(PREF_KEY, TR_KEY_seedIdleLimit);
+    ui.peerLimitSpin->setProperty(PREF_KEY, TR_KEY_peer_limit);
 
-    ui_.bandwidthPriorityCombo->addItem(tr("High"), TR_PRI_HIGH);
-    ui_.bandwidthPriorityCombo->addItem(tr("Normal"), TR_PRI_NORMAL);
-    ui_.bandwidthPriorityCombo->addItem(tr("Low"), TR_PRI_LOW);
+    ui.bandwidthPriorityCombo->addItem(tr("High"), TR_PRI_HIGH);
+    ui.bandwidthPriorityCombo->addItem(tr("Normal"), TR_PRI_NORMAL);
+    ui.bandwidthPriorityCombo->addItem(tr("Low"), TR_PRI_LOW);
 
-    ui_.ratioCombo->addItem(tr("Use Global Settings"), TR_RATIOLIMIT_GLOBAL);
-    ui_.ratioCombo->addItem(tr("Seed regardless of ratio"), TR_RATIOLIMIT_UNLIMITED);
-    ui_.ratioCombo->addItem(tr("Stop seeding at ratio:"), TR_RATIOLIMIT_SINGLE);
+    ui.ratioCombo->addItem(tr("Use Global Settings"), TR_RATIOLIMIT_GLOBAL);
+    ui.ratioCombo->addItem(tr("Seed regardless of ratio"), TR_RATIOLIMIT_UNLIMITED);
+    ui.ratioCombo->addItem(tr("Stop seeding at ratio:"), TR_RATIOLIMIT_SINGLE);
 
-    ui_.idleCombo->addItem(tr("Use Global Settings"), TR_IDLELIMIT_GLOBAL);
-    ui_.idleCombo->addItem(tr("Seed regardless of activity"), TR_IDLELIMIT_UNLIMITED);
-    ui_.idleCombo->addItem(tr("Stop seeding if idle for:"), TR_IDLELIMIT_SINGLE);
+    ui.idleCombo->addItem(tr("Use Global Settings"), TR_IDLELIMIT_GLOBAL);
+    ui.idleCombo->addItem(tr("Seed regardless of activity"), TR_IDLELIMIT_UNLIMITED);
+    ui.idleCombo->addItem(tr("Stop seeding if idle for:"), TR_IDLELIMIT_SINGLE);
 
-    auto* cr = new ColumnResizer(this);
-    cr->addLayout(ui_.speedSectionLayout);
-    cr->addLayout(ui_.seedingLimitsSectionRatioLayout);
-    cr->addLayout(ui_.seedingLimitsSectionIdleLayout);
-    cr->addLayout(ui_.peerConnectionsSectionLayout);
+    ColumnResizer* cr(new ColumnResizer(this));
+    cr->addLayout(ui.speedSectionLayout);
+    cr->addLayout(ui.seedingLimitsSectionRatioLayout);
+    cr->addLayout(ui.seedingLimitsSectionIdleLayout);
+    cr->addLayout(ui.peerConnectionsSectionLayout);
     cr->update();
 
-    void (QComboBox::* combo_index_changed)(int) = &QComboBox::currentIndexChanged;
-    void (QSpinBox::* spin_value_changed)(int) = &QSpinBox::valueChanged;
-    connect(ui_.bandwidthPriorityCombo, combo_index_changed, this, &DetailsDialog::onBandwidthPriorityChanged);
-    connect(ui_.idleCombo, combo_index_changed, this, &DetailsDialog::onIdleModeChanged);
-    connect(ui_.idleSpin, &QSpinBox::editingFinished, this, &DetailsDialog::onSpinBoxEditingFinished);
-    connect(ui_.idleSpin, spin_value_changed, this, &DetailsDialog::onIdleLimitChanged);
-    connect(ui_.peerLimitSpin, &QSpinBox::editingFinished, this, &DetailsDialog::onSpinBoxEditingFinished);
-    connect(ui_.ratioCombo, combo_index_changed, this, &DetailsDialog::onRatioModeChanged);
-    connect(ui_.ratioSpin, &QSpinBox::editingFinished, this, &DetailsDialog::onSpinBoxEditingFinished);
-    connect(ui_.sessionLimitCheck, &QCheckBox::clicked, this, &DetailsDialog::onHonorsSessionLimitsToggled);
-    connect(ui_.singleDownCheck, &QCheckBox::clicked, this, &DetailsDialog::onDownloadLimitedToggled);
-    connect(ui_.singleDownSpin, &QSpinBox::editingFinished, this, &DetailsDialog::onSpinBoxEditingFinished);
-    connect(ui_.singleUpCheck, &QCheckBox::clicked, this, &DetailsDialog::onUploadLimitedToggled);
-    connect(ui_.singleUpSpin, &QSpinBox::editingFinished, this, &DetailsDialog::onSpinBoxEditingFinished);
+    void (QComboBox::* comboIndexChanged)(int) = &QComboBox::currentIndexChanged;
+    void (QSpinBox::* spinValueChanged)(int) = &QSpinBox::valueChanged;
+    connect(ui.bandwidthPriorityCombo, comboIndexChanged, this, &DetailsDialog::onBandwidthPriorityChanged);
+    connect(ui.idleCombo, comboIndexChanged, this, &DetailsDialog::onIdleModeChanged);
+    connect(ui.idleSpin, &QSpinBox::editingFinished, this, &DetailsDialog::onSpinBoxEditingFinished);
+    connect(ui.idleSpin, spinValueChanged, this, &DetailsDialog::onIdleLimitChanged);
+    connect(ui.peerLimitSpin, &QSpinBox::editingFinished, this, &DetailsDialog::onSpinBoxEditingFinished);
+    connect(ui.ratioCombo, comboIndexChanged, this, &DetailsDialog::onRatioModeChanged);
+    connect(ui.ratioSpin, &QSpinBox::editingFinished, this, &DetailsDialog::onSpinBoxEditingFinished);
+    connect(ui.sessionLimitCheck, &QCheckBox::clicked, this, &DetailsDialog::onHonorsSessionLimitsToggled);
+    connect(ui.singleDownCheck, &QCheckBox::clicked, this, &DetailsDialog::onDownloadLimitedToggled);
+    connect(ui.singleDownSpin, &QSpinBox::editingFinished, this, &DetailsDialog::onSpinBoxEditingFinished);
+    connect(ui.singleUpCheck, &QCheckBox::clicked, this, &DetailsDialog::onUploadLimitedToggled);
+    connect(ui.singleUpSpin, &QSpinBox::editingFinished, this, &DetailsDialog::onSpinBoxEditingFinished);
 }
 
 /***
@@ -1440,33 +1435,28 @@ void DetailsDialog::initOptionsTab()
 
 void DetailsDialog::initTrackerTab()
 {
-    auto deleter = [](QObject* o) { o->deleteLater(); };
+    myTrackerModel = new TrackerModel();
+    myTrackerFilter = new TrackerModelFilter();
+    myTrackerFilter->setSourceModel(myTrackerModel);
+    myTrackerDelegate = new TrackerDelegate();
 
-    // NOLINTNEXTLINE(modernize-make-shared) no custom deleters in make_shared
-    tracker_model_.reset(new TrackerModel, deleter);
-    // NOLINTNEXTLINE(modernize-make-shared) no custom deleters in make_shared
-    tracker_filter_.reset(new TrackerModelFilter, deleter);
-    tracker_filter_->setSourceModel(tracker_model_.get());
-    // NOLINTNEXTLINE(modernize-make-shared) no custom deleters in make_shared
-    tracker_delegate_.reset(new TrackerDelegate, deleter);
+    ui.trackersView->setModel(myTrackerFilter);
+    ui.trackersView->setItemDelegate(myTrackerDelegate);
 
-    ui_.trackersView->setModel(tracker_filter_.get());
-    ui_.trackersView->setItemDelegate(tracker_delegate_.get());
+    ui.addTrackerButton->setIcon(getStockIcon(QLatin1String("list-add"), QStyle::SP_DialogOpenButton));
+    ui.editTrackerButton->setIcon(getStockIcon(QLatin1String("document-properties"), QStyle::SP_DesktopIcon));
+    ui.removeTrackerButton->setIcon(getStockIcon(QLatin1String("list-remove"), QStyle::SP_TrashIcon));
 
-    ui_.addTrackerButton->setIcon(getStockIcon(QStringLiteral("list-add"), QStyle::SP_DialogOpenButton));
-    ui_.editTrackerButton->setIcon(getStockIcon(QStringLiteral("document-properties"), QStyle::SP_DesktopIcon));
-    ui_.removeTrackerButton->setIcon(getStockIcon(QStringLiteral("list-remove"), QStyle::SP_TrashIcon));
+    ui.showTrackerScrapesCheck->setChecked(myPrefs.getBool(Prefs::SHOW_TRACKER_SCRAPES));
+    ui.showBackupTrackersCheck->setChecked(myPrefs.getBool(Prefs::SHOW_BACKUP_TRACKERS));
 
-    ui_.showTrackerScrapesCheck->setChecked(prefs_.getBool(Prefs::SHOW_TRACKER_SCRAPES));
-    ui_.showBackupTrackersCheck->setChecked(prefs_.getBool(Prefs::SHOW_BACKUP_TRACKERS));
-
-    connect(ui_.addTrackerButton, &QAbstractButton::clicked, this, &DetailsDialog::onAddTrackerClicked);
-    connect(ui_.editTrackerButton, &QAbstractButton::clicked, this, &DetailsDialog::onEditTrackerClicked);
-    connect(ui_.removeTrackerButton, &QAbstractButton::clicked, this, &DetailsDialog::onRemoveTrackerClicked);
-    connect(ui_.showBackupTrackersCheck, &QAbstractButton::clicked, this, &DetailsDialog::onShowBackupTrackersToggled);
-    connect(ui_.showTrackerScrapesCheck, &QAbstractButton::clicked, this, &DetailsDialog::onShowTrackerScrapesToggled);
+    connect(ui.addTrackerButton, &QAbstractButton::clicked, this, &DetailsDialog::onAddTrackerClicked);
+    connect(ui.editTrackerButton, &QAbstractButton::clicked, this, &DetailsDialog::onEditTrackerClicked);
+    connect(ui.removeTrackerButton, &QAbstractButton::clicked, this, &DetailsDialog::onRemoveTrackerClicked);
+    connect(ui.showBackupTrackersCheck, &QAbstractButton::clicked, this, &DetailsDialog::onShowBackupTrackersToggled);
+    connect(ui.showTrackerScrapesCheck, &QAbstractButton::clicked, this, &DetailsDialog::onShowTrackerScrapesToggled);
     connect(
-        ui_.trackersView->selectionModel(), &QItemSelectionModel::selectionChanged, this,
+        ui.trackersView->selectionModel(), &QItemSelectionModel::selectionChanged, this,
         &DetailsDialog::onTrackerSelectionChanged);
 
     onTrackerSelectionChanged();
@@ -1478,27 +1468,27 @@ void DetailsDialog::initTrackerTab()
 
 void DetailsDialog::initPeersTab()
 {
-    ui_.peersView->setHeaderLabels({ QString(), tr("Up"), tr("Down"), tr("%"), tr("Status"), tr("Address"), tr("Client") });
-    ui_.peersView->sortByColumn(COL_ADDRESS, Qt::AscendingOrder);
+    ui.peersView->setHeaderLabels({ QString(), tr("Up"), tr("Down"), tr("%"), tr("Status"), tr("Address"), tr("Client") });
+    ui.peersView->sortByColumn(COL_ADDRESS, Qt::AscendingOrder);
 
-    ui_.peersView->setColumnWidth(COL_LOCK, 20);
-    ui_.peersView->setColumnWidth(COL_UP, measureViewItem(ui_.peersView, COL_UP, QStringLiteral("1024 MiB/s")));
-    ui_.peersView->setColumnWidth(COL_DOWN, measureViewItem(ui_.peersView, COL_DOWN, QStringLiteral("1024 MiB/s")));
-    ui_.peersView->setColumnWidth(COL_PERCENT, measureViewItem(ui_.peersView, COL_PERCENT, QStringLiteral("100%")));
-    ui_.peersView->setColumnWidth(COL_STATUS, measureViewItem(ui_.peersView, COL_STATUS, QStringLiteral("ODUK?EXI")));
-    ui_.peersView->setColumnWidth(COL_ADDRESS, measureViewItem(ui_.peersView, COL_ADDRESS, QStringLiteral("888.888.888.888")));
+    ui.peersView->setColumnWidth(COL_LOCK, 20);
+    ui.peersView->setColumnWidth(COL_UP, measureViewItem(ui.peersView, COL_UP, QLatin1String("1024 MiB/s")));
+    ui.peersView->setColumnWidth(COL_DOWN, measureViewItem(ui.peersView, COL_DOWN, QLatin1String("1024 MiB/s")));
+    ui.peersView->setColumnWidth(COL_PERCENT, measureViewItem(ui.peersView, COL_PERCENT, QLatin1String("100%")));
+    ui.peersView->setColumnWidth(COL_STATUS, measureViewItem(ui.peersView, COL_STATUS, QLatin1String("ODUK?EXI")));
+    ui.peersView->setColumnWidth(COL_ADDRESS, measureViewItem(ui.peersView, COL_ADDRESS, QLatin1String("888.888.888.888")));
 }
 
 /***
 ****
 ***/
 
-void DetailsDialog::initFilesTab() const
+void DetailsDialog::initFilesTab()
 {
-    connect(ui_.filesView, &FileTreeView::openRequested, this, &DetailsDialog::onOpenRequested);
-    connect(ui_.filesView, &FileTreeView::pathEdited, this, &DetailsDialog::onPathEdited);
-    connect(ui_.filesView, &FileTreeView::priorityChanged, this, &DetailsDialog::onFilePriorityChanged);
-    connect(ui_.filesView, &FileTreeView::wantedChanged, this, &DetailsDialog::onFileWantedChanged);
+    connect(ui.filesView, &FileTreeView::openRequested, this, &DetailsDialog::onOpenRequested);
+    connect(ui.filesView, &FileTreeView::pathEdited, this, &DetailsDialog::onPathEdited);
+    connect(ui.filesView, &FileTreeView::priorityChanged, this, &DetailsDialog::onFilePriorityChanged);
+    connect(ui.filesView, &FileTreeView::wantedChanged, this, &DetailsDialog::onFileWantedChanged);
 }
 
 void DetailsDialog::onFilePriorityChanged(QSet<int> const& indices, int priority)
@@ -1520,44 +1510,46 @@ void DetailsDialog::onFilePriorityChanged(QSet<int> const& indices, int priority
         break;
     }
 
-    torrentSet(key, indices.values());
+    mySession.torrentSet(myIds, key, indices.toList());
+    getNewData();
 }
 
 void DetailsDialog::onFileWantedChanged(QSet<int> const& indices, bool wanted)
 {
     tr_quark const key = wanted ? TR_KEY_files_wanted : TR_KEY_files_unwanted;
-    torrentSet(key, indices.values());
+    mySession.torrentSet(myIds, key, indices.toList());
+    getNewData();
 }
 
 void DetailsDialog::onPathEdited(QString const& oldpath, QString const& newname)
 {
-    session_.torrentRenamePath(ids_, oldpath, newname);
+    mySession.torrentRenamePath(myIds, oldpath, newname);
 }
 
-void DetailsDialog::onOpenRequested(QString const& path) const
+void DetailsDialog::onOpenRequested(QString const& path)
 {
-    if (!session_.isLocal())
+    if (!mySession.isLocal())
     {
         return;
     }
 
-    for (int const id : ids_)
+    for (int const id : myIds)
     {
-        Torrent const* const tor = model_.getTorrentFromId(id);
+        Torrent const* const tor = myModel.getTorrentFromId(id);
 
         if (tor == nullptr)
         {
             continue;
         }
 
-        QString const local_file_path = tor->getPath() + QLatin1Char('/') + path;
+        QString const localFilePath = tor->getPath() + QLatin1Char('/') + path;
 
-        if (!QFile::exists(local_file_path))
+        if (!QFile::exists(localFilePath))
         {
             continue;
         }
 
-        if (QDesktopServices::openUrl(QUrl::fromLocalFile(local_file_path)))
+        if (QDesktopServices::openUrl(QUrl::fromLocalFile(localFilePath)))
         {
             break;
         }

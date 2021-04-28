@@ -6,29 +6,35 @@
  *
  */
 
+#include <iostream>
+
 #include <QDBusConnection>
 #include <QDBusMessage>
 #include <QDBusReply>
 #include <QString>
 #include <QVariant>
-#include <QtDebug>
 
 #include "DBusInteropHelper.h"
 #include "InteropObject.h"
+
+namespace
+{
+
+QLatin1String const DBUS_SERVICE("com.transmissionbt.Transmission");
+QLatin1String const DBUS_OBJECT_PATH("/com/transmissionbt/Transmission");
+QLatin1String const DBUS_INTERFACE("com.transmissionbt.Transmission");
+
+} // namespace
 
 bool DBusInteropHelper::isConnected() const
 {
     return QDBusConnection::sessionBus().isConnected();
 }
 
-QVariant DBusInteropHelper::addMetainfo(QString const& metainfo) const
+QVariant DBusInteropHelper::addMetainfo(QString const& metainfo)
 {
-    auto request = QDBusMessage::createMethodCall(
-        QStringLiteral("com.transmissionbt.Transmission"),
-        QStringLiteral("/com/transmissionbt/Transmission"),
-        QStringLiteral("com.transmissionbt.Transmission"),
-        QStringLiteral("AddMetainfo")
-        );
+    QDBusMessage request = QDBusMessage::createMethodCall(DBUS_SERVICE, DBUS_OBJECT_PATH, DBUS_INTERFACE,
+        QLatin1String("AddMetainfo"));
     request.setArguments(QVariantList() << metainfo);
 
     QDBusReply<bool> const response = QDBusConnection::sessionBus().call(request);
@@ -37,21 +43,20 @@ QVariant DBusInteropHelper::addMetainfo(QString const& metainfo) const
 
 void DBusInteropHelper::registerObject(QObject* parent)
 {
-    auto bus = QDBusConnection::sessionBus();
+    QDBusConnection bus = QDBusConnection::sessionBus();
+
     if (!bus.isConnected())
     {
         return;
     }
 
-    auto const service_name = QStringLiteral("com.transmissionbt.Transmission");
-    if (!bus.registerService(service_name))
+    if (!bus.registerService(DBUS_SERVICE))
     {
-        qWarning() << "couldn't register" << qPrintable(service_name);
+        std::cerr << "couldn't register " << qPrintable(DBUS_SERVICE) << std::endl;
     }
 
-    auto const object_path = QStringLiteral("/com/transmissionbt/Transmission");
-    if (!bus.registerObject(object_path, new InteropObject(parent), QDBusConnection::ExportAllSlots))
+    if (!bus.registerObject(DBUS_OBJECT_PATH, new InteropObject(parent), QDBusConnection::ExportAllSlots))
     {
-        qWarning() << "couldn't register" << qPrintable(object_path);
+        std::cerr << "couldn't register " << qPrintable(DBUS_OBJECT_PATH) << std::endl;
     }
 }

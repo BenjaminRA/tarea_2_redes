@@ -10,15 +10,12 @@
 
 #include <QToolButton>
 
-#include "Macros.h"
-
 class IconToolButton : public QToolButton
 {
     Q_OBJECT
-    TR_DISABLE_COPY_MOVE(IconToolButton)
 
 public:
-    explicit IconToolButton(QWidget* parent = nullptr);
+    IconToolButton(QWidget* parent = nullptr);
 
     // QWidget
     QSize sizeHint() const override;

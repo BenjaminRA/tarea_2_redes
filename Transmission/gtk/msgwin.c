@@ -121,12 +121,20 @@ static void level_combo_changed_cb(GtkComboBox* combo_box, gpointer gdata)
 }
 
 /* similar to asctime, but is utf8-clean */
-static char* gtr_asctime(time_t t)
+static char* gtr_localtime(time_t time)
 {
-    GDateTime* date_time = g_date_time_new_from_unix_local(t);
-    gchar* ret = g_date_time_format(date_time, "%a %b %2e %T %Y%n"); /* ctime equiv */
-    g_date_time_unref(date_time);
-    return ret;
+    char buf[256];
+    char* eoln;
+    struct tm const tm = *localtime(&time);
+
+    g_strlcpy(buf, asctime(&tm), sizeof(buf));
+
+    if ((eoln = strchr(buf, '\n')) != NULL)
+    {
+        *eoln = '\0';
+    }
+
+    return g_locale_to_utf8(buf, -1, NULL, NULL, NULL);
 }
 
 static void doSave(GtkWindow* parent, struct MsgData* data, char const* filename)
@@ -150,11 +158,12 @@ static void doSave(GtkWindow* parent, struct MsgData* data, char const* filename
         {
             do
             {
+                char* date;
                 char const* levelStr;
                 struct tr_log_message const* node;
 
                 gtk_tree_model_get(model, &iter, COL_TR_MSG, &node, -1);
-                gchar* date = gtr_asctime(node->when);
+                date = gtr_localtime(node->when);
 
                 switch (node->level)
                 {
@@ -197,19 +206,15 @@ static void onSaveDialogResponse(GtkWidget* d, int response, gpointer data)
 static void onSaveRequest(GtkWidget* w, gpointer data)
 {
     GtkWindow* window = GTK_WINDOW(gtk_widget_get_toplevel(w));
-    GtkWidget* d = gtk_file_chooser_dialog_new(_("Save Log"), window, GTK_FILE_CHOOSER_ACTION_SAVE,
-        _("_Cancel"), GTK_RESPONSE_CANCEL,
-        _("_Save"), GTK_RESPONSE_ACCEPT,
-        NULL);
+    GtkWidget* d = gtk_file_chooser_dialog_new(_("Save Log"), window, GTK_FILE_CHOOSER_ACTION_SAVE, GTK_STOCK_CANCEL,
+        GTK_RESPONSE_CANCEL, GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT, NULL);
 
     g_signal_connect(d, "response", G_CALLBACK(onSaveDialogResponse), data);
     gtk_widget_show(d);
 }
 
-static void onClearRequest(GtkWidget* w, gpointer gdata)
+static void onClearRequest(GtkWidget* w UNUSED, gpointer gdata)
 {
-    TR_UNUSED(w);
-
     struct MsgData* data = gdata;
 
     gtk_list_store_clear(data->store);
@@ -243,11 +248,9 @@ static char const* getForegroundColor(int msgLevel)
     }
 }
 
-static void renderText(GtkTreeViewColumn* column, GtkCellRenderer* renderer, GtkTreeModel* tree_model, GtkTreeIter* iter,
+static void renderText(GtkTreeViewColumn* column UNUSED, GtkCellRenderer* renderer, GtkTreeModel* tree_model, GtkTreeIter* iter,
     gpointer gcol)
 {
-    TR_UNUSED(column);
-
     int const col = GPOINTER_TO_INT(gcol);
     char* str = NULL;
     struct tr_log_message const* node;
@@ -256,19 +259,17 @@ static void renderText(GtkTreeViewColumn* column, GtkCellRenderer* renderer, Gtk
     g_object_set(renderer, "text", str, "foreground", getForegroundColor(node->level), "ellipsize", PANGO_ELLIPSIZE_END, NULL);
 }
 
-static void renderTime(GtkTreeViewColumn* column, GtkCellRenderer* renderer, GtkTreeModel* tree_model, GtkTreeIter* iter,
-    gpointer data)
+static void renderTime(GtkTreeViewColumn* column UNUSED, GtkCellRenderer* renderer, GtkTreeModel* tree_model, GtkTreeIter* iter,
+    gpointer data UNUSED)
 {
-    TR_UNUSED(column);
-    TR_UNUSED(data);
-
+    struct tm tm;
+    char buf[16];
     struct tr_log_message const* node;
+
     gtk_tree_model_get(tree_model, iter, COL_TR_MSG, &node, -1);
-    GDateTime* date_time = g_date_time_new_from_unix_local(node->when);
-    gchar* buf = g_date_time_format(date_time, "%T");
+    tm = *localtime(&node->when);
+    g_snprintf(buf, sizeof(buf), "%02d:%02d:%02d", tm.tm_hour, tm.tm_min, tm.tm_sec);
     g_object_set(renderer, "text", buf, "foreground", getForegroundColor(node->level), NULL);
-    g_free(buf);
-    g_date_time_unref(date_time);
 }
 
 static void appendColumn(GtkTreeView* view, int col)
@@ -342,10 +343,8 @@ static gboolean isRowVisible(GtkTreeModel* model, GtkTreeIter* iter, gpointer gd
     return node->level <= data->maxLevel;
 }
 
-static void onWindowDestroyed(gpointer gdata, GObject* deadWindow)
+static void onWindowDestroyed(gpointer gdata, GObject* deadWindow UNUSED)
 {
-    TR_UNUSED(deadWindow);
-
     struct MsgData* data = gdata;
 
     g_source_remove(data->refresh_tag);
@@ -468,36 +467,21 @@ GtkWidget* gtr_message_log_window_new(GtkWindow* parent, TrCore* core)
     gtk_toolbar_set_style(GTK_TOOLBAR(toolbar), GTK_TOOLBAR_BOTH_HORIZ);
     gtk_style_context_add_class(gtk_widget_get_style_context(toolbar), GTK_STYLE_CLASS_PRIMARY_TOOLBAR);
 
-    item = gtk_tool_button_new(NULL, NULL);
-    g_object_set(item,
-        "icon-name", "document-save-as",
-        "is-important", TRUE,
-        "label", _("Save _As"),
-        "use-underline", TRUE,
-        NULL);
+    item = gtk_tool_button_new_from_stock(GTK_STOCK_SAVE_AS);
+    g_object_set(G_OBJECT(item), "is-important", TRUE, NULL);
     g_signal_connect(item, "clicked", G_CALLBACK(onSaveRequest), data);
     gtk_toolbar_insert(GTK_TOOLBAR(toolbar), item, -1);
 
-    item = gtk_tool_button_new(NULL, NULL);
-    g_object_set(item,
-        "icon-name", "edit-clear",
-        "is-important", TRUE,
-        "label", _("Clear"),
-        "use-underline", TRUE,
-        NULL);
+    item = gtk_tool_button_new_from_stock(GTK_STOCK_CLEAR);
+    g_object_set(G_OBJECT(item), "is-important", TRUE, NULL);
     g_signal_connect(item, "clicked", G_CALLBACK(onClearRequest), data);
     gtk_toolbar_insert(GTK_TOOLBAR(toolbar), item, -1);
 
     item = gtk_separator_tool_item_new();
     gtk_toolbar_insert(GTK_TOOLBAR(toolbar), item, -1);
 
-    item = gtk_toggle_tool_button_new();
-    g_object_set(G_OBJECT(item),
-        "icon-name", "media-playback-pause",
-        "is-important", TRUE,
-        "label", _("P_ause"),
-        "use-underline", TRUE,
-        NULL);
+    item = gtk_toggle_tool_button_new_from_stock(GTK_STOCK_MEDIA_PAUSE);
+    g_object_set(G_OBJECT(item), "is-important", TRUE, NULL);
     g_signal_connect(item, "toggled", G_CALLBACK(onPauseToggled), data);
     gtk_toolbar_insert(GTK_TOOLBAR(toolbar), item, -1);
 

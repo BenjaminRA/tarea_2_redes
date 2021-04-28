@@ -15,23 +15,25 @@
 #include "DBusInteropHelper.h"
 #endif
 
+class QAxObject;
 class QString;
+class QVariant;
 
 class InteropHelper
 {
 public:
     bool isConnected() const;
 
-    bool addMetainfo(QString const& metainfo) const;
+    bool addMetainfo(QString const& metainfo);
 
     static void initialize();
     static void registerObject(QObject* parent);
 
 private:
 #ifdef ENABLE_DBUS_INTEROP
-    DBusInteropHelper dbus_client_ = {};
+    DBusInteropHelper myDbusClient;
 #endif
 #ifdef ENABLE_COM_INTEROP
-    ComInteropHelper com_client_ = {};
+    ComInteropHelper myComClient;
 #endif
 };

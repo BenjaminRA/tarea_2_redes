@@ -8,7 +8,7 @@
 
 #pragma once
 
-#ifndef LIBTRANSMISSION_ANNOUNCER_MODULE
+#ifndef __LIBTRANSMISSION_ANNOUNCER_MODULE__
 #error only the libtransmission announcer module should #include this header.
 #endif
 

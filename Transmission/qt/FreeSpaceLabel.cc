@@ -15,95 +15,90 @@
 #include "FreeSpaceLabel.h"
 #include "RpcQueue.h"
 #include "Session.h"
-#include "VariantHelpers.h"
-
-using ::trqt::variant_helpers::dictAdd;
-using ::trqt::variant_helpers::dictFind;
 
 namespace
 {
 
-int const IntervalMSec = 15000;
+static int const INTERVAL_MSEC = 15000;
 
 } // namespace
 
 FreeSpaceLabel::FreeSpaceLabel(QWidget* parent) :
     QLabel(parent),
-    timer_(this)
+    mySession(nullptr),
+    myTimer(this)
 {
-    timer_.setSingleShot(true);
-    timer_.setInterval(IntervalMSec);
+    myTimer.setSingleShot(true);
+    myTimer.setInterval(INTERVAL_MSEC);
 
-    connect(&timer_, &QTimer::timeout, this, &FreeSpaceLabel::onTimer);
+    connect(&myTimer, SIGNAL(timeout()), this, SLOT(onTimer()));
 }
 
 void FreeSpaceLabel::setSession(Session& session)
 {
-    if (session_ == &session)
+    if (mySession == &session)
     {
         return;
     }
 
-    session_ = &session;
+    mySession = &session;
     onTimer();
 }
 
 void FreeSpaceLabel::setPath(QString const& path)
 {
-    if (path_ != path)
+    if (myPath != path)
     {
         setText(tr("<i>Calculating Free Space...</i>"));
-        path_ = path;
+        myPath = path;
         onTimer();
     }
 }
 
 void FreeSpaceLabel::onTimer()
 {
-    timer_.stop();
+    myTimer.stop();
 
-    if (session_ == nullptr || path_.isEmpty())
+    if (mySession == nullptr || myPath.isEmpty())
     {
         return;
     }
 
     tr_variant args;
     tr_variantInitDict(&args, 1);
-    dictAdd(&args, TR_KEY_path, path_);
+    tr_variantDictAddStr(&args, TR_KEY_path, myPath.toUtf8().constData());
 
-    auto* q = new RpcQueue();
-
-    auto* alive = new bool(true);
-    connect(this, &QObject::destroyed, [alive] { *alive = false; });
+    RpcQueue* q = new RpcQueue();
 
     q->add([this, &args]()
         {
-            return session_->exec("free-space", &args);
+            return mySession->exec("free-space", &args);
         });
 
-    q->add([this, alive](RpcResponse const& r)
+    q->add([this](RpcResponse const& r)
         {
-            if (*alive)
+            QString str;
+
+            // update the label
+            int64_t bytes = -1;
+
+            if (tr_variantDictFindInt(r.args.get(), TR_KEY_size_bytes, &bytes) && bytes >= 0)
             {
-                // update the label
-                auto const bytes = dictFind<int64_t>(r.args.get(), TR_KEY_size_bytes);
-                if (bytes && *bytes > 1)
-                {
-                    setText(tr("%1 free").arg(Formatter::get().sizeToString(*bytes)));
-                }
-                else
-                {
-                    clear();
-                }
-
-                // update the tooltip
-                auto const path = dictFind<QString>(r.args.get(), TR_KEY_path);
-                setToolTip(QDir::toNativeSeparators(path ? *path : QString()));
-
-                timer_.start();
+                setText(tr("%1 free").arg(Formatter::sizeToString(bytes)));
+            }
+            else
+            {
+                setText(QString());
             }
 
-            delete alive;
+            // update the tooltip
+            size_t len = 0;
+            char const* path = nullptr;
+            tr_variantDictFindStr(r.args.get(), TR_KEY_path, &path, &len);
+            str = QString::fromUtf8(path, len);
+            setToolTip(QDir::toNativeSeparators(str));
+
+            myTimer.start();
         });
 
     q->run();

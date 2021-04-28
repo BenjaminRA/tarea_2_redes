@@ -11,5 +11,5 @@
 LicenseDialog::LicenseDialog(QWidget* parent) :
     BaseDialog(parent)
 {
-    ui_.setupUi(this);
+    ui.setupUi(this);
 }

@@ -9,17 +9,20 @@
 #pragma once
 
 #include "BaseDialog.h"
-#include "Macros.h"
+
 #include "ui_LicenseDialog.h"
 
 class LicenseDialog : public BaseDialog
 {
     Q_OBJECT
-    TR_DISABLE_COPY_MOVE(LicenseDialog)
 
 public:
-    explicit LicenseDialog(QWidget* parent = nullptr);
+    LicenseDialog(QWidget* parent = nullptr);
+
+    virtual ~LicenseDialog()
+    {
+    }
 
 private:
-    Ui::LicenseDialog ui_ = {};
+    Ui::LicenseDialog ui;
 };

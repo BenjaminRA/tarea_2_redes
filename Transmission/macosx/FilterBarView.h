@@ -24,6 +24,7 @@
 
 @interface FilterBarView : NSView
 {
+    NSGradient * fGradient;
 }
 
 @end

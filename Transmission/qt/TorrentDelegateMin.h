@@ -8,13 +8,11 @@
 
 #pragma once
 
-#include "Macros.h"
 #include "TorrentDelegate.h"
 
 class TorrentDelegateMin : public TorrentDelegate
 {
     Q_OBJECT
-    TR_DISABLE_COPY_MOVE(TorrentDelegateMin)
 
 public:
     explicit TorrentDelegateMin(QObject* parent = nullptr) :

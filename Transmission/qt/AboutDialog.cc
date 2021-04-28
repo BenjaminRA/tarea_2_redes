@@ -16,42 +16,26 @@
 
 #include "AboutDialog.h"
 #include "LicenseDialog.h"
-#include "Session.h"
 #include "Utils.h"
 
-AboutDialog::AboutDialog(Session& session, QWidget* parent) :
-    BaseDialog(parent)
+AboutDialog::AboutDialog(QWidget* parent) :
+    BaseDialog(parent),
+    myLicenseDialog()
 {
-    ui_.setupUi(this);
+    ui.setupUi(this);
 
-    ui_.iconLabel->setPixmap(QApplication::windowIcon().pixmap(48));
+    ui.iconLabel->setPixmap(qApp->windowIcon().pixmap(48));
+    ui.titleLabel->setText(tr("<b style='font-size:x-large'>Transmission %1</b>").arg(QString::fromUtf8(LONG_VERSION_STRING)));
 
-    if (session.isServer())
-    {
-        auto const title = QStringLiteral("<b style='font-size:x-large'>Transmission %1</b>")
-            .arg(QStringLiteral(LONG_VERSION_STRING));
-        ui_.titleLabel->setText(title);
-    }
-    else
-    {
-        QString title = QStringLiteral(
-            "<div style='font-size:x-large; font-weight: bold; text-align: center'>Transmission</div>");
-        title += QStringLiteral("<div style='text-align: center'>%1: %2</div>")
-            .arg(tr("This GUI"))
-            .arg(QStringLiteral(LONG_VERSION_STRING));
-        title += QStringLiteral("<div style='text-align: center'>%1: %2</div>")
-            .arg(tr("Remote"))
-            .arg(session.sessionVersion());
-        ui_.titleLabel->setText(title);
-    }
+    QPushButton* b;
 
-    QPushButton const* b = ui_.dialogButtons->addButton(tr("C&redits"), QDialogButtonBox::ActionRole);
-    connect(b, &QAbstractButton::clicked, this, &AboutDialog::showCredits);
+    b = ui.dialogButtons->addButton(tr("C&redits"), QDialogButtonBox::ActionRole);
+    connect(b, SIGNAL(clicked()), this, SLOT(showCredits()));
 
-    b = ui_.dialogButtons->addButton(tr("&License"), QDialogButtonBox::ActionRole);
-    connect(b, &QAbstractButton::clicked, this, &AboutDialog::showLicense);
+    b = ui.dialogButtons->addButton(tr("&License"), QDialogButtonBox::ActionRole);
+    connect(b, SIGNAL(clicked()), this, SLOT(showLicense()));
 
-    ui_.dialogButtons->button(QDialogButtonBox::Close)->setDefault(true);
+    ui.dialogButtons->button(QDialogButtonBox::Close)->setDefault(true);
 }
 
 void AboutDialog::showCredits()
@@ -64,5 +48,5 @@ void AboutDialog::showCredits()
 
 void AboutDialog::showLicense()
 {
-    Utils::openDialog(license_dialog_, this);
+    Utils::openDialog(myLicenseDialog, this);
 }

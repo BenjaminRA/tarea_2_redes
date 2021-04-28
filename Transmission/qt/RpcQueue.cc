@@ -10,43 +10,40 @@
 
 #include "RpcQueue.h"
 
-// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
-RpcQueue::Tag RpcQueue::next_tag = {};
-
 RpcQueue::RpcQueue(QObject* parent) :
     QObject(parent),
-    tag_(next_tag++)
+    myTolerateErrors(false)
 {
-    connect(&future_watcher_, &QFutureWatcher<RpcResponse>::finished, this, &RpcQueue::stepFinished);
+    connect(&myFutureWatcher, SIGNAL(finished()), SLOT(stepFinished()));
 }
 
 void RpcQueue::stepFinished()
 {
     RpcResponse result;
 
-    if (future_watcher_.future().isResultReadyAt(0))
+    if (myFutureWatcher.future().isResultReadyAt(0))
     {
-        result = future_watcher_.result();
-        RpcResponseFuture future = future_watcher_.future();
+        result = myFutureWatcher.result();
+        RpcResponseFuture future = myFutureWatcher.future();
 
         // we can't handle network errors, abort queue and pass the error upwards
         if (result.networkError != QNetworkReply::NoError)
         {
             assert(!result.success);
 
-            promise_.reportFinished(&result);
+            myPromise.reportFinished(&result);
             deleteLater();
             return;
         }
 
         // call user-handler for ordinary errors
-        if (!result.success && next_error_handler_)
+        if (!result.success && myNextErrorHandler)
         {
-            next_error_handler_(future);
+            myNextErrorHandler(future);
         }
 
         // run next request, if we have one to run and there was no error (or if we tolerate errors)
-        if ((result.success || tolerate_errors_) && !queue_.isEmpty())
+        if ((result.success || myTolerateErrors) && !myQueue.isEmpty())
         {
             runNext(future);
             return;
@@ -54,36 +51,36 @@ void RpcQueue::stepFinished()
     }
     else
     {
-        assert(!next_error_handler_);
-        assert(queue_.isEmpty());
+        assert(!myNextErrorHandler);
+        assert(myQueue.isEmpty());
 
         // one way or another, the last step returned nothing.
         // assume it is OK and ensure that we're not going to give an empty response object to any of the next steps.
         result.success = true;
     }
 
-    promise_.reportFinished(&result);
+    myPromise.reportFinished(&result);
     deleteLater();
 }
 
 void RpcQueue::runNext(RpcResponseFuture const& response)
 {
-    assert(!queue_.isEmpty());
+    assert(!myQueue.isEmpty());
 
-    RpcResponseFuture const old_future = future_watcher_.future();
+    RpcResponseFuture const oldFuture = myFutureWatcher.future();
 
-    for (;;)
+    while (true)
     {
-        auto next = queue_.dequeue();
-        next_error_handler_ = next.second;
-        future_watcher_.setFuture((next.first)(response));
+        auto next = myQueue.dequeue();
+        myNextErrorHandler = next.second;
+        myFutureWatcher.setFuture((next.first)(response));
 
-        if (old_future != future_watcher_.future())
+        if (oldFuture != myFutureWatcher.future())
         {
             break;
         }
 
-        if (queue_.isEmpty())
+        if (myQueue.isEmpty())
         {
             deleteLater();
             break;

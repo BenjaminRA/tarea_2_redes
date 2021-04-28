@@ -92,10 +92,8 @@ static gboolean onTimer(gpointer gdata)
     return G_SOURCE_CONTINUE;
 }
 
-static void onResponse(GtkDialog* dialog, int response, gconstpointer user_data)
+static void onResponse(GtkDialog* dialog, int response, gpointer unused UNUSED)
 {
-    TR_UNUSED(user_data);
-
     if (response == GTK_RESPONSE_APPLY)
     {
         GtkWidget* w;
@@ -139,9 +137,7 @@ GtkWidget* gtr_relocate_dialog_new(GtkWindow* parent, TrCore* core, GSList* torr
     struct relocate_dialog_data* data;
 
     d = gtk_dialog_new_with_buttons(_("Set Torrent Location"), parent, GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_MODAL,
-        _("_Cancel"), GTK_RESPONSE_CANCEL,
-        _("_Apply"), GTK_RESPONSE_APPLY,
-        NULL);
+        GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, GTK_STOCK_APPLY, GTK_RESPONSE_APPLY, NULL);
     gtk_dialog_set_default_response(GTK_DIALOG(d), GTK_RESPONSE_CANCEL);
     g_signal_connect(d, "response", G_CALLBACK(onResponse), NULL);
 

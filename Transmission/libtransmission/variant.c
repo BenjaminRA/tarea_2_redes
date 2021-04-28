@@ -31,9 +31,10 @@
 
 #include <event2/buffer.h>
 
-#define LIBTRANSMISSION_VARIANT_MODULE
+#define __LIBTRANSMISSION_VARIANT_MODULE__
 
 #include "transmission.h"
+#include "ConvertUTF.h"
 #include "error.h"
 #include "file.h"
 #include "log.h"
@@ -198,11 +199,7 @@ static void tr_variant_string_set_string(struct tr_variant_string* str, char con
     if (len < sizeof(str->str.buf))
     {
         str->type = TR_STRING_TYPE_BUF;
-        if (len > 0)
-        {
-            memcpy(str->str.buf, bytes, len);
-        }
-
+        memcpy(str->str.buf, bytes, len);
         str->str.buf[len] = '\0';
         str->len = len;
     }
@@ -339,7 +336,7 @@ bool tr_variantGetRaw(tr_variant const* v, uint8_t const** setme_raw, size_t* se
 
     if (success)
     {
-        *setme_raw = (uint8_t const*)getStr(v);
+        *setme_raw = (uint8_t*)getStr(v);
         *setme_len = v->val.s.len;
     }
 
@@ -357,20 +354,22 @@ bool tr_variantGetBool(tr_variant const* v, bool* setme)
         success = true;
     }
 
-    if ((!success) &&
-        tr_variantIsInt(v) &&
-        (v->val.i == 0 || v->val.i == 1))
+    if (!success && tr_variantIsInt(v))
     {
-        *setme = v->val.i != 0;
-        success = true;
+        if (v->val.i == 0 || v->val.i == 1)
+        {
+            *setme = v->val.i != 0;
+            success = true;
+        }
     }
 
-    if ((!success) &&
-        tr_variantGetStr(v, &str, NULL) &&
-        (strcmp(str, "true") == 0 || strcmp(str, "false") == 0))
+    if (!success && tr_variantGetStr(v, &str, NULL))
     {
-        *setme = strcmp(str, "true") == 0;
-        success = true;
+        if (strcmp(str, "true") == 0 || strcmp(str, "false") == 0)
+        {
+            *setme = strcmp(str, "true") == 0;
+            success = true;
+        }
     }
 
     return success;
@@ -388,7 +387,7 @@ bool tr_variantGetReal(tr_variant const* v, double* setme)
 
     if (!success && tr_variantIsInt(v))
     {
-        *setme = (double)v->val.i;
+        *setme = v->val.i;
         success = true;
     }
 
@@ -415,25 +414,25 @@ bool tr_variantGetReal(tr_variant const* v, double* setme)
 
 bool tr_variantDictFindInt(tr_variant* dict, tr_quark const key, int64_t* setme)
 {
-    tr_variant const* child = tr_variantDictFind(dict, key);
+    tr_variant* child = tr_variantDictFind(dict, key);
     return tr_variantGetInt(child, setme);
 }
 
 bool tr_variantDictFindBool(tr_variant* dict, tr_quark const key, bool* setme)
 {
-    tr_variant const* child = tr_variantDictFind(dict, key);
+    tr_variant* child = tr_variantDictFind(dict, key);
     return tr_variantGetBool(child, setme);
 }
 
 bool tr_variantDictFindReal(tr_variant* dict, tr_quark const key, double* setme)
 {
-    tr_variant const* child = tr_variantDictFind(dict, key);
+    tr_variant* child = tr_variantDictFind(dict, key);
     return tr_variantGetReal(child, setme);
 }
 
 bool tr_variantDictFindStr(tr_variant* dict, tr_quark const key, char const** setme, size_t* len)
 {
-    tr_variant const* const child = tr_variantDictFind(dict, key);
+    tr_variant* child = tr_variantDictFind(dict, key);
     return tr_variantGetStr(child, setme, len);
 }
 
@@ -449,7 +448,7 @@ bool tr_variantDictFindDict(tr_variant* dict, tr_quark const key, tr_variant** s
 
 bool tr_variantDictFindRaw(tr_variant* dict, tr_quark const key, uint8_t const** setme_raw, size_t* setme_len)
 {
-    tr_variant const* child = tr_variantDictFind(dict, key);
+    tr_variant* child = tr_variantDictFind(dict, key);
     return tr_variantGetRaw(child, setme_raw, setme_len);
 }
 
@@ -721,7 +720,7 @@ bool tr_variantDictRemove(tr_variant* dict, tr_quark const key)
 
     if (i >= 0)
     {
-        int const last = (int)dict->val.l.count - 1;
+        int const last = dict->val.l.count - 1;
 
         tr_variantFree(&dict->val.l.vals[i]);
 
@@ -822,13 +821,13 @@ static void nodeDestruct(struct SaveNode* node)
  * easier to read, but was vulnerable to a smash-stacking
  * attack via maliciously-crafted data. (#667)
  */
-void tr_variantWalk(tr_variant const* v_in, struct VariantWalkFuncs const* walkFuncs, void* user_data, bool sort_dicts)
+void tr_variantWalk(tr_variant const* v, struct VariantWalkFuncs const* walkFuncs, void* user_data, bool sort_dicts)
 {
     int stackSize = 0;
     int stackAlloc = 64;
     struct SaveNode* stack = tr_new(struct SaveNode, stackAlloc);
 
-    nodeConstruct(&stack[stackSize++], v_in, sort_dicts);
+    nodeConstruct(&stack[stackSize++], v, sort_dicts);
 
     while (stackSize > 0)
     {
@@ -842,7 +841,7 @@ void tr_variantWalk(tr_variant const* v_in, struct VariantWalkFuncs const* walkF
         }
         else if (tr_variantIsContainer(node->v) && node->childIndex < node->v->val.l.count)
         {
-            size_t const index = node->childIndex;
+            int const index = node->childIndex;
             ++node->childIndex;
 
             v = node->v->val.l.vals + index;
@@ -937,23 +936,17 @@ void tr_variantWalk(tr_variant const* v_in, struct VariantWalkFuncs const* walkF
 *****
 ****/
 
-static void freeDummyFunc(tr_variant const* v, void* buf)
+static void freeDummyFunc(tr_variant const* v UNUSED, void* buf UNUSED)
 {
-    TR_UNUSED(v);
-    TR_UNUSED(buf);
 }
 
-static void freeStringFunc(tr_variant const* v, void* user_data)
+static void freeStringFunc(tr_variant const* v, void* unused UNUSED)
 {
-    TR_UNUSED(user_data);
-
     tr_variant_string_clear(&((tr_variant*)v)->val.s);
 }
 
-static void freeContainerEndFunc(tr_variant const* v, void* user_data)
+static void freeContainerEndFunc(tr_variant const* v, void* unused UNUSED)
 {
-    TR_UNUSED(user_data);
-
     tr_free(v->val.l.vals);
 }
 
@@ -1007,9 +1000,9 @@ static void tr_variantListCopy(tr_variant* target, tr_variant const* src)
         }
         else if (tr_variantIsString(val))
         {
-            size_t len = 0;
-            char const* str = NULL;
-            (void)tr_variantGetStr(val, &str, &len);
+            size_t len;
+            char const* str;
+            tr_variantGetStr(val, &str, &len);
             tr_variantListAddRaw(target, str, len);
         }
         else if (tr_variantIsDict(val))
@@ -1069,7 +1062,7 @@ void tr_variantMergeDicts(tr_variant* target, tr_variant const* source)
         {
             if (tr_variantIsBool(val))
             {
-                bool boolVal = false;
+                bool boolVal;
                 tr_variantGetBool(val, &boolVal);
                 tr_variantDictAddBool(target, key, boolVal);
             }
@@ -1087,9 +1080,9 @@ void tr_variantMergeDicts(tr_variant* target, tr_variant const* source)
             }
             else if (tr_variantIsString(val))
             {
-                size_t len = 0;
-                char const* str = NULL;
-                (void)tr_variantGetStr(val, &str, &len);
+                size_t len;
+                char const* str;
+                tr_variantGetStr(val, &str, &len);
                 tr_variantDictAddRaw(target, key, str, len);
             }
             else if (tr_variantIsDict(val) && tr_variantDictFindDict(target, key, &t))
@@ -1165,55 +1158,55 @@ char* tr_variantToStr(tr_variant const* v, tr_variant_fmt fmt, size_t* len)
     return evbuffer_free_to_str(buf, len);
 }
 
-static int writeVariantToFd(tr_variant const* v, tr_variant_fmt fmt, tr_sys_file_t fd, tr_error** error)
-{
-    int err = 0;
-    struct evbuffer* buf = tr_variantToBuf(v, fmt);
-    char const* walk = (char const*)evbuffer_pullup(buf, -1);
-    uint64_t nleft = evbuffer_get_length(buf);
-
-    while (nleft > 0)
-    {
-        uint64_t n = 0;
-
-        tr_error* tmperr = NULL;
-        if (!tr_sys_file_write(fd, walk, nleft, &n, &tmperr))
-        {
-            err = tmperr->code;
-            tr_error_propagate(error, &tmperr);
-            break;
-        }
-
-        nleft -= n;
-        walk += n;
-    }
-
-    evbuffer_free(buf);
-    return err;
-}
-
 int tr_variantToFile(tr_variant const* v, tr_variant_fmt fmt, char const* filename)
 {
+    char* tmp;
+    tr_sys_file_t fd;
+    int err = 0;
+    char* real_filename;
+    tr_error* error = NULL;
+
     /* follow symlinks to find the "real" file, to make sure the temporary
      * we build with tr_sys_file_open_temp() is created on the right partition */
-    char* real_filename = tr_sys_path_resolve(filename, NULL);
-    if (real_filename != NULL)
+    if ((real_filename = tr_sys_path_resolve(filename, NULL)) != NULL)
     {
         filename = real_filename;
     }
 
     /* if the file already exists, try to move it out of the way & keep it as a backup */
-    char* const tmp = tr_strdup_printf("%s.tmp.XXXXXX", filename);
-    tr_error* error = NULL;
-    tr_sys_file_t const fd = tr_sys_file_open_temp(tmp, &error);
+    tmp = tr_strdup_printf("%s.tmp.XXXXXX", filename);
+    fd = tr_sys_file_open_temp(tmp, &error);
 
-    int err = 0;
     if (fd != TR_BAD_SYS_FILE)
     {
-        err = writeVariantToFd(v, fmt, fd, &error);
+        uint64_t nleft;
+
+        /* save the variant to a temporary file */
+        {
+            struct evbuffer* buf = tr_variantToBuf(v, fmt);
+            char const* walk = (char const*)evbuffer_pullup(buf, -1);
+            nleft = evbuffer_get_length(buf);
+
+            while (nleft > 0)
+            {
+                uint64_t n;
+
+                if (!tr_sys_file_write(fd, walk, nleft, &n, &error))
+                {
+                    err = error->code;
+                    break;
+                }
+
+                nleft -= n;
+                walk += n;
+            }
+
+            evbuffer_free(buf);
+        }
+
         tr_sys_file_close(fd, NULL);
 
-        if (err)
+        if (nleft > 0)
         {
             tr_logAddError(_("Couldn't save temporary file \"%1$s\": %2$s"), tmp, error->message);
             tr_sys_path_remove(tmp, NULL);

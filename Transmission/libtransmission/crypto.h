@@ -6,7 +6,6 @@
  *
  */
 
-// NB: crypto-test-ref.h needs this, so use it instead of #pragma once
 #ifndef TR_ENCRYPTION_H
 #define TR_ENCRYPTION_H
 
@@ -17,10 +16,7 @@
 #include <inttypes.h>
 
 #include "crypto-utils.h"
-#include "tr-macros.h"
 #include "utils.h" /* TR_GNUC_NULL_TERMINATED */
-
-TR_BEGIN_DECLS
 
 /**
 *** @addtogroup peers
@@ -75,6 +71,4 @@ bool tr_cryptoSecretKeySha1(tr_crypto const* crypto, void const* prepend_data, s
 
 /* @} */
 
-TR_END_DECLS
-
-#endif // TR_ENCRYPTION_H
+#endif

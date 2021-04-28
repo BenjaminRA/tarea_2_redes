@@ -8,7 +8,6 @@
 
 #pragma once
 
-#include <cstdint>
 #include <functional>
 #include <type_traits>
 
@@ -18,58 +17,57 @@
 #include <QPair>
 #include <QQueue>
 
-#include "Macros.h"
 #include "RpcClient.h"
 
 class RpcQueue : public QObject
 {
     Q_OBJECT
-    TR_DISABLE_COPY_MOVE(RpcQueue)
 
 public:
     explicit RpcQueue(QObject* parent = nullptr);
 
-    void setTolerateErrors(bool tolerate_errors = true)
+    void setTolerateErrors(bool tolerateErrors = true)
     {
-        tolerate_errors_ = tolerate_errors;
+        myTolerateErrors = tolerateErrors;
     }
 
     template<typename Func>
     void add(Func func)
     {
-        queue_.enqueue(qMakePair(normalizeFunc(func), ErrorHandlerFunction()));
+        myQueue.enqueue(qMakePair(normalizeFunc(func), ErrorHandlerFunction()));
     }
 
     template<typename Func, typename ErrorHandler>
-    void add(Func func, ErrorHandler error_handler)
+    void add(Func func, ErrorHandler errorHandler)
     {
-        queue_.enqueue(qMakePair(normalizeFunc(func), normalizeErrorHandler(error_handler)));
+        myQueue.enqueue(qMakePair(normalizeFunc(func), normalizeErrorHandler(errorHandler)));
     }
 
     // The first function in queue is ran synchronously
     // (hence it may be e. g. a lambda capturing local variables by reference).
     void run();
 
-    using Tag = uint64_t;
-    Tag tag() const { return tag_; }
-
 private:
     // Internally queued function. Takes the last response future, makes a
     // request and returns a new response future.
-    using QueuedFunction = std::function<RpcResponseFuture(RpcResponseFuture const&)>;
+    typedef std::function<RpcResponseFuture(RpcResponseFuture const&)> QueuedFunction;
 
     // Internally stored error handler function. Takes the last response future and returns nothing.
-    using ErrorHandlerFunction = std::function<void (RpcResponseFuture const&)>;
+    typedef std::function<void (RpcResponseFuture const&)> ErrorHandlerFunction;
 
+private slots:
+    void stepFinished();
+
+private:
     void runNext(RpcResponseFuture const& response);
 
     // These overloads convert various forms of input closures to what we store internally.
 
     // normal closure, takes response and returns new future
     template<typename Func, typename std::enable_if<
-        std::is_same_v<typename std::invoke_result_t<Func, RpcResponse const&>, RpcResponseFuture>
+        std::is_same<typename std::result_of<Func(RpcResponse const&)>::type, RpcResponseFuture>::value
         >::type* = nullptr>
-    QueuedFunction normalizeFunc(Func const& func) const
+    QueuedFunction normalizeFunc(Func const& func)
     {
         return [func](RpcResponseFuture const& r)
             {
@@ -79,9 +77,9 @@ private:
 
     // closure without argument (first step), takes nothing and returns new future
     template<typename Func, typename std::enable_if<
-        std::is_same_v<typename std::invoke_result_t<Func>, RpcResponseFuture>
+        std::is_same<typename std::result_of<Func()>::type, RpcResponseFuture>::value
         >::type* = nullptr>
-    QueuedFunction normalizeFunc(Func const& func) const
+    QueuedFunction normalizeFunc(Func const& func)
     {
         return [func](RpcResponseFuture const&)
             {
@@ -91,9 +89,9 @@ private:
 
     // closure without return value ("auxiliary"), takes response and returns nothing -- internally we reuse the last future
     template<typename Func, typename std::enable_if<
-        std::is_same_v<typename std::invoke_result_t<Func, RpcResponse const&>, void>
+        std::is_same<typename std::result_of<Func(RpcResponse const&)>::type, void>::value
         >::type* = nullptr>
-    QueuedFunction normalizeFunc(Func const& func) const
+    QueuedFunction normalizeFunc(Func const& func)
     {
         return [func](RpcResponseFuture const& r)
             {
@@ -104,9 +102,9 @@ private:
 
     // closure without argument and return value, takes nothing and returns nothing -- next function will also get nothing
     template<typename Func, typename std::enable_if<
-        std::is_same_v<typename std::invoke_result_t<Func>, void>
+        std::is_same<typename std::result_of<Func()>::type, void>::value
         >::type* = nullptr>
-    QueuedFunction normalizeFunc(Func const& func) const
+    QueuedFunction normalizeFunc(Func const& func)
     {
         return [func](RpcResponseFuture const& r)
             {
@@ -117,9 +115,9 @@ private:
 
     // normal error handler, takes last response
     template<typename Func, typename std::enable_if<
-        std::is_same_v<typename std::invoke_result_t<Func, RpcResponse const&>, void>
+        std::is_same<typename std::result_of<Func(RpcResponse const&)>::type, void>::value
         >::type* = nullptr>
-    ErrorHandlerFunction normalizeErrorHandler(Func const& func) const
+    ErrorHandlerFunction normalizeErrorHandler(Func const& func)
     {
         return [func](RpcResponseFuture const& r)
             {
@@ -129,9 +127,9 @@ private:
 
     // error handler without an argument, takes nothing
     template<typename Func, typename std::enable_if<
-        std::is_same_v<typename std::invoke_result_t<Func>, void>
+        std::is_same<typename std::result_of<Func()>::type, void>::value
         >::type* = nullptr>
-    ErrorHandlerFunction normalizeErrorHandler(Func const& func) const
+    ErrorHandlerFunction normalizeErrorHandler(Func const& func)
     {
         return [func](RpcResponseFuture const&)
             {
@@ -139,14 +137,10 @@ private:
             };
     }
 
-    Tag const tag_;
-    static Tag next_tag;
-    bool tolerate_errors_ = {};
-    QFutureInterface<RpcResponse> promise_;
-    QQueue<QPair<QueuedFunction, ErrorHandlerFunction>> queue_;
-    ErrorHandlerFunction next_error_handler_;
-    QFutureWatcher<RpcResponse> future_watcher_;
-
-private slots:
-    void stepFinished();
+private:
+    bool myTolerateErrors;
+    QFutureInterface<RpcResponse> myPromise;
+    QQueue<QPair<QueuedFunction, ErrorHandlerFunction>> myQueue;
+    ErrorHandlerFunction myNextErrorHandler;
+    QFutureWatcher<RpcResponse> myFutureWatcher;
 };

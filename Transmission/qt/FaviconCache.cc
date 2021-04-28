@@ -6,8 +6,6 @@
  *
  */
 
-#include <array>
-
 #include <QDir>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
@@ -20,82 +18,59 @@
 ****
 ***/
 
-FaviconCache::FaviconCache() :
-    nam_(new QNetworkAccessManager(this))
+FaviconCache::FaviconCache()
 {
-    connect(nam_, &QNetworkAccessManager::finished, this, &FaviconCache::onRequestFinished);
+    myNAM = new QNetworkAccessManager();
+    connect(myNAM, SIGNAL(finished(QNetworkReply*)), this, SLOT(onRequestFinished(QNetworkReply*)));
+}
+
+FaviconCache::~FaviconCache()
+{
+    delete myNAM;
 }
 
 /***
 ****
 ***/
+
+QString FaviconCache::getCacheDir()
+{
+    QString const base = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
+
+    return QDir(base).absoluteFilePath(QLatin1String("favicons"));
+}
 
 namespace
 {
 
-QPixmap scale(QPixmap const& pixmap)
+QPixmap scale(QPixmap pixmap)
 {
     return pixmap.scaled(FaviconCache::getIconSize(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 }
 
-QString getCacheDir()
-{
-    auto const base = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
-    return QDir(base).absoluteFilePath(QStringLiteral("favicons"));
 }
-
-QString getScrapedFile()
-{
-    auto const base = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
-    return QDir(base).absoluteFilePath(QStringLiteral("favicons-scraped.txt"));
-}
-
-void markUrlAsScraped(QString const& url_str)
-{
-    auto skip_file = QFile(getScrapedFile());
-    if (skip_file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append))
-    {
-        skip_file.write(url_str.toUtf8());
-        skip_file.write("\n");
-    }
-}
-
-} // unnamed namespace
-
 void FaviconCache::ensureCacheDirHasBeenScanned()
 {
-    static bool has_been_scanned = false;
-    if (has_been_scanned)
-    {
-        return;
-    }
+    static bool hasBeenScanned = false;
 
-    has_been_scanned = true;
-
-    // remember which hosts we've asked for a favicon so that we
-    // don't re-ask them every time we start a new session
-    auto skip_file = QFile(getScrapedFile());
-    if (skip_file.open(QIODevice::ReadOnly | QIODevice::Text))
+    if (!hasBeenScanned)
     {
-        while (!skip_file.atEnd())
+        hasBeenScanned = true;
+
+        QDir cacheDir(getCacheDir());
+        cacheDir.mkpath(cacheDir.absolutePath());
+
+        QStringList files = cacheDir.entryList(QDir::Files | QDir::Readable);
+
+        for (QString const& file : files)
         {
-            auto const url = QString::fromUtf8(skip_file.readLine()).trimmed();
-            auto const key = getKey(QUrl{ url });
-            keys_.insert({ url, key });
-            pixmaps_.try_emplace(key);
-        }
-    }
+            QPixmap pixmap;
+            pixmap.load(cacheDir.absoluteFilePath(file));
 
-    // load the cached favicons
-    auto cache_dir = QDir(getCacheDir());
-    cache_dir.mkpath(cache_dir.absolutePath());
-    QStringList const files = cache_dir.entryList(QDir::Files | QDir::Readable);
-    for (auto const& file : files)
-    {
-        QPixmap pixmap(cache_dir.absoluteFilePath(file));
-        if (!pixmap.isNull())
-        {
-            pixmaps_[file] = scale(pixmap);
+            if (!pixmap.isNull())
+            {
+                myPixmaps[file] = scale(pixmap);
+            }
         }
     }
 }
@@ -104,14 +79,14 @@ void FaviconCache::ensureCacheDirHasBeenScanned()
 ****
 ***/
 
-QString FaviconCache::getDisplayName(Key const& key)
+QString FaviconCache::getDisplayName(QString const& key)
 {
     auto name = key;
     name[0] = name.at(0).toTitleCase();
     return name;
 }
 
-FaviconCache::Key FaviconCache::getKey(QUrl const& url)
+QString FaviconCache::getKey(QUrl const& url)
 {
     auto host = url.host();
 
@@ -124,7 +99,7 @@ FaviconCache::Key FaviconCache::getKey(QUrl const& url)
     return pos < 0 ? host : host.remove(0, pos + 1);
 }
 
-FaviconCache::Key FaviconCache::getKey(QString const& displayName)
+QString FaviconCache::getKey(QString const& displayName)
 {
     return displayName.toLower();
 }
@@ -134,76 +109,32 @@ QSize FaviconCache::getIconSize()
     return QSize(16, 16);
 }
 
-QPixmap FaviconCache::find(Key const& key)
+QPixmap FaviconCache::find(QString const& key)
 {
     ensureCacheDirHasBeenScanned();
 
-    return pixmaps_[key];
+    return myPixmaps[key];
 }
 
-FaviconCache::Key FaviconCache::add(QString const& url_str)
+QString FaviconCache::add(QUrl const& url)
 {
     ensureCacheDirHasBeenScanned();
 
-    // find or add this url's key
-    auto k_it = keys_.find(url_str);
-    if (k_it != keys_.end())
+    QString const key = getKey(url);
+
+    if (myPixmaps.count(key) == 0)
     {
-        return k_it->second;
-    }
+        // add a placholder s.t. we only ping the server once per session
+        myPixmaps[key] = QPixmap();
 
-    auto const url = QUrl { url_str };
-    auto const key = getKey(url);
-    keys_.insert({ url_str, key });
+        // try to download the favicon
+        QString const path = QLatin1String("http://") + url.host() + QLatin1String("/favicon.");
+        QStringList suffixes;
+        suffixes << QLatin1String("ico") << QLatin1String("png") << QLatin1String("gif") << QLatin1String("jpg");
 
-    // Try to download a favicon if we don't have one.
-    // Add a placeholder to prevent repeat downloads.
-    if (pixmaps_.try_emplace(key).second)
-    {
-        markUrlAsScraped(url_str);
-
-        auto const scrape = [this](auto const host)
-            {
-                auto const schemes = std::array<QString, 2>{
-                    QStringLiteral("http"),
-                    QStringLiteral("https")
-                };
-                auto const suffixes = std::array<QString, 5>{
-                    QStringLiteral("gif"),
-                    QStringLiteral("ico"),
-                    QStringLiteral("jpg"),
-                    QStringLiteral("png"),
-                    QStringLiteral("svg")
-                };
-                for (auto const& scheme : schemes)
-                {
-                    for (auto const& suffix : suffixes)
-                    {
-                        auto const path = QStringLiteral("%1://%2/favicon.%3").arg(scheme).arg(host).arg(suffix);
-                        nam_->get(QNetworkRequest(path));
-                    }
-                }
-            };
-
-        // tracker.domain.com
-        auto host = url.host();
-        scrape(host);
-
-        auto const delim = QStringLiteral(".");
-        auto const has_subdomain = host.count(delim) > 1;
-        if (has_subdomain)
+        for (QString const& suffix : suffixes)
         {
-            auto const original_subdomain = host.left(host.indexOf(delim));
-            host.remove(0, original_subdomain.size() + 1);
-            // domain.com
-            scrape(host);
-
-            auto const www = QStringLiteral("www");
-            if (original_subdomain != www)
-            {
-                // www.domain.com
-                scrape(QStringLiteral("%1.%2").arg(www).arg(host));
-            }
+            myNAM->get(QNetworkRequest(path + suffix));
         }
     }
 
@@ -226,12 +157,12 @@ void FaviconCache::onRequestFinished(QNetworkReply* reply)
     if (!pixmap.isNull())
     {
         // save it in memory...
-        pixmaps_[key] = scale(pixmap);
+        myPixmaps[key] = scale(pixmap);
 
         // save it on disk...
-        QDir cache_dir(getCacheDir());
-        cache_dir.mkpath(cache_dir.absolutePath());
-        QFile file(cache_dir.absoluteFilePath(key));
+        QDir cacheDir(getCacheDir());
+        cacheDir.mkpath(cacheDir.absolutePath());
+        QFile file(cacheDir.absoluteFilePath(key));
         file.open(QIODevice::WriteOnly);
         file.write(content);
         file.close();
@@ -239,6 +170,4 @@ void FaviconCache::onRequestFinished(QNetworkReply* reply)
         // notify listeners
         emit pixmapReady(key);
     }
-
-    reply->deleteLater();
 }

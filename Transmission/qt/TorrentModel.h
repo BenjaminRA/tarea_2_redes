@@ -12,14 +12,13 @@
 #include <vector>
 
 #include <QAbstractListModel>
-#include <QVector>
+// #include <QVector>
 
-#include "Macros.h"
-#include "Torrent.h"
-#include "Typedefs.h"
+#include <Typedefs.h>
 
 class Prefs;
 class Speed;
+class Torrent;
 
 extern "C"
 {
@@ -29,7 +28,6 @@ struct tr_variant;
 class TorrentModel : public QAbstractListModel
 {
     Q_OBJECT
-    TR_DISABLE_COPY_MOVE(TorrentModel)
 
 public:
     enum Role
@@ -38,28 +36,28 @@ public:
     };
 
     explicit TorrentModel(Prefs const& prefs);
-    ~TorrentModel() override;
+    virtual ~TorrentModel() override;
     void clear();
 
-    bool hasTorrent(TorrentHash const& hash) const;
+    bool hasTorrent(QString const& hashString) const;
 
     Torrent* getTorrentFromId(int id);
     Torrent const* getTorrentFromId(int id) const;
 
     using torrents_t = QVector<Torrent*>;
-    torrents_t const& torrents() const { return torrents_; }
+    torrents_t const& torrents() const { return myTorrents; }
 
     // QAbstractItemModel
     int rowCount(QModelIndex const& parent = QModelIndex()) const override;
     QVariant data(QModelIndex const& index, int role = Qt::DisplayRole) const override;
 
 public slots:
-    void updateTorrents(tr_variant* torrent_list, bool is_complete_list);
-    void removeTorrents(tr_variant* torrent_list);
+    void updateTorrents(tr_variant* torrentList, bool isCompleteList);
+    void removeTorrents(tr_variant* torrentList);
 
 signals:
     void torrentsAdded(torrent_ids_t const&);
-    void torrentsChanged(torrent_ids_t const&, Torrent::fields_t const& fields);
+    void torrentsChanged(torrent_ids_t const&);
     void torrentsCompleted(torrent_ids_t const&);
     void torrentsEdited(torrent_ids_t const&);
     void torrentsNeedInfo(torrent_ids_t const&);
@@ -73,7 +71,7 @@ private:
     using span_t = std::pair<int, int>;
     std::vector<span_t> getSpans(torrent_ids_t const& ids) const;
 
-    Prefs const& prefs_;
-    torrent_ids_t already_added_;
-    torrents_t torrents_;
+    Prefs const& myPrefs;
+    torrent_ids_t myAlreadyAdded;
+    torrents_t myTorrents;
 };

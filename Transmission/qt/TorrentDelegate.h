@@ -12,8 +12,6 @@
 
 #include <QStyledItemDelegate>
 
-#include "Macros.h"
-
 class QStyle;
 class QStyleOptionProgressBar;
 
@@ -22,10 +20,10 @@ class Torrent;
 class TorrentDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
-    TR_DISABLE_COPY_MOVE(TorrentDelegate)
 
 public:
     explicit TorrentDelegate(QObject* parent = nullptr);
+    virtual ~TorrentDelegate();
 
     // QAbstractItemDelegate
     QSize sizeHint(QStyleOptionViewItem const& option, QModelIndex const& index) const override;
@@ -45,17 +43,18 @@ protected:
     static QString shortStatusString(Torrent const& tor);
     static QString shortTransferString(Torrent const& tor);
 
-    QColor const BlueBack{ "lightgrey" };
-    QColor const BlueBrush{ "steelblue" };
-    QColor const GreenBack{ "darkseagreen" };
-    QColor const GreenBrush{ "forestgreen" };
-    QColor const SilverBack{ "grey" };
-    QColor const SilverBrush{ "silver" };
+protected:
+    QStyleOptionProgressBar* myProgressBarStyle;
 
-    mutable QStyleOptionProgressBar progress_bar_style_ = {};
+    static QColor blueBrush;
+    static QColor greenBrush;
+    static QColor silverBrush;
+    static QColor blueBack;
+    static QColor greenBack;
+    static QColor silverBack;
 
 private:
-    mutable std::optional<int> height_hint_;
-    mutable QFont height_font_;
-    mutable QIcon warning_emblem_;
+    mutable std::optional<int> myHeightHint;
+    mutable QFont myHeightFont;
+    mutable QIcon myWarningEmblem;
 };

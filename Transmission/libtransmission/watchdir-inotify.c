@@ -17,7 +17,7 @@
 #include <event2/bufferevent.h>
 #include <event2/event.h>
 
-#define LIBTRANSMISSION_WATCHDIR_MODULE
+#define __LIBTRANSMISSION_WATCHDIR_MODULE__
 
 #include "transmission.h"
 #include "log.h"
@@ -55,11 +55,8 @@ tr_watchdir_inotify;
 ****
 ***/
 
-static void tr_watchdir_inotify_on_first_scan(evutil_socket_t fd, short type, void* context)
+static void tr_watchdir_inotify_on_first_scan(evutil_socket_t fd UNUSED, short type UNUSED, void* context)
 {
-    TR_UNUSED(fd);
-    TR_UNUSED(type);
-
     tr_watchdir_t const handle = context;
 
     tr_watchdir_scan(handle, NULL);
@@ -71,7 +68,7 @@ static void tr_watchdir_inotify_on_event(struct bufferevent* event, void* contex
 
     tr_watchdir_t const handle = context;
 #ifdef TR_ENABLE_ASSERTS
-    tr_watchdir_inotify const* const backend = BACKEND_UPCAST(tr_watchdir_get_backend(handle));
+    tr_watchdir_inotify* const backend = BACKEND_UPCAST(tr_watchdir_get_backend(handle));
 #endif
     struct inotify_event ev;
     size_t nread;
@@ -166,19 +163,19 @@ tr_watchdir_backend* tr_watchdir_inotify_new(tr_watchdir_t handle)
     if ((backend->infd = inotify_init()) == -1)
     {
         log_error("Unable to inotify_init: %s", tr_strerror(errno));
-        goto FAIL;
+        goto fail;
     }
 
     if ((backend->inwd = inotify_add_watch(backend->infd, path, INOTIFY_WATCH_MASK | IN_ONLYDIR)) == -1)
     {
         log_error("Failed to setup watchdir \"%s\": %s (%d)", path, tr_strerror(errno), errno);
-        goto FAIL;
+        goto fail;
     }
 
     if ((backend->event = bufferevent_socket_new(tr_watchdir_get_event_base(handle), backend->infd, 0)) == NULL)
     {
         log_error("Failed to create event buffer: %s", tr_strerror(errno));
-        goto FAIL;
+        goto fail;
     }
 
     /* Guarantees at least the sizeof an inotify event will be available in the
@@ -196,7 +193,7 @@ tr_watchdir_backend* tr_watchdir_inotify_new(tr_watchdir_t handle)
 
     return BACKEND_DOWNCAST(backend);
 
-FAIL:
+fail:
     tr_watchdir_inotify_free(BACKEND_DOWNCAST(backend));
     return NULL;
 }

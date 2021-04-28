@@ -8,9 +8,10 @@
 
 #pragma once
 
-#include "tr-macros.h"
-
-TR_BEGIN_DECLS
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
 typedef struct tr_session_id* tr_session_id_t;
 
@@ -51,4 +52,6 @@ char const* tr_session_id_get_current(tr_session_id_t session_id);
  */
 bool tr_session_id_is_local(char const* session_id);
 
-TR_END_DECLS
+#ifdef __cplusplus
+}
+#endif

@@ -105,7 +105,6 @@
 
         //set auto import
         NSString * autoPath;
-        VDKQueue* x = [(Controller *)[NSApp delegate] fileWatcherQueue];
         if ([fDefaults boolForKey: @"AutoImport"] && (autoPath = [fDefaults stringForKey: @"AutoImportDirectory"]))
             [[(Controller *)[NSApp delegate] fileWatcherQueue] addPath: [autoPath stringByExpandingTildeInPath] notifyingAbout: VDKQueueNotifyAboutWrite];
 
@@ -237,11 +236,7 @@
     if ([ident isEqualToString: TOOLBAR_GENERAL])
     {
         [item setLabel: NSLocalizedString(@"General", "Preferences -> toolbar item title")];
-        if (@available(macOS 11.0, *)) {
-            [item setImage: [NSImage imageWithSystemSymbolName: @"gearshape" accessibilityDescription: nil]];
-        } else {
-            [item setImage: [NSImage imageNamed: NSImageNamePreferencesGeneral]];
-        }
+        [item setImage: [NSImage imageNamed: NSImageNamePreferencesGeneral]];
         [item setTarget: self];
         [item setAction: @selector(setPrefView:)];
         [item setAutovalidates: NO];
@@ -250,11 +245,6 @@
     {
         [item setLabel: NSLocalizedString(@"Transfers", "Preferences -> toolbar item title")];
         [item setImage: [NSImage imageNamed: @"Transfers"]];
-        if (@available(macOS 11.0, *)) {
-            [item setImage: [NSImage imageWithSystemSymbolName: @"arrow.up.arrow.down" accessibilityDescription: nil]];
-        } else {
-            [item setImage: [NSImage imageNamed: @"Transfers"]];
-        }
         [item setTarget: self];
         [item setAction: @selector(setPrefView:)];
         [item setAutovalidates: NO];
@@ -263,11 +253,6 @@
     {
         [item setLabel: NSLocalizedString(@"Groups", "Preferences -> toolbar item title")];
         [item setImage: [NSImage imageNamed: @"Groups"]];
-        if (@available(macOS 11.0, *)) {
-            [item setImage: [NSImage imageWithSystemSymbolName: @"pin" accessibilityDescription: nil]];
-        } else {
-            [item setImage: [NSImage imageNamed: @"Groups"]];
-        }
         [item setTarget: self];
         [item setAction: @selector(setPrefView:)];
         [item setAutovalidates: NO];
@@ -276,11 +261,6 @@
     {
         [item setLabel: NSLocalizedString(@"Bandwidth", "Preferences -> toolbar item title")];
         [item setImage: [NSImage imageNamed: @"Bandwidth"]];
-        if (@available(macOS 11.0, *)) {
-            [item setImage: [NSImage imageWithSystemSymbolName: @"speedometer" accessibilityDescription: nil]];
-        } else {
-            [item setImage: [NSImage imageNamed: @"Bandwidth"]];
-        }
         [item setTarget: self];
         [item setAction: @selector(setPrefView:)];
         [item setAutovalidates: NO];
@@ -289,11 +269,6 @@
     {
         [item setLabel: NSLocalizedString(@"Peers", "Preferences -> toolbar item title")];
         [item setImage: [NSImage imageNamed: NSImageNameUserGroup]];
-        if (@available(macOS 11.0, *)) {
-            [item setImage: [NSImage imageWithSystemSymbolName: @"person.2" accessibilityDescription: nil]];
-        } else {
-            [item setImage: [NSImage imageNamed: NSImageNameUserGroup]];
-        }
         [item setTarget: self];
         [item setAction: @selector(setPrefView:)];
         [item setAutovalidates: NO];
@@ -301,11 +276,7 @@
     else if ([ident isEqualToString: TOOLBAR_NETWORK])
     {
         [item setLabel: NSLocalizedString(@"Network", "Preferences -> toolbar item title")];
-        if (@available(macOS 11.0, *)) {
-            [item setImage: [NSImage imageWithSystemSymbolName: @"network" accessibilityDescription: nil]];
-        } else {
-            [item setImage: [NSImage imageNamed: NSImageNameNetwork]];
-        }
+        [item setImage: [NSImage imageNamed: NSImageNameNetwork]];
         [item setTarget: self];
         [item setAction: @selector(setPrefView:)];
         [item setAutovalidates: NO];
@@ -313,11 +284,7 @@
     else if ([ident isEqualToString: TOOLBAR_REMOTE])
     {
         [item setLabel: NSLocalizedString(@"Remote", "Preferences -> toolbar item title")];
-        if (@available(macOS 11.0, *)) {
-            [item setImage: [NSImage imageWithSystemSymbolName: @"antenna.radiowaves.left.and.right" accessibilityDescription: nil]];
-        } else {
-            [item setImage: [NSImage imageNamed: @"Remote"]];
-        }
+        [item setImage: [NSImage imageNamed: @"Remote"]];
         [item setTarget: self];
         [item setAction: @selector(setPrefView:)];
         [item setAutovalidates: NO];
@@ -710,7 +677,7 @@
 + (NSInteger) dateToTimeSum: (NSDate *) date
 {
     NSCalendar * calendar = [NSCalendar currentCalendar];
-    NSDateComponents * components = [calendar components: NSCalendarUnitHour | NSCalendarUnitMinute fromDate: date];
+    NSDateComponents * components = [calendar components: NSHourCalendarUnit | NSMinuteCalendarUnit fromDate: date];
     return [components hour] * 60 + [components minute];
 }
 

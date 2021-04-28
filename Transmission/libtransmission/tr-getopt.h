@@ -8,9 +8,10 @@
 
 #pragma once
 
-#include "tr-macros.h"
-
-TR_BEGIN_DECLS
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
 /**
  * @addtogroup utils Utilities
@@ -51,6 +52,8 @@ int tr_getopt(char const* summary, int argc, char const* const* argv, tr_option 
 /** @brief prints the `Usage' help section to stdout */
 void tr_getopt_usage(char const* appName, char const* description, tr_option const* opts);
 
-/** @} */
+#ifdef __cplusplus
+} /* extern "C" */
+#endif
 
-TR_END_DECLS
+/** @} */

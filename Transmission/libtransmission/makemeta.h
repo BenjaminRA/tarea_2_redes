@@ -8,10 +8,10 @@
 
 #pragma once
 
-#include "tr-macros.h"
-#include "transmission.h"
-
-TR_BEGIN_DECLS
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
 typedef struct tr_metainfo_builder_file
 {
@@ -117,4 +117,6 @@ void tr_metaInfoBuilderFree(tr_metainfo_builder*);
 void tr_makeMetaInfo(tr_metainfo_builder* builder, char const* outputFile, tr_tracker_info const* trackers, int trackerCount,
     char const* comment, bool isPrivate);
 
-TR_END_DECLS
+#ifdef __cplusplus
+}
+#endif

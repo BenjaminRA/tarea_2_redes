@@ -13,7 +13,6 @@
 #include "transmission.h"
 #include "crypto-utils.h"
 #include "tr-assert.h"
-#include "tr-macros.h"
 #include "utils.h"
 
 /***
@@ -66,30 +65,30 @@ void tr_dh_secret_free(tr_dh_secret_t handle)
 
 tr_x509_store_t tr_ssl_get_x509_store(tr_ssl_ctx_t handle)
 {
-    TR_UNUSED(handle);
+    (void)handle;
 
     return NULL;
 }
 
 bool tr_x509_store_add(tr_x509_store_t handle, tr_x509_cert_t cert)
 {
-    TR_UNUSED(handle);
-    TR_UNUSED(cert);
+    (void)handle;
+    (void)cert;
 
     return false;
 }
 
 tr_x509_cert_t tr_x509_cert_new(void const* der, size_t der_length)
 {
-    TR_UNUSED(der);
-    TR_UNUSED(der_length);
+    (void)der;
+    (void)der_length;
 
     return NULL;
 }
 
 void tr_x509_cert_free(tr_x509_cert_t handle)
 {
-    TR_UNUSED(handle);
+    (void)handle;
 }
 
 #endif /* TR_CRYPTO_X509_FALLBACK */

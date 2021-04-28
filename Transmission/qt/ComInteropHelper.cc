@@ -10,36 +10,40 @@
 #include <objbase.h>
 
 #include <QAxFactory>
+#include <QAxObject>
 #include <QString>
 #include <QVariant>
 
 #include "ComInteropHelper.h"
 #include "InteropObject.h"
 
-// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions)
 QAXFACTORY_BEGIN("{1e405fc2-1a3a-468b-8bd6-bfbb58770390}", "{792d1aac-53cc-4dc9-bc29-e5295fdb93a9}")
 QAXCLASS(InteropObject)
-QAXFACTORY_END() // NOLINT
+QAXFACTORY_END()
 
 // These are ActiveQt internals; declaring here as I don't like their WinMain much...
-extern HANDLE qAxInstance; // NOLINT
-extern bool qAxOutProcServer; // NOLINT
-extern wchar_t qAxModuleFilename[MAX_PATH]; // NOLINT
-extern QString qAxInit(); // NOLINT
+extern HANDLE qAxInstance;
+extern bool qAxOutProcServer;
+extern wchar_t qAxModuleFilename[MAX_PATH];
+extern QString qAxInit();
 
 ComInteropHelper::ComInteropHelper() :
-    client_(new QAxObject(QStringLiteral("Transmission.QtClient")))
+    m_client(new QAxObject(QLatin1String("Transmission.QtClient")))
+{
+}
+
+ComInteropHelper::~ComInteropHelper()
 {
 }
 
 bool ComInteropHelper::isConnected() const
 {
-    return !client_->isNull();
+    return !m_client->isNull();
 }
 
-QVariant ComInteropHelper::addMetainfo(QString const& metainfo) const
+QVariant ComInteropHelper::addMetainfo(QString const& metainfo)
 {
-    return client_->dynamicCall("AddMetainfo(QString)", metainfo);
+    return m_client->dynamicCall("AddMetainfo(QString)", metainfo);
 }
 
 void ComInteropHelper::initialize()

@@ -130,32 +130,9 @@ bool trashDataFile(const char * filename, tr_error ** error)
 }
 
 @implementation Torrent
-{
-    tr_torrent * fHandle;
-    const tr_info * fInfo;
-    const tr_stat * fStat;
 
-    NSUserDefaults * fDefaults;
-
-    NSImage * fIcon;
-
-    NSString * fHashString;
-
-    tr_file_stat * fFileStat;
-    NSArray * fFileList, * fFlatFileList;
-
-    NSIndexSet * fPreviousFinishedIndexes;
-    NSDate * fPreviousFinishedIndexesDate;
-
-    NSInteger fGroupValue;
-    TorrentDeterminationType fGroupValueDetermination;
-
-    TorrentDeterminationType fDownloadFolderDetermination;
-
-    BOOL fResumeOnWake;
-
-    BOOL fTimeMachineExcludeInitialized;
-}
+#warning remove ivars in header when 64-bit only (or it compiles in 32-bit mode)
+@synthesize removeWhenFinishSeeding = fRemoveWhenFinishSeeding;
 
 - (id) initWithPath: (NSString *) path location: (NSString *) location deleteTorrentFile: (BOOL) torrentDelete
         lib: (tr_session *) lib
@@ -253,7 +230,7 @@ bool trashDataFile(const char * filename, tr_error ** error)
             @"Active": @([self isActive]),
             @"WaitToStart": @([self waitingToStart]),
             @"GroupValue": @(fGroupValue),
-            @"RemoveWhenFinishSeeding": @(_removeWhenFinishSeeding)};
+            @"RemoveWhenFinishSeeding": @(fRemoveWhenFinishSeeding)};
 }
 
 - (void) dealloc
@@ -1740,7 +1717,7 @@ bool trashDataFile(const char * filename, tr_error ** error)
         fGroupValue = [[GroupsController groups] groupIndexForTorrent: self];
     }
 
-    _removeWhenFinishSeeding = removeWhenFinishSeeding ? [removeWhenFinishSeeding boolValue] : [fDefaults boolForKey: @"RemoveWhenFinishSeeding"];
+    fRemoveWhenFinishSeeding = removeWhenFinishSeeding ? [removeWhenFinishSeeding boolValue] : [fDefaults boolForKey: @"RemoveWhenFinishSeeding"];
 
     [[NSNotificationCenter defaultCenter] addObserver: self selector: @selector(checkGroupValueForRemoval:)
         name: @"GroupValueRemoved" object: nil];
@@ -1864,11 +1841,26 @@ bool trashDataFile(const char * filename, tr_error ** error)
 
             //quarantine the finished data
             NSString * dataLocation = [[self currentDirectory] stringByAppendingPathComponent: [self name]];
-            NSURL * dataLocationUrl = [NSURL fileURLWithPath: dataLocation];
             NSDictionary * quarantineProperties = @{ (NSString *)kLSQuarantineTypeKey : (NSString *)kLSQuarantineTypeOtherDownload };
-            NSError * error = nil;
-            if (![dataLocationUrl setResourceValue: quarantineProperties forKey: NSURLQuarantinePropertiesKey error: &error])
-                NSLog(@"Failed to quarantine %@: %@", dataLocation, [error description]);
+            if ([NSApp isOnYosemiteOrBetter])
+            {
+                NSURL * dataLocationUrl = [NSURL fileURLWithPath: dataLocation];
+                NSError * error = nil;
+                if (![dataLocationUrl setResourceValue: quarantineProperties forKey: NSURLQuarantinePropertiesKey error: &error])
+                    NSLog(@"Failed to quarantine %@: %@", dataLocation, [error description]);
+            }
+            else
+            {
+                NSString * dataLocation = [[self currentDirectory] stringByAppendingPathComponent: [self name]];
+                FSRef ref;
+                if (FSPathMakeRef((const UInt8 *)[dataLocation UTF8String], &ref, NULL) == noErr)
+                {
+                    if (LSSetItemAttribute(&ref, kLSRolesAll, kLSItemQuarantineProperties, (__bridge CFTypeRef)(quarantineProperties)) != noErr)
+                        NSLog(@"Failed to quarantine: %@", dataLocation);
+                }
+                else
+                    NSLog(@"Could not find file to quarantine: %@", dataLocation);
+            }
             break;
         }
         case TR_LEECH:
@@ -1999,17 +1991,25 @@ bool trashDataFile(const char * filename, tr_error ** error)
     else
         return NSLocalizedString(@"remaining time unknown", "Torrent -> eta string");
 
-    static NSDateComponentsFormatter *formatter;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        formatter = [NSDateComponentsFormatter new];
-        formatter.unitsStyle = NSDateComponentsFormatterUnitsStyleShort;
-        formatter.maximumUnitCount = 2;
-        formatter.collapsesLargestUnit = YES;
-        formatter.includesTimeRemainingPhrase = YES;
-    });
-    NSString * idleString = [formatter stringFromTimeInterval: eta];
-    
+    NSString * idleString;
+
+    if ([NSApp isOnYosemiteOrBetter]) {
+        static NSDateComponentsFormatter *formatter;
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            formatter = [NSDateComponentsFormatter new];
+            formatter.unitsStyle = NSDateComponentsFormatterUnitsStyleShort;
+            formatter.maximumUnitCount = 2;
+            formatter.collapsesLargestUnit = YES;
+            formatter.includesTimeRemainingPhrase = YES;
+        });
+
+        idleString = [formatter stringFromTimeInterval: eta];
+    }
+    else {
+        idleString = [NSString timeString: eta includesTimeRemainingPhrase: YES showSeconds: YES maxFields: 2];
+    }
+
     if (fromIdle) {
         idleString = [idleString stringByAppendingFormat: @" (%@)", NSLocalizedString(@"inactive", "Torrent -> eta string")];
     }
