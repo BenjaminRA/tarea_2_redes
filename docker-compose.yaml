@@ -1,16 +1,20 @@
 services:
   server:
     build: ./chihaya
+    restart: 'unless-stopped'
     ports:
       - '6880:6880'
       - '6969:6969'
 
   client:
     build: ./transmission
+    restart: 'unless-stopped'
+    volumes:
+      - './client/config:/transmission/config'
+      - './client/torrents:/transmission/downloads'
+      - './client/watch:/transmission/watch'
     ports:
       - '5446:5446'
-
-  test:
-    image: nginx:alpine
-    ports:
-      - '8080:80'
+      - '9091:9091'
+      - '9095:9095'
+      - '9095:9095/udp'

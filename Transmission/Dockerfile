@@ -16,4 +16,6 @@ RUN make install
 
 WORKDIR /usr/local/bin
 
-# CMD [ "transmission-daemon" ]
+ENV TRANSMISSION_HOME="/transmission/config"
+
+CMD [ "transmission-daemon", "-f"]
