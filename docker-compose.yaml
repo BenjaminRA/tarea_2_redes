@@ -1,0 +1,16 @@
+services:
+  server:
+    build: ./chihaya
+    ports:
+      - '6880:6880'
+      - '6969:6969'
+
+  client:
+    build: ./transmission
+    ports:
+      - '5446:5446'
+
+  test:
+    image: nginx:alpine
+    ports:
+      - '8080:80'
