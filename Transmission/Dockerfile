@@ -10,6 +10,8 @@ COPY . .
 
 RUN apt-get -y install libssl-dev
 
+RUN ["chmod", "+x", "./configure"]
+
 RUN ./configure -q && make -s
 
 RUN make install
