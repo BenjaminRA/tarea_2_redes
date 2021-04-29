@@ -29,4 +29,4 @@ EXPOSE 6880 6969
 # Drop root privileges
 USER chihaya
 
-ENTRYPOINT ["/chihaya", "--debug"]
+ENTRYPOINT ["/chihaya"]

@@ -14,7 +14,7 @@ RUN ./configure -q && make -s
 
 RUN make install
 
-WORKDIR /usr/local/bin
+WORKDIR /transmission
 
 ENV TRANSMISSION_HOME="/transmission/config"
 
