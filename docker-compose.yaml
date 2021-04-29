@@ -4,7 +4,9 @@ services:
     restart: 'unless-stopped'
     ports:
       - '6880:6880'
+      - '6880:6880/udp'
       - '6969:6969'
+      - '6969:6969/udp'
 
   client:
     build: ./transmission
@@ -14,7 +16,18 @@ services:
       - './client/torrents:/transmission/downloads'
       - './client/watch:/transmission/watch'
     ports:
-      - '5446:5446'
       - '9091:9091'
       - '9095:9095'
       - '9095:9095/udp'
+
+  client_2:
+    build: ./transmission
+    restart: 'unless-stopped'
+    volumes:
+      - './client_2/config:/transmission/config'
+      - './client_2/torrents:/transmission/downloads'
+      - './client_2/watch:/transmission/watch'
+    ports:
+      - '9098:9098'
+      - '9099:9099'
+      - '9099:9099/udp'
