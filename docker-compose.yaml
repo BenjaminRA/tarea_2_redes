@@ -10,7 +10,7 @@ services:
       - '6969:6969/udp'
 
   client:
-    build: ./transmission
+    build: ./Transmission
     restart: 'unless-stopped'
     volumes:
       - './client/config:/transmission/config'
@@ -22,7 +22,7 @@ services:
       - '9095:9095/udp'
 
   client_2:
-    build: ./transmission
+    build: ./Transmission
     restart: 'unless-stopped'
     volumes:
       - './client_2/config:/transmission/config'
