@@ -18,9 +18,6 @@ FROM alpine:latest
 RUN apk add --no-cache ca-certificates
 COPY --from=build-env /go/bin/chihaya /chihaya
 
-# Copy chihaya config file
-COPY chihaya.yaml /etc
-
 RUN adduser -D chihaya
 
 # Expose a docker interface to our binary.

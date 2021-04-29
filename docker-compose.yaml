@@ -3,6 +3,8 @@ services:
   server:
     build: ./chihaya
     restart: 'unless-stopped'
+    volumes:
+      - './chihaya/config:/etc'
     ports:
       - '6880:6880'
       - '6880:6880/udp'
