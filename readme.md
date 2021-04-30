@@ -47,6 +47,12 @@ transmission-remote -a testing.torrent
 
 This will start sharing the file to the network in `client` container, and start the fetching and download on `client_2` container.
 
+You can check the status of the download/upload running the command:
+
+```
+transmission-remote -l
+```
+
 # How to configure the server
 
 A `chihaya.yaml` config file is mounted into the server container, and is located inside the folder `chihaya/config`.
