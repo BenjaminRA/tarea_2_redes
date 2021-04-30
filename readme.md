@@ -53,6 +53,8 @@ You can check the status of the download/upload running the command:
 transmission-remote -l
 ```
 
+After it's been downloaded in `client_2`, the file can be located inside `client_2/torrents`.
+
 # How to configure the server
 
 A `chihaya.yaml` config file is mounted into the server container, and is located inside the folder `chihaya/config`.
