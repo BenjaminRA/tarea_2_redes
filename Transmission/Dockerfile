@@ -22,4 +22,6 @@ WORKDIR /transmission
 
 ENV TRANSMISSION_HOME="/transmission/config"
 
+RUN apt-get -y install tcpdump
+
 CMD [ "transmission-daemon", "-f"]

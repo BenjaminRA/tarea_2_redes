@@ -4,6 +4,7 @@ client/config/*
 client/watch/*
 client_2/torrents/*
 client_2/config/*
+Tcpdumps
 !client_2/config/settings.json
 chihaya/config/*
 !chihaya/config/chihaya.yaml

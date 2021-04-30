@@ -15,7 +15,7 @@ RUN go mod tidy
 RUN CGO_ENABLED=0 go install ./cmd/chihaya
 
 FROM alpine:latest
-RUN apk add --no-cache ca-certificates
+RUN apk add --no-cache ca-certificates tcpdump
 COPY --from=build-env /go/bin/chihaya /chihaya
 
 RUN adduser -D chihaya
@@ -24,6 +24,6 @@ RUN adduser -D chihaya
 EXPOSE 6880 6969
 
 # Drop root privileges
-USER chihaya
+# USER chihaya
 
 ENTRYPOINT ["/chihaya"]
