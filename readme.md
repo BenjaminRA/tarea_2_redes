@@ -41,6 +41,6 @@ Finally you can share the torrent file to the other client and add it in his tra
 
 A `chihaya.yaml` config file is mounted into the server container, and is located inside the folder `chihaya/config`.
 
-# How to configure the server
+# How to configure the client
 
 Each client has its own `settings.json` config file, located inside `client/config`. This is applicable for both client and client_2.
