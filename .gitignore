@@ -6,3 +6,4 @@ Tcpdumps
 !client_2/config/settings.json
 chihaya/config/*
 !chihaya/config/chihaya.yaml
+client_2/torrents/testing_file.rar
