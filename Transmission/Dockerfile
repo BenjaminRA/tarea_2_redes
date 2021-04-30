@@ -18,10 +18,10 @@ RUN chmod +x ./configure && ./configure -q && make -s
 
 RUN make install
 
-WORKDIR /transmission
-
 ENV TRANSMISSION_HOME="/transmission/config"
 
 RUN apt-get -y install tcpdump
+
+WORKDIR /transmission/downloads
 
 CMD [ "transmission-daemon", "-f"]

@@ -37,6 +37,16 @@ After that, you can add the torrent in the client's container transmission-web-s
 
 Finally you can share the torrent file to the other client and add it in his transmission-web-service to start downloading it from the corresponding peer.
 
+# Testing
+
+There is a testing file with its corresponding torrent file, located inside `client/torrents`. In order to share it to `client_2`, you can run the following command inside both containers.
+
+```
+transmission-remote -a testing.torrent
+```
+
+This will start sharing the file to the network in `client` container, and start the fetching and download on `client_2` container.
+
 # How to configure the server
 
 A `chihaya.yaml` config file is mounted into the server container, and is located inside the folder `chihaya/config`.
